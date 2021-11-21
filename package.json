@@ -1,17 +1,19 @@
 {
-  "name": "nuxtjs",
+  "name": "laba2-sem3",
   "version": "1.0.0",
-  "description": "My astonishing Nuxt App",
-  "author": "msweeneydev",
   "private": true,
   "scripts": {
     "dev": "nuxt",
-    "build": "nuxt generate",
-    "start": "nuxt start"
+    "start": "nuxt start",
+    "build": "nuxt generate"
   },
   "dependencies": {
-    "core-js": "^3.15.0",
+    "@nuxtjs/pwa": "^3.3.5",
+    "core-js": "^3.15.1",
     "nuxt": "^2.15.7"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^4.2.0",
+    "postcss": "^8.3.5"
+  }
 }
