@@ -20,7 +20,8 @@ add_executable(Tests
         DynamicArrayTests.cpp
         LinkedListTests.cpp
         ListSequenceTests.cpp
-        SequenceTests.cpp SortTests.cpp)
+        SequenceTests.cpp
+        SortTests.cpp SetTests.cpp)
 
 
 include(GoogleTest)

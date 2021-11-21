@@ -6,7 +6,7 @@
 #define LABA3_SET_H
 
 #include "BTree.hpp"
-#include "Sequence.hpp"
+#include "ISequence.hpp"
 
 template<typename T>
 class Set {

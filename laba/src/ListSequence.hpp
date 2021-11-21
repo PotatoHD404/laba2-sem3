@@ -18,9 +18,9 @@ private:
     mutable LinkedList<T> items;
 
 public:
-    Iter<T> begin() override { return items.begin(); }
+    Iter<T> begin() const override { return items.begin(); }
 
-    Iter<T> end() override { return items.end(); }
+    Iter<T> end() const override { return items.end(); }
 
     ListSequence Copy() {
         return ListSequence<T>(*this);

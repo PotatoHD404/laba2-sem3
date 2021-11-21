@@ -8,11 +8,11 @@
 template<typename T>
 class IList : public ICollection<T> {
 public:
-    virtual Iter<T> begin() {
+    Iter<T> begin() const override{
         return Iter<T>(RandomAccessIterator<T>(*this));
     }
 
-    virtual Iter<T> end() {
+    Iter<T> end() const override{
         return Iter<T>(RandomAccessIterator<T>(*this, this->Count() > 0 ? this->Count() : 0));
     }
 
@@ -36,7 +36,7 @@ public:
         throw invalid_argument("Item was not found");
     }
 
-    virtual bool operator==(IList<T> &list) {
+    virtual bool operator==(const IList<T> &list) const {
         if(list.Count() != this->Count())
             return false;
         for (Iter<T> iter1 = this->begin(), iter2 = list.begin(); iter1.GetPos() < list.Count(); iter1++, iter2++) {

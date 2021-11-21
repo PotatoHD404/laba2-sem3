@@ -12,7 +12,7 @@ using Iter = Implementation<RandomAccessIterator<T>>;
 template<typename T>
 class IEnumerable {
 public:
-    virtual Iter<T> begin() = 0;
+    virtual Iter<T> begin() const = 0;
 
-    virtual Iter<T> end() = 0;
+    virtual Iter<T> end() const= 0;
 };

@@ -18,9 +18,9 @@ private:
     mutable DynamicArray<T> items;
 
 public:
-    Iter<T> begin() override { return items.begin(); }
+    Iter<T> begin() const override { return items.begin(); }
 
-    Iter<T> end() override { return items.end(); }
+    Iter<T> end() const override { return items.end(); }
 
     ArraySequence Copy() {
         return ArraySequence<T>(*this);

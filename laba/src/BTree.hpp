@@ -74,7 +74,7 @@ private:
             BNode *child = GetChild(idx);
             BNode *sibling = GetChild(idx - 1);
 
-            child->keys.Prepend(T());
+            child->keys.AddFirst(T());
 //            for (size_t i = child->keys.Count() - 1; i >= 0; --i)
 //                child->keys[i + 1] = child->keys[i];
 
@@ -84,15 +84,15 @@ private:
 //
 //            }
 
-            child->keys.Prepend(this->keys[idx - 1]);
+            child->keys.AddFirst(this->keys[idx - 1]);
 
 //            if (!child->leaf)
 //                child->children[0] = sibling->children[sibling->keys.Count()];
             if (!child->IsLeaf())
-                this->children.Prepend(sibling->children[sibling->keys.Count()]);
+                this->children.AddFirst(sibling->children[sibling->keys.Count()]);
 
 
-            this->keys[idx - 1] = sibling->keys.PopLast();
+            this->keys[idx - 1] = sibling->keys.RemoveLast();
         }
 
 // A function to borrow a key from the this->children[idx+1] and place
@@ -103,24 +103,24 @@ private:
             BNode *sibling = GetChild(idx + 1);
 
             // this->keys[idx] is inserted as the last key in GetChild(idx)
-            child->keys.Append(this->keys[idx]);
+            child->keys.Add(this->keys[idx]);
 
             // Sibling's first child is inserted as the last child
             // into GetChild(idx)
             if (!(child->IsLeaf()))
-                child->children.Append(sibling->children[0]);
+                child->children.Add(sibling->children[0]);
 
             //The first key from sibling is inserted into this->keys[idx]
             this->keys[idx] = sibling->keys[0];
 
             // Moving all this->keys in sibling one step behind
-            sibling->keys.PopFirst();
+            sibling->keys.RemoveFirst();
 
             // Moving the child pointers one step behind
             if (!sibling->IsLeaf()) {
 //                for (size_t i = 1; i <= sibling->keys.Count() + 1; ++i)
 //                    sibling->children[i - 1] = sibling->children[i];
-                sibling->children.PopFirst();
+                sibling->children.RemoveFirst();
             }
 
         }
@@ -158,7 +158,7 @@ private:
             size_t i = FindKey(k);
             if (this->IsLeaf()) {
                 if (this->keys.Count() == i || (i < this->keys.Count() && k != this->keys[i])) {
-                    this->keys.InsertAt(i, k);
+                    this->keys.Insert(i, k);
                     return true;
                 }
                 return false;
@@ -216,12 +216,12 @@ private:
         void Merge(size_t idx) {
             BNode *child = this->GetChild(idx);
             BNode *sibling = this->GetChild(idx + 1);
-            child->keys.Append(this->keys[idx]);
+            child->keys.Add(this->keys[idx]);
             for (size_t i = 0; i < sibling->keys.Count(); ++i)
-                child->keys.Append(sibling->keys[i]);
+                child->keys.Add(sibling->keys[i]);
             if (!child->IsLeaf()) {
                 for (size_t i = 0; i <= sibling->keys.Count(); ++i)
-                    child->children.Append(sibling->children[i]);
+                    child->children.Add(sibling->children[i]);
             }
 //            for (size_t i = idx + 1; i < this->keys.Count(); ++i)
 //                this->keys[i - 1] = this->keys[i];
@@ -236,15 +236,15 @@ private:
 //            z->keys.Resize(_t - 1);
             for (size_t j = 0; j < _t - 1; j++)
 //                z->keys[j] = y->keys[j + _t];
-                z->keys.Prepend(y->keys.PopLast());
+                z->keys.AddFirst(y->keys.RemoveLast());
 
             if (!y->IsLeaf()) {
                 for (size_t j = 0; j < _t; j++)
-                    z->children.Prepend(y->children.PopLast());
+                    z->children.AddFirst(y->children.RemoveLast());
             }
 
-            this->children.InsertAt(i + 1, z);
-            this->keys.InsertAt(i, y->keys.PopLast());
+            this->children.Insert(i + 1, z);
+            this->keys.Insert(i, y->keys.RemoveLast());
 //            y->keys.Resize(_t - 1);
         }
 
@@ -269,7 +269,7 @@ public:
             for (size_t i = 0; i < length; ++i) {
                 if (!node->IsLeaf())
                     VisitNode(node->GetChild(i));
-                res.Append(node->keys[i]);
+                res.Add(node->keys[i]);
             }
             if (!node->IsLeaf())
                 VisitNode(node->GetChild(length));
@@ -346,7 +346,7 @@ public:
 //            for (size_t i = 0; i < length; ++i) {
 //                if (!node->IsLeaf())
 //                    VisitNode(node->GetChild(i));
-//                res.Append(node->keys[i]);
+//                res.Add(node->keys[i]);
 //            }
 //            if (!node->IsLeaf())
 //                VisitNode(node->GetChild(length));
@@ -360,7 +360,7 @@ public:
     void Insert(T k) {
         if (static_cast<BNode *>(this->root)->keys.Count() == 2 * t - 1) {
             BNode *s = new BNode();
-            s->children.Append(this->root);
+            s->children.Add(this->root);
             s->SplitChild(0, static_cast<BNode *>(this->root), t);
             size_t i = 0;
             if (s->keys[i] < k)
