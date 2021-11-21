@@ -92,3 +92,5 @@ sw.*
 
 # Vercel
 .vercel
+
+/laba/src/cmake-*

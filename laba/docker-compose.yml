@@ -1,0 +1,12 @@
+version: "3"
+
+
+services:
+  code-compiler:
+    platform: linux/amd64
+    build: ./src
+    restart: unless-stopped
+    volumes:
+      - ./src:/src
+    ports:
+      - "22:22"
