@@ -4,14 +4,25 @@
 
 #pragma once
 
-template<template<typename> class Base, class T>
+#include <any>
+#include <map>
+
+
+template<template<typename> class ICollection, typename T>
 class CollectionFactory {
-    const std::function<Base<T> &&> New;
+public:
+    std::map<string, std::function<ICollection<T> &&>> arr;
 
+//    class
+//
+//    template<template<typename> class Child>
+//    CollectionFactory():New([]() -> ICollection<T> && {
+//        auto res = Child<T>();
+//        return move(res);
+//    }) {}
 
-    template<template<typename> class Child>
-    CollectionFactory():New([]() -> Base<T> && {
-        auto res = Child<T>();
-        return move(res);
-    }) {}
+    template<class Child>
+    void Register(){
+
+    };
 };

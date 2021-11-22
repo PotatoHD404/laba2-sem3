@@ -32,7 +32,8 @@ public:
 
     virtual ICollection<T> &Add(T item) = 0;
 
-    virtual ICollection<T> &&Copy() = 0;
+    template<typename T1 = T>
+    ICollection<T1> &&Copy() { factory<T1> }
 
     virtual T Remove(T item) = 0;
 
