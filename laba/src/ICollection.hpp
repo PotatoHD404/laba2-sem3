@@ -38,11 +38,3 @@ public:
 
     virtual ~ICollection() = default;
 };
-
-template<template<typename> class Child,typename T>
-class CopyHelper : public ICollection<T>{
-    Child<T> &&Copy() override {
-        auto res = Child<T>();
-        return move(res);
-    }
-};

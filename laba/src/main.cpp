@@ -17,7 +17,14 @@ using namespace std;
 
 
 int main() {
-    cout << typeid(DynamicArray<int>) << endl;
+    ICollection<int> && a = DynamicArray<int>();
+    cout << typeid(a).name() << endl;
+    cout << typeid(ArraySequence<float>).name() << endl;
+    cout << typeid(ArraySequence<DynamicArray<float>>).name() << endl;
+//    cout << (long)typeid(DynamicArray<float>).hash_code() << endl;
+//    cout << typeid(float).hash_code() - typeid(int).hash_code() << endl;
+    cout << (long)typeid(float).hash_code() << endl;
+    cout << (long)typeid(int).hash_code() << endl;
     return 0;
 }
 

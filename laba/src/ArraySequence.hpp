@@ -13,10 +13,7 @@
 using namespace std;
 
 template<typename T>
-class ArraySequence : public ISequence<T>, public IList<T>,
-                      public ISortable<T>,
-                      public ICollection<T>,
-                      public IEnumerable<T>,public CopyHelper<ArraySequence, T> {
+class ArraySequence : public ISequence<T> {
 private:
     mutable DynamicArray<T> items;
 
@@ -25,8 +22,9 @@ public:
 
     Iter<T> end() const override { return items.end(); }
 
-    ArraySequence Copy() {
-        return ArraySequence<T>(*this);
+    ArraySequence<T> &&Copy() override{
+        auto res = ArraySequence<T>(*this);
+        return move(res);
     }
 
     //Creation of the object

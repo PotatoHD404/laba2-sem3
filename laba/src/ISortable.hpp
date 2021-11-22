@@ -41,7 +41,7 @@ namespace PrivateSorts {
             auto i = first;
             for (auto j = first; j != pivot; ++j) {
                 // bool format
-                if (*j < *pivot) {
+                if (j < pivot) {
                     std::swap(*i++, *j);
                 }
             }

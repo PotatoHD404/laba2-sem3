@@ -13,10 +13,7 @@
 using namespace std;
 
 template<typename T>
-class ListSequence : public ISequence<T>,public IList<T>,
-                     public ISortable<T>,
-                     public ICollection<T>,
-                     public IEnumerable<T>, public CopyHelper<ListSequence, T> {
+class ListSequence : public ISequence<T> {
 private:
     mutable LinkedList<T> items;
 

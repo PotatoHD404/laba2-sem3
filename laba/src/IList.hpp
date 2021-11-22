@@ -7,7 +7,7 @@
 #include "ISortable.hpp"
 
 template<typename T>
-class IList : public ICollection<T>, public ISortable<T>, public IEnumerable<T> {
+class IList : public ICollection<T>, public ISortable<T> {
 public:
     Iter<T> begin() const override {
         return Iter<T>(RandomAccessIterator<T>(*this));
@@ -50,7 +50,7 @@ public:
 
     virtual IList<T> &Sort() { return this->Sort(Sorts::QuickSort<T>); }
 
-    virtual IList<T> &Sort(const ISort<T> &sort) {
+    IList<T> &Sort(const ISort<T> &sort) final {
         return (IList<T> &) sort(*this);
     }
 

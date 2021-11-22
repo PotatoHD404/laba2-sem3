@@ -10,7 +10,7 @@
 using namespace std;
 
 template<typename T>
-class ISequence : public IList<T>, public ISortable<T>, public ICollection<T>,public IEnumerable<T> {
+class ISequence : public IList<T> {
 public:
     ISequence() = default;
 

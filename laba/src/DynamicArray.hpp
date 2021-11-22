@@ -10,10 +10,7 @@
 using namespace std;
 
 template<class T>
-class DynamicArray : public IList<T>,
-                     public ISortable<T>,
-                     public ICollection<T>,
-                     public IEnumerable<T>, public CopyHelper<DynamicArray, T> {
+class DynamicArray : public IList<T>{
 private:
     T *actual_array;
     size_t length{};
@@ -146,6 +143,11 @@ public:
                 actual_array = new T[1]();
         }
         return *this;
+    }
+
+    DynamicArray<T> &&Copy() override {
+        auto res = DynamicArray<T>(*this);
+        return move(res);
     }
 
     //Termination
