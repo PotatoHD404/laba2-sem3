@@ -4,15 +4,16 @@
 #pragma once
 
 #include "ICollection.hpp"
+#include "ISortable.hpp"
 
 template<typename T>
-class IList : public ICollection<T> {
+class IList : public ICollection<T>, public ISortable<T>, public IEnumerable<T> {
 public:
-    Iter<T> begin() const override{
+    Iter<T> begin() const override {
         return Iter<T>(RandomAccessIterator<T>(*this));
     }
 
-    Iter<T> end() const override{
+    Iter<T> end() const override {
         return Iter<T>(RandomAccessIterator<T>(*this, this->Count() > 0 ? this->Count() : 0));
     }
 
@@ -29,7 +30,7 @@ public:
         return *this;
     }
 
-    virtual T Remove(T item) {
+    T Remove(T item) override {
         for (auto ptr = this->begin(); ptr < this->end(); ptr++)
             if (*ptr == item)
                 return this->RemoveAt(ptr.GetPos());
@@ -37,7 +38,7 @@ public:
     }
 
     virtual bool operator==(const IList<T> &list) const {
-        if(list.Count() != this->Count())
+        if (list.Count() != this->Count())
             return false;
         for (Iter<T> iter1 = this->begin(), iter2 = list.begin(); iter1.GetPos() < list.Count(); iter1++, iter2++) {
             if (*iter1 != *iter2) {
@@ -45,6 +46,12 @@ public:
             }
         }
         return true;
+    }
+
+    virtual IList<T> &Sort() { return this->Sort(Sorts::QuickSort<T>); }
+
+    virtual IList<T> &Sort(const ISort<T> &sort) {
+        return (IList<T> &) sort(*this);
     }
 
     virtual ~IList() = default;

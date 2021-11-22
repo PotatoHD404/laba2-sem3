@@ -25,5 +25,5 @@ add_executable(Tests
 
 
 include(GoogleTest)
-target_link_libraries(Tests gtest_main)
+target_link_libraries(Tests gtest_main Boost:any)
 #target_link_libraries(Tests gtest gtest_main)

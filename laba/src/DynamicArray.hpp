@@ -10,7 +10,10 @@
 using namespace std;
 
 template<class T>
-class DynamicArray : public IList<T> {
+class DynamicArray : public IList<T>,
+                     public ISortable<T>,
+                     public ICollection<T>,
+                     public IEnumerable<T>, public CopyHelper<DynamicArray, T> {
 private:
     T *actual_array;
     size_t length{};
@@ -20,7 +23,7 @@ public:
     DynamicArray() : actual_array(new T[1]()), length(0) {}
 
     explicit DynamicArray(size_t count) {
-        if ((long)count < 0)
+        if ((long) count < 0)
             throw out_of_range("count < 0");
 
         if (count > 0)
@@ -31,7 +34,7 @@ public:
     }
 
     DynamicArray(T *items, size_t count) {
-        if ((long)count < 0)
+        if ((long) count < 0)
             throw out_of_range("count < 0");
         if (items == NULL)
             throw invalid_argument("items is NULL");

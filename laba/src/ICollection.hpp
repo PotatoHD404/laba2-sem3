@@ -5,9 +5,15 @@
 
 #include "Exceptions.hpp"
 #include "IEnumerable.hpp"
+#include "CollectionFactory.hpp"
+
+//https://stackoverflow.com/questions/5120768/how-to-implement-the-factory-method-pattern-in-c-correctly
 
 template<typename T>
 class ICollection : public IEnumerable<T> {
+protected:
+    template<typename T1>
+    const static CollectionFactory<ICollection, T1> factory;
 public:
     //Decomposition
     using type = T;
@@ -26,7 +32,17 @@ public:
 
     virtual ICollection<T> &Add(T item) = 0;
 
+    virtual ICollection<T> &&Copy() = 0;
+
     virtual T Remove(T item) = 0;
 
     virtual ~ICollection() = default;
+};
+
+template<template<typename> class Child,typename T>
+class CopyHelper : public ICollection<T>{
+    Child<T> &&Copy() override {
+        auto res = Child<T>();
+        return move(res);
+    }
 };

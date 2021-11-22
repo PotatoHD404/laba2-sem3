@@ -19,7 +19,7 @@ public:
 //    explicit IEnumerator(Iter<Seq> &it, size_t pos) = 0;
 
 //    IEnumerator(const IEnumerator &other) = 0;
-//    virtual Child<Seq> Init() = 0;
+//    virtual Base<Seq> Init() = 0;
 
 
 

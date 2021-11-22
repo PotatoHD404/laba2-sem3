@@ -13,7 +13,10 @@
 using namespace std;
 
 template<typename T>
-class ArraySequence : public ISequence<T> {
+class ArraySequence : public ISequence<T>, public IList<T>,
+                      public ISortable<T>,
+                      public ICollection<T>,
+                      public IEnumerable<T>,public CopyHelper<ArraySequence, T> {
 private:
     mutable DynamicArray<T> items;
 

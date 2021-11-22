@@ -16,7 +16,12 @@ using Iter = Implementation<RandomAccessIterator<T>>;
 using namespace std;
 
 template<typename T>
-class LinkedList : public IList<T> {
+class LinkedList
+        : public IList<T>,
+          public ISortable<T>,
+          public ICollection<T>,
+          public IEnumerable<T>,
+          public CopyHelper<LinkedList, T> {
 private:
     class Node;
 
@@ -55,8 +60,9 @@ private:
         Node *current;
     public:
 
-        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RandomAccessIterator<T>::RandomAccessIterator(it, pos),
-                                                               current(it.GetNode(pos)) {}
+        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RandomAccessIterator<T>::RandomAccessIterator(it,
+                                                                                                                   pos),
+                                                                     current(it.GetNode(pos)) {}
 
         Iterator(Iterator &other) : RandomAccessIterator<T>::RandomAccessIterator(other.iterable, other.pos),
                                     current(other.current) {}
@@ -325,7 +331,7 @@ public:
             tail = nullptr;
             head = nullptr;
         } else {
-            Node* prev = head;
+            Node *prev = head;
             head = head->next;
             delete prev;
             head->prev = nullptr;

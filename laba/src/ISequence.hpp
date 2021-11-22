@@ -4,14 +4,13 @@
 #pragma once
 
 #include "IList.hpp"
-#include "ISortable.hpp"
 #include <iostream>
 #include <memory>
 
 using namespace std;
 
 template<typename T>
-class ISequence : public IList<T>, public ISortable<T> {
+class ISequence : public IList<T>, public ISortable<T>, public ICollection<T>,public IEnumerable<T> {
 public:
     ISequence() = default;
 
@@ -35,11 +34,14 @@ public:
 
     virtual T &Last() { return this->Get(this->Count() - 1); }
 
-    virtual ISequence<T> &Sort() { return this->Sort(Sorts::QuickSort<T>); }
-
-    virtual ISequence<T> &Sort(const ISort<T> &sort) {
-        return (ISequence<T> &) sort(*this);
-    }
+//    template<typename T2>
+//    ISequence<T> &&Map(function<T2(const T&)> mapper){
+//        auto res = this->New<T2>();
+//        for(auto el: *this)
+//            res.Add(mapper())
+//
+//        return move(res);
+//    }
 
     virtual ~ISequence() = default;
 };
