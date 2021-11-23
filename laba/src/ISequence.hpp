@@ -14,13 +14,6 @@ class ISequence : public IList<T> {
 public:
     ISequence() = default;
 
-    virtual ISequence<T> &Concat(ISequence<T> &list) {
-        for (auto el : list) {
-            this->Add(el);
-        }
-        return *this;
-    }
-
     virtual ISequence &AddFirst(T item) = 0;
 
     virtual ISequence &Insert(size_t index, T item) = 0;
@@ -33,15 +26,6 @@ public:
     virtual T &First() { return this->Get(0); }
 
     virtual T &Last() { return this->Get(this->Count() - 1); }
-
-//    template<typename T2>
-//    ISequence<T> &&Map(function<T2(const T&)> mapper){
-//        auto res = this->New<T2>();
-//        for(auto el: *this)
-//            res.Add(mapper())
-//
-//        return move(res);
-//    }
 
     virtual ~ISequence() = default;
 };
@@ -66,11 +50,11 @@ ostream &operator<<(ostream &out, const ISequence<T> &x) {
 
 template<typename T>
 istream &operator>>(istream &in, ISequence<T> &x) {
-    string tmp;
-    getline(in, tmp);
-    stringstream ss(tmp);
+//    string tmp;
+//    getline(in, tmp);
+//    stringstream ss(tmp);
     T t;
-    while (ss >> t) {
+    while (in >> t) {
         x.Add(t);
     }
     return in;

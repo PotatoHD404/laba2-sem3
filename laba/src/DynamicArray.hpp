@@ -145,11 +145,6 @@ public:
         return *this;
     }
 
-    DynamicArray<T> &&Copy() override {
-        auto res = DynamicArray<T>(*this);
-        return move(res);
-    }
-
     //Termination
     ~DynamicArray() {
         if (actual_array) {

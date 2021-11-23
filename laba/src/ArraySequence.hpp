@@ -22,11 +22,6 @@ public:
 
     Iter<T> end() const override { return items.end(); }
 
-    ArraySequence<T> &&Copy() override{
-        auto res = ArraySequence<T>(*this);
-        return move(res);
-    }
-
     //Creation of the object
     ArraySequence() : items() {}
 

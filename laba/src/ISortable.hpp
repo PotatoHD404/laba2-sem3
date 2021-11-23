@@ -14,7 +14,7 @@
 template<typename T>
 class ISort {
 public:
-    virtual IEnumerable<T> &operator()(IEnumerable<T> &arr) const = 0;
+    virtual const IEnumerable<T> &operator()(const IEnumerable<T> &arr) const = 0;
 };
 
 namespace std {
@@ -25,11 +25,11 @@ namespace std {
 }
 namespace PrivateSorts {
     template<typename T>
-    class QuickSort : public ISort<T> {
+    class QuickSort1 : public ISort<T> {
     private:
     public:
 
-        IEnumerable<T> &operator()(IEnumerable<T> &arr) const final {
+        const IEnumerable<T> &operator()(const IEnumerable<T> &arr) const final {
             quick_sort(arr.begin(), arr.end());
             return arr;
         }
@@ -42,10 +42,10 @@ namespace PrivateSorts {
             for (auto j = first; j != pivot; ++j) {
                 // bool format
                 if (j < pivot) {
-                    std::swap(*i++, *j);
+                    std::iter_swap(i++, j);
                 }
             }
-            std::swap(*i, *pivot);
+            std::iter_swap(i, pivot);
             return i;
         }
 
@@ -61,7 +61,7 @@ namespace PrivateSorts {
     template<typename T>
     class ShellSort : public ISort<T> {
     public:
-        IEnumerable<T> &operator()(IEnumerable<T> &arr) const final {
+        const IEnumerable<T> &operator()(const IEnumerable<T> &arr) const final {
             shell_sort(arr.begin(), arr.end());
             return arr;
         }
@@ -78,7 +78,7 @@ namespace PrivateSorts {
     template<typename T>
     class InsertionSort : public ISort<T> {
     public:
-        IEnumerable<T> &operator()(IEnumerable<T> &arr) const final {
+        const IEnumerable<T> &operator()(const IEnumerable<T> &arr) const final {
             insertion_sort(arr.begin(), arr.end());
             return arr;
         }
@@ -94,9 +94,33 @@ namespace PrivateSorts {
 }
 
 namespace Sorts {
-
     template<typename T>
-    static const PrivateSorts::QuickSort<T> QuickSort;
+    const IEnumerable<T> &QuickSort(const IEnumerable<T> &arr) {
+        function<Iter<T>(const Iter<T> &first, const Iter<T> &last)>
+                Partition = [&Partition](const Iter<T> &first, const Iter<T> &last) -> Iter<T> {
+            auto pivot = last - 1;
+            auto i = first;
+            for (auto j = first; j != pivot; ++j) {
+                // bool format
+                if (*j < *pivot) {
+                    std::swap(*i++, *j);
+                }
+            }
+            std::swap(*i, *pivot);
+            return i;
+        };
+
+        function<void(const Iter<T> &first, const Iter<T> &last)> quick_sort = [&quick_sort](const Iter<T> &first,
+                                                                                             const Iter<T> &last) -> void {
+            if (std::distance(first, last) > 1) {
+                Iter<T> bound = Partition(first, last);
+                quick_sort(first, bound);
+                quick_sort(bound + 1, last);
+            }
+        };
+        quick_sort(arr.begin(), arr.end());
+        return arr;
+    }
 
     template<typename T>
     static const PrivateSorts::ShellSort<T> ShellSort;
@@ -109,9 +133,11 @@ namespace Sorts {
 //    };
 }
 
-template<typename T>
-class ISortable {
-public:
-    virtual IEnumerable<T> &Sort(const ISort<T> &sort) = 0;
-};
+
+
+//template<typename T>
+//class ISortable {
+//public:
+//    virtual IEnumerable<T> &Sort(const ISort<T> &sort) = 0;
+//};
 
