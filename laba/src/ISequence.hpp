@@ -11,6 +11,8 @@ using namespace std;
 
 template<typename T>
 class ISequence : public IList<T> {
+private:
+    using ptr = lab::shared_ptr<ISequence<T>, ICollection<T>>;
 public:
     ISequence() = default;
 
@@ -21,9 +23,9 @@ public:
         return *this;
     }
 
-    virtual ISequence &AddFirst(T item) = 0;
+    virtual ptr AddFirst(T item) = 0;
 
-    virtual ISequence &Insert(size_t index, T item) = 0;
+    virtual ptr nsert(size_t index, T item) = 0;
 
     virtual T RemoveFirst() = 0;
 
@@ -34,14 +36,14 @@ public:
 
     virtual T &Last() { return this->Get(this->Count() - 1); }
 
-//    template<typename T2>
-//    ISequence<T> &&Map(function<T2(const T&)> mapper){
-//        auto res = this->New<T2>();
-//        for(auto el: *this)
-//            res.Add(mapper())
-//
-//        return move(res);
-//    }
+    template<template <typename> class Child, typename T1>
+    ptr Map(function<T1(const T&)> mapper){
+        auto res = new Child<T1>();
+        for(auto el: *this)
+            res->Add(mapper());
+
+        return res;
+    }
 
     virtual ~ISequence() = default;
 };
@@ -66,11 +68,11 @@ ostream &operator<<(ostream &out, const ISequence<T> &x) {
 
 template<typename T>
 istream &operator>>(istream &in, ISequence<T> &x) {
-    string tmp;
-    getline(in, tmp);
-    stringstream ss(tmp);
+//    string tmp;
+//    getline(in, tmp);
+//    stringstream ss(tmp);
     T t;
-    while (ss >> t) {
+    while (in >> t) {
         x.Add(t);
     }
     return in;

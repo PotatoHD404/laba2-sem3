@@ -14,7 +14,7 @@ class DynamicArray : public IList<T>{
 private:
     T *actual_array;
     size_t length{};
-
+    using ptr = lab::shared_ptr<DynamicArray<T>, ICollection<T>>;
 public:
     //Creation of the object
     DynamicArray() : actual_array(new T[1]()), length(0) {}
@@ -44,7 +44,7 @@ public:
         length = count;
     }
 
-    DynamicArray(const DynamicArray<T> &list) : DynamicArray() {
+    DynamicArray(const ptr list) : DynamicArray() {
         *this = list;
     }
 
@@ -57,7 +57,7 @@ public:
 
     T &operator[](size_t index) const override { return actual_array[index]; }
 
-    DynamicArray<T> &Clear() override {
+    ptr Clear() override {
         this->Resize(0);
         return *this;
     }
@@ -80,7 +80,7 @@ public:
         return res;
     }
 
-    DynamicArray<T> &Set(size_t index, T value) override {
+    ptr Set(size_t index, T value) override {
         if (index < 0 || index >= length)
             throw range_error("index < 0 or index >= length");
         Get(index) = value;
@@ -107,7 +107,7 @@ public:
     [[nodiscard]] size_t Count() const override { return length; }
 
     //Operations
-    DynamicArray<T> &Resize(size_t new_length) {
+    ptr Resize(size_t new_length) {
         if (new_length < 0) {
             throw range_error("new_length < 0");
         }
@@ -126,7 +126,7 @@ public:
         return *this;
     }
 
-    DynamicArray<T> &operator=(const DynamicArray<T> &list) {
+    DynamicArray<T>& operator=(const ptr list) {
         if (&list != this) {
 //            this->~DynamicArray();
             if (actual_array) {
@@ -145,7 +145,7 @@ public:
         return *this;
     }
 
-    DynamicArray<T> &&Copy() override {
+    ptr &Copy() override {
         auto res = DynamicArray<T>(*this);
         return move(res);
     }

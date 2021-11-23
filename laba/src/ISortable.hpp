@@ -10,11 +10,14 @@
 
 //template<typename T>
 //class Enumerable;
-
+namespace PrivateSorts{
+    template<typename T>
+    using ptr = lab::shared_ptr<IEnumerable<T>, ICollection<T>>;
+}
 template<typename T>
 class ISort {
 public:
-    virtual IEnumerable<T> &operator()(IEnumerable<T> &arr) const = 0;
+    virtual PrivateSorts::ptr<T> operator()(PrivateSorts::ptr<T> arr) const = 0;
 };
 
 namespace std {
@@ -26,10 +29,9 @@ namespace std {
 namespace PrivateSorts {
     template<typename T>
     class QuickSort : public ISort<T> {
-    private:
     public:
 
-        IEnumerable<T> &operator()(IEnumerable<T> &arr) const final {
+        ptr<T> operator()(ptr<T> arr) const final {
             quick_sort(arr.begin(), arr.end());
             return arr;
         }
@@ -61,7 +63,7 @@ namespace PrivateSorts {
     template<typename T>
     class ShellSort : public ISort<T> {
     public:
-        IEnumerable<T> &operator()(IEnumerable<T> &arr) const final {
+        ptr<T> operator()(ptr<T> arr) const final {
             shell_sort(arr.begin(), arr.end());
             return arr;
         }
@@ -78,7 +80,7 @@ namespace PrivateSorts {
     template<typename T>
     class InsertionSort : public ISort<T> {
     public:
-        IEnumerable<T> &operator()(IEnumerable<T> &arr) const final {
+        ptr<T> operator()(ptr<T> arr) const final {
             insertion_sort(arr.begin(), arr.end());
             return arr;
         }
@@ -112,6 +114,6 @@ namespace Sorts {
 template<typename T>
 class ISortable {
 public:
-    virtual IEnumerable<T> &Sort(const ISort<T> &sort) = 0;
+    virtual lab::shared_ptr<IList<T>, ICollection<T>> Sort(const ISort<T> &sort) = 0;
 };
 

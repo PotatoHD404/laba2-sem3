@@ -8,6 +8,8 @@
 
 template<typename T>
 class IList : public ICollection<T>, public ISortable<T> {
+private:
+    using ptr = lab::shared_ptr<IList<T>, ICollection<T>>;
 public:
     Iter<T> begin() const override {
         return Iter<T>(RandomAccessIterator<T>(*this));
@@ -23,7 +25,7 @@ public:
 
     virtual T &operator[](size_t index) const = 0;
 
-    virtual IList<T> &Set(size_t index, T value) {
+    virtual ptr Set(size_t index, T value) {
         if (index < 0 || index >= this->Count())
             throw range_error("index < 0 or index >= length");
         Get(index) = value;
@@ -48,9 +50,9 @@ public:
         return true;
     }
 
-    virtual IList<T> &Sort() { return this->Sort(Sorts::QuickSort<T>); }
+    virtual ptr Sort() { return this->Sort(Sorts::QuickSort<T>); }
 
-    IList<T> &Sort(const ISort<T> &sort) final {
+    ptr Sort(const ISort<T> &sort) final {
         return (IList<T> &) sort(*this);
     }
 
