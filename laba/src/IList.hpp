@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ICollection.hpp"
-#include "ISortable.hpp"
+#include "Sorts.hpp"
 
 template<typename T>
 class IList : public ICollection<T> {

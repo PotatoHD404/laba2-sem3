@@ -11,6 +11,7 @@
 #include "ArraySequence.hpp"
 #include "Stack.hpp"
 #include "Pair.hpp"
+#include "Utils.hpp"
 
 using namespace std;
 
@@ -30,7 +31,6 @@ protected:
         Node(Node<T1> &node) : Node(&node) {}
 
         explicit Node(Node<T1> *input) : Node() {
-//            Node<T1> *res = new Node();
             Stack<Node<T1> *> s, s1;
             s.Push(input);
             s1.Push(this);
@@ -48,7 +48,7 @@ protected:
         }
 
         template<class T2>
-        Node<T2> *Map(T2 (*mapper)(T1)) {
+        Node<T2> *Map(function<T2(T1)> bijectiveFunc) {
             Stack<Node<T1> *> s;
             Stack<Node<T2> *> s1;
             Node<T2> *res = new Node<T2>();
@@ -57,7 +57,7 @@ protected:
             while (!s.IsEmpty()) {
                 Node<T1> *node = s.Pop();
                 Node<T2> *tmp = s1.Pop();
-                tmp->keys = node->keys.Map(mapper);
+                tmp->keys = Utils::Map(node->keys, bijectiveFunc);
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -82,7 +82,7 @@ protected:
         Node(ArraySequence<T1> keys, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
                 keys(keys), parent(parent), children(children) {}
 
-        T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
+        T1 Reduce(function<T1(T1, T1)> f, T1 c) {
             if (f == nullptr)
                 throw invalid_argument("mapper is NULL");
             T res = c;
@@ -91,7 +91,7 @@ protected:
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
-                res = node->keys.Reduce(f, res);
+                res = Utils::Reduce(node->keys, f, res);
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL)
                         s.Push(node->children[i]);
@@ -121,7 +121,7 @@ protected:
         void AddChild() {
             Node<T1> *child = new Node<T1>();
             child->parent = this;
-            children.Append(child);
+            children.Add(child);
         }
 
         ~Node() {
@@ -160,14 +160,14 @@ protected:
     }
 
 
-    size_t n;
+    size_t n{};
     Node<T> *root;
-    size_t count;
+    size_t count{};
 
 public:
     NAryTree() : NAryTree(2) {}
 
-    NAryTree(size_t n) : NAryTree(new Node<T>(), n, 0) {}
+    explicit NAryTree(size_t n) : NAryTree(new Node<T>(), n, 0) {}
 
     explicit NAryTree(Node<T> *root, size_t count) : n(root->ChildrenCount()), root(root), count(count) {}
 
@@ -353,8 +353,8 @@ public:
     }
 
     template<typename T1>
-    NAryTree<T1> Map(T1 (*mapper)(T)) {
-        return NAryTree<T1>(root->Map(mapper), n);
+    NAryTree<T1> Map(function<T1(T)> bijectiveFunc) {
+        return NAryTree<T1>(root->Map(bijectiveFunc), n);
     }
 
     T Reduce(T (*f)(T, T), T const &c) {

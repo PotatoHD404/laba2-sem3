@@ -21,7 +21,7 @@
 const int itemNum = 1000;
 
 using namespace std;
-using namespace Sorts;
+using namespace Utils;
 
 template<typename T>
 T GenRandom(mt19937 &rng) {
@@ -39,7 +39,7 @@ T GenRandom(mt19937 &rng) {
         uniform_real_distribution<float> distribution(-1, 1);
         return Complex((float) distribution(rng), (float) distribution(rng));
     } else if constexpr(std::is_same<T, int>::value) {
-        uniform_int_distribution<int> distribution(-itemNum, itemNum);
+        uniform_int_distribution<int> distribution(-itemNum*10, itemNum*10);
         return (int) distribution(rng);
     } else if constexpr(std::is_same<T, float>::value) {
         uniform_real_distribution<float> distribution(-10, 10);
@@ -95,13 +95,14 @@ TYPED_TEST_P(Sorts_Test, QuickSort) {
     // Inside a test, refer to TypeParam to get the type parameter.
     using Seq = TypeParam;
     using T = typename Seq::type;
-    ISequence<T> &&seq = Seq();
+    Seq seq = Seq();
     array<T, itemNum> test_data = this->test_data();
     for (const T &el: test_data) {
         seq.Add(el);
     }
-    seq = Sort<QuickSort>(seq);
-//    auto begin = seq.begin();
+    Seq a(seq);
+    Sorts::QuickSort<T> s;
+    s(seq);
     for (size_t i = 0; i < seq.Count() - 1; i++) {
         EXPECT_TRUE(seq[i] <= seq[i + 1]);
     }
@@ -111,12 +112,12 @@ TYPED_TEST_P(Sorts_Test, InsertionSort) {
     // Inside a test, refer to TypeParam to get the type parameter.
     using Seq = TypeParam;
     using T = typename Seq::type;
-    ISequence<T> &&seq = Seq();
+    Seq seq = Seq();
     array<T, itemNum> test_data = this->test_data();
-    for (const T &el: test_data) {
+    for (const T& el: test_data) {
         seq.Add(el);
     }
-    seq = Sort<InsertionSort>(seq);
+    seq = Sort<Sorts::InsertionSort>(seq);
 //    auto begin = seq.begin();
     for (size_t i = 0; i < seq.Count() - 1; i++) {
         EXPECT_TRUE(seq[i] <= seq[i + 1]);
@@ -127,12 +128,12 @@ TYPED_TEST_P(Sorts_Test, ShellSort) {
     // Inside a test, refer to TypeParam to get the type parameter.
     using Seq = TypeParam;
     using T = typename Seq::type;
-    ISequence<T> &&seq = Seq();
+    Seq seq = Seq();
     array<T, itemNum> test_data = this->test_data();
     for (const T &el: test_data) {
         seq.Add(el);
     }
-    Sort<ShellSort>(seq);
+    Sort<Sorts::ShellSort>(seq);
 //    auto begin = seq.begin();
     for (size_t i = 0; i < seq.Count() - 1; i++) {
         EXPECT_TRUE(seq[i] <= seq[i + 1]);
@@ -146,8 +147,7 @@ using ListSequence_test_types = test_types<ListSequence, int, float, string, Com
 using ArraySequence_test_types = test_types<ArraySequence, int, float, string, Complex>;
 
 
-REGISTER_TYPED_TEST_SUITE_P(Sorts_Test,
-                            QuickSort, ShellSort, InsertionSort);
+REGISTER_TYPED_TEST_SUITE_P(Sorts_Test, ShellSort, InsertionSort, QuickSort);
 
 INSTANTIATE_TYPED_TEST_SUITE_P(ListSequence, Sorts_Test, ListSequence_test_types);
 INSTANTIATE_TYPED_TEST_SUITE_P(ArraySequence, Sorts_Test, ArraySequence_test_types);

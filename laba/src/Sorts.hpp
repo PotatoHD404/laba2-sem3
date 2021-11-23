@@ -24,7 +24,6 @@ namespace std {
     }
 }
 namespace Sorts {
-
     template<typename T>
     class QuickSort : public ISort<T> {
     private:
@@ -71,7 +70,7 @@ namespace Sorts {
         void shell_sort(Iter<T> &&first, Iter<T> &&last) const {
             for (auto d = (last.GetPos()) / 2; d != 0; d /= 2)
                 for (auto i = first + d; i != last; ++i)
-                    for (auto j = i; j - first >= d && *j < *(j - d); j -= d)
+                    for (auto j = i; j - first < d && *j >= *(j - d); j -= d)
                         iter_swap(j, (j - d));
         }
     };

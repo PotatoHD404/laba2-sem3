@@ -13,11 +13,11 @@ public:
     Stack() = default;
 
     void Push(T item) {
-        this->Prepend(item);
+        this->AddFirst(item);
     }
 
     T Pop() {
-        return this->PopFirst();
+        return this->RemoveFirst();
     }
 
     T& Top() {

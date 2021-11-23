@@ -53,9 +53,9 @@ public:
     }
 
     template<typename T1>
-    Set<T1> Map(T1 (*mapper)(T)) {
+    Set<T1> Map(function<T1(T)>bijectiveFunc) {
         Set<T1> res;
-        static_cast<NAryTree<T> &>(res.items) = items.Map(mapper);
+        static_cast<NAryTree<T> &>(res.items) = items.Map(bijectiveFunc);
         ArraySequence<T> x = res.items.ToArraySequence();
         res.items = BTree<T>();
         for (size_t i = 0; i < x.Count(); ++i)

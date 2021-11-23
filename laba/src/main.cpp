@@ -6,7 +6,7 @@
 #include "ArraySequence.hpp"
 
 using namespace std;
-
+using namespace Utils;
 
 int main() {
     ArraySequence<int> a{5, 4, 3, 2, 1};

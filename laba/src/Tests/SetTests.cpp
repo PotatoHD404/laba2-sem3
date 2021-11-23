@@ -8,14 +8,6 @@
 
 using namespace std;
 
-int mapper1(int a) {
-    return a * 2;
-}
-
-string mapper2(string a) {
-    return a + " sampleText";
-}
-
 int ReduceCheck(int a, int b) {
     return a + b;
 }
@@ -47,12 +39,19 @@ TEST(SetTest, Add_Remove) {
     ASSERT_TRUE(set1 == set);
     set.Remove(1);
     set.Remove(2);
-    EXPECT_EQ(set.Count(),0);
+    EXPECT_EQ(set.Count(), 0);
     ASSERT_TRUE(set == Set<int>());
 
 }
 
 TEST(SetTest, Map) {
+    function<int(int)> mapper1 = [](int a) -> int {
+        return a * 2;
+    };
+
+    function<string(string)> mapper2 = [](const string& a) -> string {
+        return a + " sampleText";
+    };
     Set<int> set = Set<int>({4, 3, 2, 0});
     Set<int> mapSet = set.Map(mapper1);
     ASSERT_TRUE(mapSet == Set<int>({8, 6, 4, 0}));
