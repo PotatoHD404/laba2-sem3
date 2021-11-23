@@ -72,10 +72,6 @@ public:
         return items.Get(index);
     }
 
-    using ISequence<T>::Sort;
-
-    ISequence<T> &Sort() override { return this->ISequence<T>::Sort(Sorts::InsertionSort<T>); }
-
     ListSequence<T> *Subsequence(size_t startIndex, size_t endIndex) {
         if (startIndex < 0 || startIndex >= items.Count())
             throw range_error("index < 0 or index >= length");

@@ -7,6 +7,8 @@
 #include "ISequence.hpp"
 #include "ISortable.hpp"
 
+template<class T> T& unmove(T&& t) { return t; }
+
 template<typename T, template<typename> class Sequence>
 Sequence<T> Concat(const Sequence<T> &seq1, const Sequence<T> &seq2) {
     Sequence<T> res(seq1);
@@ -16,6 +18,17 @@ Sequence<T> Concat(const Sequence<T> &seq1, const Sequence<T> &seq2) {
     return res;
 }
 
+template<template<typename> class SortType = Sorts::QuickSort, typename T>
+ISequence<T> &Sort(ISequence<T> &seq) {
+//    Sequence<T> res(seq);
+    SortType<T> sort;
+    sort(seq);
+    return seq;
+}
+template<template<typename> class SortType = Sorts::QuickSort, typename T>
+ISequence<T> &Sort(ISequence<T> &&seq) {
+    return Sort<SortType>(unmove(seq));
+}
 template<template<typename> class SortType = Sorts::QuickSort, typename T,
         template<typename> class Sequence>
 Sequence<T> Sort(const Sequence<T> &seq) {
