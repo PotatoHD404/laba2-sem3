@@ -23,9 +23,10 @@ namespace std {
         return abs((long) (ra1 - ra2).GetPos());
     }
 }
-namespace PrivateSorts {
+namespace Sorts {
+
     template<typename T>
-    class QuickSort1 : public ISort<T> {
+    class QuickSort : public ISort<T> {
     private:
     public:
 
@@ -41,11 +42,11 @@ namespace PrivateSorts {
             auto i = first;
             for (auto j = first; j != pivot; ++j) {
                 // bool format
-                if (j < pivot) {
-                    std::iter_swap(i++, j);
+                if (*j < *pivot) {
+                    std::swap(*i++, *j);
                 }
             }
-            std::iter_swap(i, pivot);
+            std::swap(*i, *pivot);
             return i;
         }
 
@@ -92,52 +93,4 @@ namespace PrivateSorts {
         }
     };
 }
-
-namespace Sorts {
-    template<typename T>
-    const IEnumerable<T> &QuickSort(const IEnumerable<T> &arr) {
-        function<Iter<T>(const Iter<T> &first, const Iter<T> &last)>
-                Partition = [&Partition](const Iter<T> &first, const Iter<T> &last) -> Iter<T> {
-            auto pivot = last - 1;
-            auto i = first;
-            for (auto j = first; j != pivot; ++j) {
-                // bool format
-                if (*j < *pivot) {
-                    std::swap(*i++, *j);
-                }
-            }
-            std::swap(*i, *pivot);
-            return i;
-        };
-
-        function<void(const Iter<T> &first, const Iter<T> &last)> quick_sort = [&quick_sort](const Iter<T> &first,
-                                                                                             const Iter<T> &last) -> void {
-            if (std::distance(first, last) > 1) {
-                Iter<T> bound = Partition(first, last);
-                quick_sort(first, bound);
-                quick_sort(bound + 1, last);
-            }
-        };
-        quick_sort(arr.begin(), arr.end());
-        return arr;
-    }
-
-    template<typename T>
-    static const PrivateSorts::ShellSort<T> ShellSort;
-
-    template<typename T>
-    static const PrivateSorts::InsertionSort<T> InsertionSort;
-
-//    enum Sort {
-//        Shell, Insertion, Quick
-//    };
-}
-
-
-
-//template<typename T>
-//class ISortable {
-//public:
-//    virtual IEnumerable<T> &Sort(const ISort<T> &sort) = 0;
-//};
 

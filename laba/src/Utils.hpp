@@ -16,9 +16,11 @@ Sequence<T> Concat(const Sequence<T> &seq1, const Sequence<T> &seq2) {
     return res;
 }
 
-template<typename T, template<typename> class Sequence>
-Sequence<T> Sort(const Sequence<T> &seq, function<const IEnumerable<T> &(const IEnumerable<T> &)> sort) {
+template<template<typename> class SortType = Sorts::QuickSort, typename T,
+        template<typename> class Sequence>
+Sequence<T> Sort(const Sequence<T> &seq) {
     Sequence<T> res(seq);
+    SortType<T> sort;
     sort(res);
     return res;
 }
