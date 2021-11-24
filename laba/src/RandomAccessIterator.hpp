@@ -17,7 +17,7 @@ class RandomAccessIterator {
 protected:
     using Iter = Implementation<RandomAccessIterator<T>>;
     size_t pos;
-    IList<T> &iterable;
+    const IList<T> &iterable;
 
 //    using IEnumerator = IEnumerator<Seq, RandomAccessIterator>;
 
@@ -30,7 +30,7 @@ public:
     typedef std::random_access_iterator_tag iterator_category;  //usually std::forward_iterator_tag or similar
 
 
-    explicit RandomAccessIterator(IList<T> &it, size_t pos = 0) : pos(pos), iterable(it) {}
+    explicit RandomAccessIterator(const IList<T> &it, size_t pos = 0) : pos(pos), iterable(it) {}
 
     RandomAccessIterator(const RandomAccessIterator &other) : pos(other.pos), iterable(other.iterable) {}
 
@@ -40,7 +40,7 @@ public:
 //    explicit IEnumerator(Iter<Seq> &it, size_t pos) = 0;
 
 //    IEnumerator(const IEnumerator &other) = 0;
-//    virtual Child<Seq> Init() = 0;
+//    virtual Base<Seq> Init() = 0;
 
 
 //    virtual Seq *operator->() const = 0;
@@ -101,7 +101,7 @@ public:
     }
 
     virtual bool Equals(const RandomAccessIterator &b) const {
-        return (this->iterable == b.iterable) && (this->GetPos() == b.GetPos());
+        return (this->GetPos() == b.GetPos()) && (&this->iterable == &b.iterable);
     }
 
     virtual Iter operator-(const RandomAccessIterator &b) const {

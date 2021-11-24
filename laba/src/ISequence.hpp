@@ -4,23 +4,15 @@
 #pragma once
 
 #include "IList.hpp"
-#include "ISortable.hpp"
 #include <iostream>
 #include <memory>
 
 using namespace std;
 
 template<typename T>
-class ISequence : public IList<T>, public ISortable<T> {
+class ISequence : public IList<T> {
 public:
     ISequence() = default;
-
-    virtual ISequence<T> &Concat(ISequence<T> &list) {
-        for (auto el : list) {
-            this->Add(el);
-        }
-        return *this;
-    }
 
     virtual ISequence &AddFirst(T item) = 0;
 
@@ -34,12 +26,6 @@ public:
     virtual T &First() { return this->Get(0); }
 
     virtual T &Last() { return this->Get(this->Count() - 1); }
-
-    virtual ISequence<T> &Sort() { return this->Sort(Sorts::QuickSort<T>); }
-
-    virtual ISequence<T> &Sort(const ISort<T> &sort) {
-        return (ISequence<T> &) sort(*this);
-    }
 
     virtual ~ISequence() = default;
 };
@@ -64,11 +50,11 @@ ostream &operator<<(ostream &out, const ISequence<T> &x) {
 
 template<typename T>
 istream &operator>>(istream &in, ISequence<T> &x) {
-    string tmp;
-    getline(in, tmp);
-    stringstream ss(tmp);
+//    string tmp;
+//    getline(in, tmp);
+//    stringstream ss(tmp);
     T t;
-    while (ss >> t) {
+    while (in >> t) {
         x.Add(t);
     }
     return in;

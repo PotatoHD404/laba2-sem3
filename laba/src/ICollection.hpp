@@ -6,6 +6,8 @@
 #include "Exceptions.hpp"
 #include "IEnumerable.hpp"
 
+//https://stackoverflow.com/questions/5120768/how-to-implement-the-factory-method-pattern-in-c-correctly
+
 template<typename T>
 class ICollection : public IEnumerable<T> {
 public:

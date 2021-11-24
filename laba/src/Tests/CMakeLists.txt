@@ -20,9 +20,9 @@ add_executable(Tests
         DynamicArrayTests.cpp
         LinkedListTests.cpp
         ListSequenceTests.cpp
-        SequenceTests.cpp SortTests.cpp)
+        SequenceTests.cpp
+        SortTests.cpp SetTests.cpp)
 
 
 include(GoogleTest)
 target_link_libraries(Tests gtest_main)
-#target_link_libraries(Tests gtest gtest_main)

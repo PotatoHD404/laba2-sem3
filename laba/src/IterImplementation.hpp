@@ -19,7 +19,7 @@ public:
 //    explicit IEnumerator(Iter<Seq> &it, size_t pos) = 0;
 
 //    IEnumerator(const IEnumerator &other) = 0;
-//    virtual Child<Seq> Init() = 0;
+//    virtual Base<Seq> Init() = 0;
 
 
 
@@ -160,10 +160,12 @@ public:
         return *storage >= *b.storage;
     }
 
+    explicit operator int() const { return storage->GetPos(); }
+
     Implementation &operator=(const Implementation &list) {
         if (this != &list) {
             delete storage;
-            storage = copy(*list.storage);
+            storage = list.copy(*list.storage);
             copy = list.copy;
         }
         return *this;

@@ -4,15 +4,16 @@
 #pragma once
 
 #include "ICollection.hpp"
+#include "Sorts.hpp"
 
 template<typename T>
 class IList : public ICollection<T> {
 public:
-    virtual Iter<T> begin() {
+    Iter<T> begin() const override {
         return Iter<T>(RandomAccessIterator<T>(*this));
     }
 
-    virtual Iter<T> end() {
+    Iter<T> end() const override {
         return Iter<T>(RandomAccessIterator<T>(*this, this->Count() > 0 ? this->Count() : 0));
     }
 
@@ -29,15 +30,15 @@ public:
         return *this;
     }
 
-    virtual T Remove(T item) {
+    T Remove(T item) override {
         for (auto ptr = this->begin(); ptr < this->end(); ptr++)
             if (*ptr == item)
                 return this->RemoveAt(ptr.GetPos());
         throw invalid_argument("Item was not found");
     }
 
-    virtual bool operator==(IList<T> &list) {
-        if(list.Count() != this->Count())
+    virtual bool operator==(const IList<T> &list) const {
+        if (list.Count() != this->Count())
             return false;
         for (Iter<T> iter1 = this->begin(), iter2 = list.begin(); iter1.GetPos() < list.Count(); iter1++, iter2++) {
             if (*iter1 != *iter2) {

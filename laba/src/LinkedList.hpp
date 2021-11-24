@@ -55,13 +55,14 @@ private:
         Node *current;
     public:
 
-        explicit Iterator(LinkedList<T> &it, size_t pos = 0) : RandomAccessIterator<T>::RandomAccessIterator(it, pos),
-                                                               current(it.GetNode(pos)) {}
+        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RandomAccessIterator<T>::RandomAccessIterator(it,
+                                                                                                                   pos),
+                                                                     current(it.GetNode(pos)) {}
 
         Iterator(Iterator &other) : RandomAccessIterator<T>::RandomAccessIterator(other.iterable, other.pos),
                                     current(other.current) {}
 
-        Iterator(LinkedList<T> &it, Node *current, size_t pos) : RandomAccessIterator<T>::RandomAccessIterator(
+        Iterator(const LinkedList<T> &it, Node *current, size_t pos) : RandomAccessIterator<T>::RandomAccessIterator(
                 it, pos), current(current) {}
 
         T &operator*() const override { return current->data; }
@@ -149,9 +150,9 @@ private:
     };
 
 public:
-    Iter<T> begin() override { return Iter<T>(Iterator(*this)); }
+    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
 
-    Iter<T> end() override {
+    Iter<T> end() const override {
         return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
     }
     //Creation of the object
@@ -325,7 +326,7 @@ public:
             tail = nullptr;
             head = nullptr;
         } else {
-            Node* prev = head;
+            Node *prev = head;
             head = head->next;
             delete prev;
             head->prev = nullptr;

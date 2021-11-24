@@ -18,9 +18,9 @@ private:
     mutable LinkedList<T> items;
 
 public:
-    Iter<T> begin() override { return items.begin(); }
+    Iter<T> begin() const override { return items.begin(); }
 
-    Iter<T> end() override { return items.end(); }
+    Iter<T> end() const override { return items.end(); }
 
     ListSequence Copy() {
         return ListSequence<T>(*this);
@@ -71,10 +71,6 @@ public:
     T &Get(size_t index) const override {
         return items.Get(index);
     }
-
-    using ISequence<T>::Sort;
-
-    ISequence<T> &Sort() override { return this->ISequence<T>::Sort(Sorts::InsertionSort<T>); }
 
     ListSequence<T> *Subsequence(size_t startIndex, size_t endIndex) {
         if (startIndex < 0 || startIndex >= items.Count())
