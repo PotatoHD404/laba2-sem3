@@ -160,10 +160,12 @@ public:
         return *storage >= *b.storage;
     }
 
+    explicit operator int() const { return storage->GetPos(); }
+
     Implementation &operator=(const Implementation &list) {
         if (this != &list) {
             delete storage;
-            storage = copy(*list.storage);
+            storage = list.copy(*list.storage);
             copy = list.copy;
         }
         return *this;

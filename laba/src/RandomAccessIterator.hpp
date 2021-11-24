@@ -101,7 +101,7 @@ public:
     }
 
     virtual bool Equals(const RandomAccessIterator &b) const {
-        return (this->iterable == b.iterable) && (this->GetPos() == b.GetPos());
+        return (this->GetPos() == b.GetPos()) && (&this->iterable == &b.iterable);
     }
 
     virtual Iter operator-(const RandomAccessIterator &b) const {

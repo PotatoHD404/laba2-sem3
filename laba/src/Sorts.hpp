@@ -68,11 +68,22 @@ namespace Sorts {
 
     private:
         void shell_sort(Iter<T> &&first, Iter<T> &&last) const {
-            for (auto d = (last.GetPos()) / 2; d != 0; d /= 2)
-                for (auto i = first + d; i != last; ++i)
-                    for (auto j = i; j - first < d && *j >= *(j - d); j -= d)
-                        iter_swap(j, (j - d));
+            auto size = last - first;
+            auto h = 1;
+            while (h < (int)(size / 3)) h = 3 * h + 1;
+
+            while (h >= 1) {
+                for (auto i = first + h; i != last; i++) {
+                    for (auto j = i; (j - first) >= h && *j < *(j - h); j -= h)
+                        std::iter_swap(j, j - h);
+                }
+                h /= 3;
+            }
         }
+
+//        static void sort(Iter<T> first, Iter<T> last) {
+//
+//        }
     };
 
     template<typename T>

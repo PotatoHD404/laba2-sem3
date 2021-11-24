@@ -18,7 +18,7 @@
 
 // https://github.com/google/googletest/blob/master/docs/advanced.md#type-parameterized-tests
 
-const int itemNum = 1000;
+const int itemNum = 10000;
 
 using namespace std;
 using namespace Utils;
@@ -39,7 +39,7 @@ T GenRandom(mt19937 &rng) {
         uniform_real_distribution<float> distribution(-1, 1);
         return Complex((float) distribution(rng), (float) distribution(rng));
     } else if constexpr(std::is_same<T, int>::value) {
-        uniform_int_distribution<int> distribution(-itemNum*10, itemNum*10);
+        uniform_int_distribution<int> distribution(-itemNum * 10, itemNum * 10);
         return (int) distribution(rng);
     } else if constexpr(std::is_same<T, float>::value) {
         uniform_real_distribution<float> distribution(-10, 10);
@@ -100,9 +100,7 @@ TYPED_TEST_P(Sorts_Test, QuickSort) {
     for (const T &el: test_data) {
         seq.Add(el);
     }
-    Seq a(seq);
-    Sorts::QuickSort<T> s;
-    s(seq);
+    seq = Sort<Sorts::QuickSort>(seq);
     for (size_t i = 0; i < seq.Count() - 1; i++) {
         EXPECT_TRUE(seq[i] <= seq[i + 1]);
     }
@@ -114,7 +112,7 @@ TYPED_TEST_P(Sorts_Test, InsertionSort) {
     using T = typename Seq::type;
     Seq seq = Seq();
     array<T, itemNum> test_data = this->test_data();
-    for (const T& el: test_data) {
+    for (const T &el: test_data) {
         seq.Add(el);
     }
     seq = Sort<Sorts::InsertionSort>(seq);
@@ -133,11 +131,12 @@ TYPED_TEST_P(Sorts_Test, ShellSort) {
     for (const T &el: test_data) {
         seq.Add(el);
     }
-    Sort<Sorts::ShellSort>(seq);
+    seq = Sort<Sorts::ShellSort>(seq);
 //    auto begin = seq.begin();
     for (size_t i = 0; i < seq.Count() - 1; i++) {
         EXPECT_TRUE(seq[i] <= seq[i + 1]);
     }
+//    cout << seq << endl;
 }
 
 template<template<typename> class C, typename ...Ts>
