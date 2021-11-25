@@ -18,7 +18,7 @@ private:
         BNode *Search(T k) {
             size_t i = FindKey(k);
 
-            if (i < this->keys.Count() && this->keys[i] == k)
+            if (i < this->values.Count() && this->values[i] == k)
                 return this;
             else if (this->IsLeaf())
                 return nullptr;
@@ -28,23 +28,23 @@ private:
         }
 
         bool RemoveFromLeaf(size_t idx) {
-            if (idx < this->keys.Count()) {
-                this->keys.RemoveAt(idx);
+            if (idx < this->values.Count()) {
+                this->values.RemoveAt(idx);
                 return true;
             }
             return false;
         }
 
         bool RemoveFromNonLeaf(size_t idx, size_t _t) {
-            T k = this->keys[idx];
-            if (this->children[idx]->keys.Count() >= _t) {
+            T k = this->values[idx];
+            if (this->children[idx]->values.Count() >= _t) {
                 T pred = GetPred(idx);
-                this->keys[idx] = pred;
+                this->values[idx] = pred;
                 GetChild(idx)->Remove(pred, _t);
                 return true;
-            } else if (this->children[idx + 1]->keys.Count() >= _t) {
+            } else if (this->children[idx + 1]->values.Count() >= _t) {
                 T next = GetNext(idx);
-                this->keys[idx] = next;
+                this->values[idx] = next;
                 GetChild(idx + 1)->Remove(next, _t);
                 return true;
             } else {
@@ -55,12 +55,12 @@ private:
         }
 
         void Fill(size_t idx, size_t _t) {
-            if (idx != 0 && GetChild(idx - 1)->keys.Count() >= _t)
+            if (idx != 0 && GetChild(idx - 1)->values.Count() >= _t)
                 BorrowFromPrev(idx);
-            else if (idx != this->keys.Count() && this->children[idx + 1]->keys.Count() >= _t)
+            else if (idx != this->values.Count() && this->children[idx + 1]->values.Count() >= _t)
                 BorrowFromNext(idx);
             else {
-                if (idx != this->keys.Count())
+                if (idx != this->values.Count())
                     Merge(idx);
                 else
                     Merge(idx - 1);
@@ -73,25 +73,25 @@ private:
             BNode *child = GetChild(idx);
             BNode *sibling = GetChild(idx - 1);
 
-            child->keys.AddFirst(T());
-//            for (size_t i = child->keys.Count() - 1; i >= 0; --i)
-//                child->keys[i + 1] = child->keys[i];
+            child->values.AddFirst(T());
+//            for (size_t i = child->values.Count() - 1; i >= 0; --i)
+//                child->values[i + 1] = child->values[i];
 
 //            if (!child->IsLeaf()) {
-////                for (size_t i = child->keys.Count(); i >= 0; --i)
+////                for (size_t i = child->values.Count(); i >= 0; --i)
 ////                    child->children[i + 1] = child->children[i];
 //
 //            }
 
-            child->keys.AddFirst(this->keys[idx - 1]);
+            child->values.AddFirst(this->values[idx - 1]);
 
 //            if (!child->leaf)
-//                child->children[0] = sibling->children[sibling->keys.Count()];
+//                child->children[0] = sibling->children[sibling->values.Count()];
             if (!child->IsLeaf())
-                this->children.AddFirst(sibling->children[sibling->keys.Count()]);
+                this->children.AddFirst(sibling->children[sibling->values.Count()]);
 
 
-            this->keys[idx - 1] = sibling->keys.RemoveLast();
+            this->values[idx - 1] = sibling->values.RemoveLast();
         }
 
 // A function to borrow a key from the this->children[idx+1] and place
@@ -101,38 +101,38 @@ private:
             BNode *child = GetChild(idx);
             BNode *sibling = GetChild(idx + 1);
 
-            // this->keys[idx] is inserted as the last key in GetChild(idx)
-            child->keys.Add(this->keys[idx]);
+            // this->values[idx] is inserted as the last key in GetChild(idx)
+            child->values.Add(this->values[idx]);
 
             // Sibling's first child is inserted as the last child
             // into GetChild(idx)
             if (!(child->IsLeaf()))
                 child->children.Add(sibling->children[0]);
 
-            //The first key from sibling is inserted into this->keys[idx]
-            this->keys[idx] = sibling->keys[0];
+            //The first key from sibling is inserted into this->values[idx]
+            this->values[idx] = sibling->values[0];
 
-            // Moving all this->keys in sibling one step behind
-            sibling->keys.RemoveFirst();
+            // Moving all this->values in sibling one step behind
+            sibling->values.RemoveFirst();
 
             // Moving the child pointers one step behind
             if (!sibling->IsLeaf()) {
-//                for (size_t i = 1; i <= sibling->keys.Count() + 1; ++i)
+//                for (size_t i = 1; i <= sibling->values.Count() + 1; ++i)
 //                    sibling->children[i - 1] = sibling->children[i];
                 sibling->children.RemoveFirst();
             }
 
         }
 
-        // A function to get predecessor of this->keys[idx]
+        // A function to get predecessor of this->values[idx]
         T GetPred(size_t idx) {
             // Keep moving to the right most node until we reach a leaf
             BNode *cur = GetChild(idx);
             while (!cur->IsLeaf())
-                cur = cur->GetChild(cur->keys.Count());
+                cur = cur->GetChild(cur->values.Count());
 
             // Return the last key of the leaf
-            return cur->keys[cur->keys.Count() - 1];
+            return cur->values[cur->values.Count() - 1];
         }
 
         T GetNext(size_t idx) {
@@ -142,13 +142,13 @@ private:
                 cur = cur->GetChild(0);
 
             // Return the first key of the leaf
-            return cur->keys[0];
+            return cur->values[0];
         }
 
 
         size_t FindKey(T k) {
             size_t res = 0;
-            while (res < this->keys.Count() && this->keys[res] < k)
+            while (res < this->values.Count() && this->values[res] < k)
                 ++res;
             return res;
         }
@@ -156,15 +156,15 @@ private:
         bool InsertNonFull(T k, size_t _t) {
             size_t i = FindKey(k);
             if (this->IsLeaf()) {
-                if (this->keys.Count() == i || (i < this->keys.Count() && k != this->keys[i])) {
-                    this->keys.Insert(i, k);
+                if (this->values.Count() == i || (i < this->values.Count() && k != this->values[i])) {
+                    this->values.Insert(i, k);
                     return true;
                 }
                 return false;
             } else {
-                if (this->children[i]->keys.Count() == 2 * _t - 1) {
+                if (this->children[i]->values.Count() == 2 * _t - 1) {
                     SplitChild(i, this->GetChild(i), _t);
-                    if (this->keys[i] < k)
+                    if (this->values[i] < k)
                         i++;
                 }
                 return this->GetChild(i)->InsertNonFull(k, _t);
@@ -175,7 +175,7 @@ private:
             size_t idx = FindKey(k);
 
             // The key to be removed is present in this node
-            if (idx < this->keys.Count() && this->keys[idx] == k) {
+            if (idx < this->values.Count() && this->values[idx] == k) {
 
                 // If the node is a leaf node - removeFromLeaf is called
                 // Otherwise, removeFromNonLeaf function is called
@@ -194,17 +194,17 @@ private:
                 // The key to be removed is present in the sub-tree rooted with this node
                 // The flag indicates whether the key is present in the sub-tree rooted
                 // with the last child of this node
-                bool flag = idx == this->keys.Count();
+                bool flag = idx == this->values.Count();
 
-                // If the child where the key is supposed to exist has less that _t this->keys,
+                // If the child where the key is supposed to exist has less that _t this->values,
                 // we fill that child
-                if (GetChild(idx)->keys.Count() < _t)
+                if (GetChild(idx)->values.Count() < _t)
                     Fill(idx, _t);
 
                 // If the last child has been merged, it must have merged with the previous
                 // child and so we recurse on the (idx-1)th child. Else, we recurse on the
-                // (idx)th child which now has atleast _t this->keys
-                if (flag && idx > this->keys.Count())
+                // (idx)th child which now has atleast _t this->values
+                if (flag && idx > this->values.Count())
                     GetChild(idx - 1)->Remove(k, _t);
                 else
                     GetChild(idx)->Remove(k, _t);
@@ -215,16 +215,16 @@ private:
         void Merge(size_t idx) {
             BNode *child = this->GetChild(idx);
             BNode *sibling = this->GetChild(idx + 1);
-            child->keys.Add(this->keys[idx]);
-            for (size_t i = 0; i < sibling->keys.Count(); ++i)
-                child->keys.Add(sibling->keys[i]);
+            child->values.Add(this->values[idx]);
+            for (size_t i = 0; i < sibling->values.Count(); ++i)
+                child->values.Add(sibling->values[i]);
             if (!child->IsLeaf()) {
-                for (size_t i = 0; i <= sibling->keys.Count(); ++i)
+                for (size_t i = 0; i <= sibling->values.Count(); ++i)
                     child->children.Add(sibling->children[i]);
             }
-//            for (size_t i = idx + 1; i < this->keys.Count(); ++i)
-//                this->keys[i - 1] = this->keys[i];
-            this->keys.RemoveAt(idx);
+//            for (size_t i = idx + 1; i < this->values.Count(); ++i)
+//                this->values[i - 1] = this->values[i];
+            this->values.RemoveAt(idx);
             this->children.RemoveAt(idx + 1);
             sibling->children.Clear();
             delete sibling;
@@ -232,10 +232,10 @@ private:
 
         void SplitChild(size_t i, BNode *y, size_t _t) {
             BNode *z = new BNode();
-//            z->keys.Resize(_t - 1);
+//            z->values.Resize(_t - 1);
             for (size_t j = 0; j < _t - 1; j++)
-//                z->keys[j] = y->keys[j + _t];
-                z->keys.AddFirst(y->keys.RemoveLast());
+//                z->values[j] = y->values[j + _t];
+                z->values.AddFirst(y->values.RemoveLast());
 
             if (!y->IsLeaf()) {
                 for (size_t j = 0; j < _t; j++)
@@ -243,8 +243,8 @@ private:
             }
 
             this->children.Insert(i + 1, z);
-            this->keys.Insert(i, y->keys.RemoveLast());
-//            y->keys.Resize(_t - 1);
+            this->values.Insert(i, y->values.RemoveLast());
+//            y->values.Resize(_t - 1);
         }
 
         BNode *GetChild(size_t i) {
@@ -320,11 +320,11 @@ public:
             throw runtime_error("Root is NULL");
 
         function<void(BNode *)> VisitNode = [&](BNode *node) {
-            size_t length = node->keys.Count();
+            size_t length = node->values.Count();
             for (size_t i = 0; i < length; ++i) {
                 if (!node->IsLeaf())
                     VisitNode(node->GetChild(i));
-                res.Add(node->keys[i]);
+                res.Add(node->values[i]);
             }
             if (!node->IsLeaf())
                 VisitNode(node->GetChild(length));
@@ -367,7 +367,7 @@ public:
                 else {
 
                     if (stack.Top().second != 0) {
-                        buffer << stack.Top().first->keys[stack.Top().second - 1];
+                        buffer << stack.Top().first->values[stack.Top().second - 1];
                         length--;
                         if (length != this->count && length)
                             buffer << " ";
@@ -376,10 +376,10 @@ public:
                     stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
                 }
             } else {
-                size_t len = stack.Top().first->keys.Count();
+                size_t len = stack.Top().first->values.Count();
                 length -= len;
                 for (size_t i = 0; i < len; ++i) {
-                    buffer << stack.Top().first->keys[i];
+                    buffer << stack.Top().first->values[i];
                     if (i != len - 1)
                         buffer << " ";
                 }
@@ -394,12 +394,12 @@ public:
     explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t, 0), t(t) {}
 
     BTree &Add(T k) override {
-        if (static_cast<BNode *>(this->root)->keys.Count() == 2 * t - 1) {
+        if (static_cast<BNode *>(this->root)->values.Count() == 2 * t - 1) {
             BNode *s = new BNode();
             s->children.Add(this->root);
             s->SplitChild(0, static_cast<BNode *>(this->root), t);
             size_t i = 0;
-            if (s->keys[i] < k)
+            if (s->values[i] < k)
                 i++;
 
             if (s->InsertNonFull(k, t))
@@ -416,14 +416,14 @@ public:
         BNode *tmp = static_cast<BNode *>(this->root);
         while (!tmp->IsLeaf())
             tmp = static_cast<BNode *>(tmp->children.GetFirst());
-        return tmp->keys.GetFirst();
+        return tmp->values.GetFirst();
     }
 
     T GetMax() {
         BNode *tmp = static_cast<BNode *>(this->root);
         while (!tmp->IsLeaf())
             tmp = tmp->children.GetLast();
-        return tmp->keys.GetLast();
+        return tmp->values.GetLast();
     }
 
     T Pop() {
@@ -439,9 +439,9 @@ public:
             this->count--;
         }
 
-        // If the root node has 0 this->keys, make its first child as the new root
+        // If the root node has 0 this->values, make its first child as the new root
         //  if it has a child, otherwise BTree root as NULL
-        if (this->root->keys.Count() == 0 && !static_cast<BNode *>(this->root)->IsLeaf()) {
+        if (this->root->values.Count() == 0 && !static_cast<BNode *>(this->root)->IsLeaf()) {
             BNode *tmp = static_cast<BNode *>(this->root);
 //            if (!static_cast<BNode *>(this->root)->IsLeaf())
             this->root = this->root->children[0];

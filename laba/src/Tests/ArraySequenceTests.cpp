@@ -636,7 +636,7 @@ TEST(ArraySequence_float, InitFromArr) {
     EXPECT_EQ (5, arr[4]);
     EXPECT_EQ (6, arr[5]);
 
-    arr = {};
+    arr = ArraySequence<float>{};
     ASSERT_EQ (0, arr.Count());
     arr.Add(6);
     ASSERT_EQ (1, arr.Count());

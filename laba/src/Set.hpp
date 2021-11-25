@@ -88,7 +88,7 @@ public:
         return items.Contains(item);
     }
 
-    Set &Remove(T item) {
+    Set &Remove(T item) override {
         items.Remove(item);
         return *this;
     }

@@ -12,7 +12,8 @@ class GraphIter : public BaseIter<T> {
 protected:
     const ICollection<T> &iterable;
 public:
-    explicit GraphIter(const ICollection<T> &it, size_t pos = 0) : BaseIter<T>(pos), iterable(it) {}
+
+    explicit GraphIter(const ICollection<T> &it = *static_cast<const ICollection<T>*>(nullptr), size_t pos = 0) : BaseIter<T>(pos), iterable(it) {}
 
     GraphIter(const GraphIter &other) : BaseIter<T>(other.pos), iterable(other.iterable) {}
 

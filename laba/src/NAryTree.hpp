@@ -21,12 +21,11 @@ protected:
     template<class T1>
     class Node {
     public:
-        ArraySequence<T1> keys;
         ArraySequence<T1> values;
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
 
-        Node() : keys(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
+        Node() : values(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
 
         Node(Node<T1> &node) : Node(&node) {}
 
@@ -37,7 +36,7 @@ protected:
             while (!s.IsEmpty()) {
                 Node<T1> *node = s.Pop();
                 Node<T1> *tmp = s1.Pop();
-                tmp->keys = node->keys;
+                tmp->values = node->values;
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -57,7 +56,7 @@ protected:
             while (!s.IsEmpty()) {
                 Node<T1> *node = s.Pop();
                 Node<T2> *tmp = s1.Pop();
-                tmp->keys = Utils::Map(node->keys, bijectiveFunc);
+                tmp->values = Utils::Map(node->values, bijectiveFunc);
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -77,10 +76,10 @@ protected:
                 Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                keys({data}), parent(parent), children(children) {}
+                values{data}, parent(parent), children(children) {}
 
         Node(ArraySequence<T1> keys, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                keys(keys), parent(parent), children(children) {}
+                values(keys), parent(parent), children(children) {}
 
         T1 Reduce(function<T1(T1, T1)> f, T1 c) {
             if (f == nullptr)
@@ -90,7 +89,7 @@ protected:
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
-                res = Utils::Reduce(node->keys, f, res);
+                res = Utils::Reduce(node->values, f, res);
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL)
                         s.Push(node->children[i]);
@@ -133,47 +132,56 @@ protected:
     class Iterator : public GraphIter<T> {
     private:
         Node<T> *current;
+        size_t i{};
         Stack<Node<T> *> fStack, bStack;
     public:
-        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, -1), fStack{it.root},
-                                                                   bStack() {
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, -1), i(),
+                                                                   fStack{it.root}, bStack() {
             *this += (pos + 1);
         }
 
-        Iterator(Iterator &other) : GraphIter<T>::GraphIter(other.iterable, other.pos),
-                                    current(other.current), fStack(other.fStack), bStack(other.bStack) {}
+        Iterator(const Iterator &other) { *this = other; }
 
-        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : GraphIter<T>::GraphIter(it, pos),
-                                                                          current(current), fStack{} {}
+        T &operator*() const override { return current->values[i]; }
 
-        T &operator*() const override { return current->data; }
-
-        T *operator->() const override { return &current->data; }
+        T *operator->() const override { return &current->values[i]; }
 
         Iterator &operator++() override {
-            if (current != nullptr)
-                bStack.Push(current);
-            current = fStack.Pop();
+            if (i + 1 < current->values.Count()) {
+                i++;
+            } else {
+                i = 0;
+                do {
+                    if (current != nullptr)
+                        bStack.Push(current);
+                    current = fStack.Pop();
 
-            for (size_t i = 0; i < current->ChildrenCount(); ++i)
-                if (current->children[i] != NULL)
-                    fStack.Push(current->children[i]);
-
+                    for (size_t j = 0; j < current->ChildrenCount(); ++j)
+                        if (current->children[j] != NULL)
+                            fStack.Push(current->children[j]);
+                } while (current->values.Count() != 0);
+            }
             ++this->pos;
             return *this;
         }
 
         Iterator &operator--() override {
-            fStack.Push(current);
-            current = bStack.Pop();
-
-
+            if (i - 1 >= 0) {
+                i--;
+            } else {
+                do {
+                    fStack.Push(current);
+                    current = bStack.Pop();
+                } while (current->values.Count() != 0);
+                i = current->values.Count() - 1;
+            }
             --this->pos;
             return *this;
         }
 
         Iterator &operator=(const Iterator &list) {
             if (this != &list) {
+                this->i = list.i;
                 this->fStack = list.fStack;
                 this->bStack = list.bStack;
                 this->iterable = list.iterable;
@@ -298,10 +306,10 @@ public:
                 try {
                     stringstream ss(str.substr(tmp + 1, i));
                     T d;
-                    ss >> node->keys[0];
+                    ss >> node->values[0];
                     while (ss >> d) {
                         count++;
-                        node->keys.Append(d);
+                        node->values.Append(d);
                     }
 
                 }
@@ -316,12 +324,12 @@ public:
     }
 
     NAryTree &Insert(size_t at, initializer_list<size_t> indexes, T k) {
-        GetNode(indexes)->keys.InsertAt(at, k);
+        GetNode(indexes)->values.InsertAt(at, k);
         return *this;
     }
 
     NAryTree &Remove(size_t at, initializer_list<size_t> indexes) {
-        GetNode(indexes)->keys.RemoveAt(at);
+        GetNode(indexes)->values.RemoveAt(at);
         return *this;
     }
 
@@ -338,7 +346,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] size_t Count() const { return count; }
+    [[nodiscard]] size_t Count() const override { return count; }
 
     string Order() {
         return Order("{K}(2)[1]<3>d4b\\5/");
@@ -382,9 +390,9 @@ public:
             for (size_t i = 0; i < length; ++i)
                 if (indexes[i] == length - 1) {
                     buffer << brackets[2 * length - 2];
-                    for (size_t k = 0; k < node->keys.Count(); ++k) {
-                        buffer << node->keys[k];
-                        if (k != node->keys.Count() - 1)
+                    for (size_t k = 0; k < node->values.Count(); ++k) {
+                        buffer << node->values[k];
+                        if (k != node->values.Count() - 1)
                             buffer << " ";
                     }
                     buffer << brackets[2 * length - 1];

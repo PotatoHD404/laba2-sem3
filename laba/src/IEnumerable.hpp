@@ -12,7 +12,7 @@ using Iter = IterImpl<BaseIter<T>>;
 template<typename T>
 class IEnumerable {
 public:
-    [[nodiscard]] virtual Iter<T> begin() const = 0;
+    [[nodiscard]] virtual Iter<T> begin() = 0;
 
-    [[nodiscard]] virtual Iter<T> end() const = 0;
+    [[nodiscard]] virtual Iter<T> end() = 0;
 };

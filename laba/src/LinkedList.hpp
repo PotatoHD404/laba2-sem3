@@ -55,7 +55,7 @@ private:
         explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, pos),
                                                                      current(it.GetNode(pos)) {}
 
-        Iterator(const Iterator &other) : GraphIter<T>::GraphIter(other), current(other.current) {}
+        Iterator(const Iterator &other) { *this = other; }
 
         Iterator(const LinkedList<T> &it, Node *current, size_t pos) : GraphIter<T>::GraphIter(it, pos),
                                                                        current(current) {}
@@ -91,9 +91,9 @@ private:
     };
 
 public:
-    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
+    Iter<T> begin() override { return Iter<T>(Iterator(*this)); }
 
-    Iter<T> end() const override {
+    Iter<T> end() override {
         return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
     }
     //Creation of the object
@@ -328,12 +328,12 @@ public:
         return res;
     }
 
-    LinkedList<T> &operator=(const LinkedList<T> &list) {
+    LinkedList<T> &operator=(const IList<T> &list) override {
         if (&list != this) {
             while (length)
                 RemoveFirst();
-            if (list.length > 0) {
-                Node *tmp = list.head;
+            if (list.Count() > 0) {
+                Node *tmp = ((const LinkedList<T> &) list).head;
                 head = new Node(tmp->data);
                 Node *prev = head;
                 tmp = tmp->next;
@@ -344,7 +344,7 @@ public:
                     tmp = tmp->next;
                 }
                 tail = prev;
-                length = list.length;
+                length = list.Count();
             } else {
                 head = nullptr;
                 tail = nullptr;

@@ -10,11 +10,11 @@
 template<typename T>
 class IList : public ICollection<T> {
 public:
-    Iter<T> begin() const override {
+    Iter<T> begin() override {
         return Iter<T>(ListIter<T>(*this));
     }
 
-    Iter<T> end() const override {
+    Iter<T> end() override {
         return Iter<T>(ListIter<T>(*this, this->Count() > 0 ? this->Count() : 0));
     }
 
@@ -50,6 +50,8 @@ public:
         }
         return true;
     }
+
+    virtual IList &operator=(const IList &) = 0; // NOLINT(misc-unconventional-assign-operator)
 
     virtual ~IList() = default;
 };

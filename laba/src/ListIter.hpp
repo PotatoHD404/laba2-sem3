@@ -15,14 +15,14 @@ class IList;
 template<typename T>
 class ListIter : public BaseIter<T> {
 protected:
-    const IList<T> &iterable;
+    IList<T> &iterable;
 
 public:
 
 
-    explicit ListIter(const IList<T> &it, size_t pos = 0) : BaseIter<T>(pos), iterable(it) {}
+    explicit ListIter(IList<T> &it, size_t pos = 0) : BaseIter<T>(pos), iterable(it) {}
 
-    ListIter(const ListIter &other) : BaseIter<T>(other.pos), iterable(other.iterable) {}
+    ListIter(const ListIter &other) : iterable(*static_cast<IList<T> *>(nullptr)) { *this = other; }
 
 
 // c++ stuff
