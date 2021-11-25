@@ -7,6 +7,9 @@
 #include "IterImpl.hpp"
 
 template<typename T>
+using Iter = IterImpl<BaseIter<T>>;
+
+template<typename T>
 class IEnumerable {
 public:
     [[nodiscard]] virtual Iter<T> begin() const = 0;

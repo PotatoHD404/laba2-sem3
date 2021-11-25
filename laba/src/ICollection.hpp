@@ -28,7 +28,7 @@ public:
 
     virtual ICollection<T> &Add(T item) = 0;
 
-    virtual T Remove(T item) = 0;
+    virtual ICollection<T> & Remove(T item) = 0;
 
     virtual ~ICollection() = default;
 };

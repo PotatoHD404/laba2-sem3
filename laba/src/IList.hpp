@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ICollection.hpp"
+#include "ListIter.hpp"
 #include "Sorts.hpp"
 
 template<typename T>
@@ -30,10 +31,12 @@ public:
         return *this;
     }
 
-    T Remove(T item) override {
+    IList<T> &Remove(T item) override {
         for (auto ptr = this->begin(); ptr < this->end(); ptr++)
-            if (*ptr == item)
-                return this->RemoveAt(ptr.GetPos());
+            if (*ptr == item) {
+                this->RemoveAt(ptr.GetPos());
+                return *this;
+            }
         throw invalid_argument("Item was not found");
     }
 

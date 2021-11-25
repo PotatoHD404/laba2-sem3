@@ -41,29 +41,33 @@ public:
         return *this;
     }
 
-    bool Equals(const ListIter &b) const override {
-        return (this->GetPos() == b.GetPos()) && (&this->iterable == &b.iterable);
+    bool Equals(const BaseIter<T> &b) const override {
+        return (this->GetPos() == b.GetPos()) && (&this->iterable == &static_cast<const ListIter &>(b).iterable);
     }
 
-    Iter<T> operator-(size_t b_pos) const override {
-        return Iter<T>(ListIter(this->iterable, this->pos - b_pos));
+    ListIter<T> &operator-=(size_t b_pos) override {
+        this->pos -= b_pos;
+        return *this;
     }
 
-    Iter<T> operator*(size_t b_pos) const override {
-        Iter<T>(ListIter(this->iterable, this->pos * b_pos));
+    ListIter<T> &operator*=(size_t b_pos) override {
+        this->pos *= b_pos;
+        return *this;
     }
 
-    Iter<T> operator/(size_t b_pos) const override {
+    ListIter<T> &operator/=(size_t b_pos) override {
         if (b_pos == 0)
             throw invalid_argument("b equals 0");
-        return Iter<T>(ListIter(this->iterable, this->pos / b_pos));
+        this->pos /= b_pos;
+        return *this;
     }
 
-    Iter<T> operator+(size_t b_pos) const override {
-        return Iter<T>(ListIter(this->iterable, this->pos + b_pos));
+    ListIter<T> &operator+=(size_t b_pos) override {
+        this->pos += b_pos;
+        return *this;
     }
 
-    ListIter<T> &operator=(const ListIter<T> &list) override {
+    ListIter<T> &operator=(const ListIter<T> &list) {
         if (this != &list) {
             this->iterable = list.iterable;
             this->pos = list.pos;

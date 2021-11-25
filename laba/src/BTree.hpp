@@ -251,19 +251,20 @@ private:
             return static_cast<BNode *>(this->children[i]);
         }
     };
+
     class Iterator : public GraphIter<T> {
     private:
-        Node<T> *current;
-        Stack<Node<T> *> fStack, bStack;
+        BNode *current;
+        Stack<BNode *> fStack, bStack;
     public:
         explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it,
-                                                                                     pos),
+                                                                                         pos),
                                                                    current(it.GetNode(pos)), fStack{current} {}
 
         Iterator(Iterator &other) : ListIter<T>::ListIter(other.iterable, other.pos),
                                     current(other.current), fStack{current} {}
 
-        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : ListIter<T>::ListIter(
+        Iterator(const LinkedList<T> &it, BNode *current, size_t pos) : ListIter<T>::ListIter(
                 it, pos), current(current), fStack{current} {}
 
         T &operator*() const override { return current->data; }
@@ -413,7 +414,7 @@ public:
         return res;
     }
 
-    void Remove(T k) {
+    BTree &Remove(T k) {
 
         // Call the remove function for root
         if (static_cast<BNode *>(this->root)->Remove(k, t)) {
@@ -431,6 +432,7 @@ public:
             tmp->children.Clear();
             delete tmp;
         }
+        return *this;
     }
 
     bool Contains(T key) {

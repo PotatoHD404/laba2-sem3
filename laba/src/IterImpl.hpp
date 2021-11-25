@@ -17,22 +17,20 @@ public:
     using reference = typename Interface::reference;
     using pointer = typename Interface::pointer;
     using iterator_category = typename Interface::iterator_category;
-
-    [[nodiscard]] virtual bool Equals(const IterImpl &b) const { return storage->Equals(*b.storage); }
-
+public:
     [[nodiscard]] size_t GetPos() const {
         return storage->GetPos();
     }
 
     friend bool operator==(const IterImpl &a, const IterImpl &b) {
-        return *a.storage == *b.storage;
+        return a.storage->Equals(*b.storage);
     }
 
     friend bool operator!=(const IterImpl &a, const IterImpl &b) {
-        return *a.storage != *b.storage;
+        return !a.storage->Equals(*b.storage);
     }
 
-    IterImpl(const IterImpl &a) : storage(a.copy(*a.storage)), copy(a.copy) {}
+    IterImpl(Interface *storage, Interface *(*copy)(Interface &)) : storage(copy(storage)), copy(copy) {}
 
     template<typename ConcreteType>
     [[maybe_unused]] explicit IterImpl(const ConcreteType *object)
@@ -46,6 +44,13 @@ public:
     [[maybe_unused]] explicit IterImpl(const ConcreteType &object)
             : IterImpl(&object) {}
 
+//    template<typename ConcreteType>
+//    [[maybe_unused]] explicit IterImpl(ConcreteType &&object)
+//            : storage(new ConcreteType(object)),
+//              copy([](Interface &strg) -> Interface * {
+//                  return new ConcreteType(dynamic_cast<ConcreteType &>(strg));
+//              }) {}
+
     virtual T *operator->() { return storage->operator->(); }
 
     virtual T &operator*() const { return **storage; }
@@ -57,8 +62,8 @@ public:
     }
 
     // Postfix increment
-    virtual IterImpl operator++(int) {
-        IterImpl tmp = IterImpl(this->storage);
+    virtual IterImpl operator++(int) { // NOLINT(cert-dcl21-cpp)
+        IterImpl tmp = IterImpl(*this);
         ++(*this);
         return tmp;
     }
@@ -70,43 +75,61 @@ public:
     }
 
     virtual IterImpl operator--(int) { // NOLINT(cert-dcl21-cpp)
-        IterImpl tmp = IterImpl(this->storage);
+        IterImpl tmp = IterImpl(*this);
         --(*this);
         return tmp;
     }
 
     virtual IterImpl &operator+=(size_t num) {
-        *this = *this + num;
+        *this->storage += num;
         return *this;
     };
 
     virtual IterImpl &operator-=(size_t num) {
-        *this = *this - num;
+        *this->storage -= num;
         return *this;
     };
 
-    virtual IterImpl operator-(const IterImpl &b) const {
-        return *storage - *b.storage;
-    }
+    virtual IterImpl &operator*=(size_t num) {
+        *this->storage *= num;
+        return *this;
+    };
 
-    virtual IterImpl operator-(size_t b_pos) const {
-        return *storage - b_pos;
-    }
-
-    virtual IterImpl operator/(size_t b_pos) const {
-        return *storage / b_pos;
-    }
-
-    virtual IterImpl operator*(size_t b_pos) const {
-        return *storage * b_pos;
-    }
+    virtual IterImpl &operator/=(size_t num) {
+        *this->storage /= num;
+        return *this;
+    };
 
     virtual IterImpl operator+(const IterImpl &b) const {
-        return *storage + *b.storage;
+        return IterImpl(*this) += b.GetPos();
+    }
+
+    virtual IterImpl operator-(const IterImpl &b) const {
+        return IterImpl(*this) -= b.GetPos();
+    }
+
+    virtual IterImpl operator*(const IterImpl &b) const {
+        return IterImpl(*this) *= b.GetPos();
+    }
+
+    virtual IterImpl operator/(const IterImpl &b) const {
+        return IterImpl(*this) /= b.GetPos();
     }
 
     virtual IterImpl operator+(size_t b_pos) const {
-        return *storage + b_pos;
+        return IterImpl(*this) += b_pos;
+    }
+
+    virtual IterImpl operator-(size_t b_pos) const {
+        return IterImpl(*this) -= b_pos;
+    }
+
+    virtual IterImpl operator*(size_t b_pos) const {
+        return IterImpl(*this) *= b_pos;
+    }
+
+    virtual IterImpl operator/(size_t b_pos) const {
+        return IterImpl(*this) /= b_pos;
     }
 
     virtual bool operator<(size_t b_pos) const {

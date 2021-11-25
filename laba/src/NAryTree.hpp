@@ -17,7 +17,7 @@
 using namespace std;
 
 template<class T>
-class NAryTree : ITree<T> {
+class NAryTree : public ITree<T> {
 protected:
     template<class T1>
     class Node {
@@ -136,44 +136,38 @@ protected:
         Node<T> *current;
         Stack<Node<T> *> fStack, bStack;
     public:
-        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it,
-                                                                                     pos),
-                                                                   current(it.GetNode(pos)), fStack(), bStack() {
-
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it, -1), fStack(it.root),
+                                                                   bStack() {
+            *this + (pos + 1);
         }
 
         Iterator(Iterator &other) : ListIter<T>::ListIter(other.iterable, other.pos),
-                                    current(other.current), fStack{current} {}
+                                    current(other.current), fStack(other.fStack), bStack(other.bStack) {}
 
         Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : ListIter<T>::ListIter(
-                it, pos), current(current), fStack{current} {}
+                it, pos), current(current), fStack{} {}
 
         T &operator*() const override { return current->data; }
 
         T *operator->() override { return &current->data; }
 
         Iterator &operator++() override {
-            stringstream buffer;
-            function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node) {
-                for (size_t i = 0; i < this->iterable.Count(); ++i)
-                    if (i == this->iterable.Count() - 1) {
-                        for (size_t k = 0; k < node->keys.Count(); ++k) {
-                            buffer << node->keys[k];
-                            if (k != node->keys.Count() - 1)
-                                buffer << " ";
-                        }
-                    } else if (i < node->ChildrenCount())
-                        VisitNode(node->children[i]);
-            };
-            VisitNode(root);
+            if (current != nullptr)
+                bStack.Push(current);
+            current = fStack.Pop();
+
+            for (size_t i = 0; i < current->ChildrenCount(); ++i)
+                if (current->children[i] != NULL)
+                    fStack.Push(current->children[i]);
 
             ++this->pos;
             return *this;
         }
 
         Iterator &operator--() override {
-            current = bStack.Pop();
             fStack.Push(current);
+            current = bStack.Pop();
+
 
             --this->pos;
             return *this;
@@ -403,14 +397,14 @@ public:
     }
 
 
-    NAryTree<T> Subtree(initializer_list<size_t> indexes) {
-        return NAryTree<T>(new Node(GetNode(indexes)));
-    }
-
-    template<size_t N>
-    NAryTree<T> Subtree(const size_t (&indexes)[N]) {
-        return NAryTree<T>(new Node(GetNode(indexes)));
-    }
+//    NAryTree<T> Subtree(initializer_list<size_t> indexes) {
+//        return NAryTree<T>(new Node(GetNode(indexes)));
+//    }
+//
+//    template<size_t N>
+//    NAryTree<T> Subtree(const size_t (&indexes)[N]) {
+//        return NAryTree<T>(new Node(GetNode(indexes)));
+//    }
 
     template<typename T1>
     NAryTree<T1> Map(function<T1(T)> bijectiveFunc) {

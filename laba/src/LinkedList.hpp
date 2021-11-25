@@ -9,9 +9,6 @@
 #include "GraphIter.hpp"
 #include "IterImpl.hpp"
 
-template<typename T>
-using Iter = IterImpl<ListIter < T>>;
-
 
 using namespace std;
 
@@ -58,8 +55,7 @@ private:
         explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, pos),
                                                                      current(it.GetNode(pos)) {}
 
-        Iterator(Iterator &other) : GraphIter<T>::GraphIter(other.iterable, other.pos),
-                                    current(other.current) {}
+        Iterator(const Iterator &other) : GraphIter<T>::GraphIter(other), current(other.current) {}
 
         Iterator(const LinkedList<T> &it, Node *current, size_t pos) : GraphIter<T>::GraphIter(it, pos),
                                                                        current(current) {}
