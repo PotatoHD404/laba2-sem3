@@ -11,13 +11,12 @@
 #include "Stack.hpp"
 #include "Pair.hpp"
 #include "Utils.hpp"
-#include "ITree.hpp"
 #include "GraphIter.hpp"
 
 using namespace std;
 
 template<class T>
-class NAryTree : public ITree<T> {
+class NAryTree : public ICollection<T> {
 protected:
     template<class T1>
     class Node {
@@ -136,20 +135,20 @@ protected:
         Node<T> *current;
         Stack<Node<T> *> fStack, bStack;
     public:
-        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it, -1), fStack(it.root),
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, -1), fStack{it.root},
                                                                    bStack() {
-            *this + (pos + 1);
+            *this += (pos + 1);
         }
 
-        Iterator(Iterator &other) : ListIter<T>::ListIter(other.iterable, other.pos),
+        Iterator(Iterator &other) : GraphIter<T>::GraphIter(other.iterable, other.pos),
                                     current(other.current), fStack(other.fStack), bStack(other.bStack) {}
 
-        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : ListIter<T>::ListIter(
-                it, pos), current(current), fStack{} {}
+        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : GraphIter<T>::GraphIter(it, pos),
+                                                                          current(current), fStack{} {}
 
         T &operator*() const override { return current->data; }
 
-        T *operator->() override { return &current->data; }
+        T *operator->() const override { return &current->data; }
 
         Iterator &operator++() override {
             if (current != nullptr)
@@ -316,13 +315,16 @@ public:
             throw std::runtime_error("Wrong input");
     }
 
-    void Insert(size_t at, initializer_list<size_t> indexes, T k) {
+    NAryTree &Insert(size_t at, initializer_list<size_t> indexes, T k) {
         GetNode(indexes)->keys.InsertAt(at, k);
+        return *this;
     }
 
-    void Remove(size_t at, initializer_list<size_t> indexes) {
+    NAryTree &Remove(size_t at, initializer_list<size_t> indexes) {
         GetNode(indexes)->keys.RemoveAt(at);
+        return *this;
     }
+
 
     size_t GetN() { return n; }
 
@@ -336,7 +338,7 @@ public:
         return *this;
     }
 
-    size_t Count() { return count; }
+    [[nodiscard]] size_t Count() const { return count; }
 
     string Order() {
         return Order("{K}(2)[1]<3>d4b\\5/");

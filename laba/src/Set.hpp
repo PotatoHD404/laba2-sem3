@@ -14,6 +14,13 @@ private:
     BTree<T> items;
 
 public:
+
+    Iter<T> begin() const override { return items.begin(); }
+
+    Iter<T> end() const override {
+        return items.end();
+    }
+
     //Creation of the object
     Set() : items() {}
 
@@ -43,13 +50,14 @@ public:
         return res;
     }
 
-    size_t Count() {
+    [[nodiscard]] size_t Count() const override {
         return items.Count();
     }
 
     //Operations
-    void Clear() {
+    Set &Clear() override {
         items = BTree<T>();
+        return *this;
     }
 
     template<typename T1>
@@ -72,16 +80,17 @@ public:
         return items.Pop();
     }
 
-    void Add(T item) {
-        items.Insert(item);
+    Set &Add(T item) override {
+        items.Add(item);
     }
 
-    bool Contains(T item) {
+    bool Contains(T item) override {
         return items.Contains(item);
     }
 
-    void Remove(T item) {
-        return items.Remove(item);
+    Set &Remove(T item) {
+        items.Remove(item);
+        return *this;
     }
 
     Set<T> Union(Set<T> &list) {

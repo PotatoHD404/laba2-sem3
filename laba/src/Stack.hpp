@@ -9,7 +9,7 @@
 template<class T>
 class Stack : ListSequence<T> {
 public:
-    Stack() = default;
+    using ListSequence<T>::ListSequence;
 
     void Push(T item) {
         this->AddFirst(item);

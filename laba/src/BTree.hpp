@@ -308,6 +308,12 @@ private:
 public:
     BTree() : BTree(3) {}
 
+    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
+
+    Iter<T> end() const override {
+        return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+    }
+
     ArraySequence<T> ToArraySequence() {
         ArraySequence<T> res;
         if (this->root == NULL)
@@ -325,6 +331,17 @@ public:
         };
         VisitNode(static_cast<BNode *>(this->root));
         return res;
+    }
+
+    BTree &Clear() override {
+        delete this->root;
+        this->root = new BNode();
+        this->count = 0;
+        return *this;
+    }
+
+    [[nodiscard]] size_t Count() const override {
+        return ((NAryTree<T> *) this)->Count();
     }
 
     BTree<T> &operator=(BTree<T> &&list) noexcept {
@@ -376,7 +393,7 @@ public:
 
     explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t, 0), t(t) {}
 
-    void Insert(T k) {
+    BTree &Add(T k) override {
         if (static_cast<BNode *>(this->root)->keys.Count() == 2 * t - 1) {
             BNode *s = new BNode();
             s->children.Add(this->root);
@@ -392,6 +409,7 @@ public:
             if (static_cast<BNode *>(this->root)->InsertNonFull(k, t))
                 this->count++;
         }
+        return *this;
     }
 
     T GetMin() {
@@ -414,7 +432,7 @@ public:
         return res;
     }
 
-    BTree &Remove(T k) {
+    BTree &Remove(T k) override {
 
         // Call the remove function for root
         if (static_cast<BNode *>(this->root)->Remove(k, t)) {
@@ -435,7 +453,7 @@ public:
         return *this;
     }
 
-    bool Contains(T key) {
+    bool Contains(T key) override {
         return static_cast<BNode *>(this->root)->Search(key) != nullptr;
     }
 
