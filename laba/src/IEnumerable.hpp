@@ -3,11 +3,11 @@
 //
 #pragma once
 
-#include "RandomAccessIterator.hpp"
-#include "IterImplementation.hpp"
+#include "RAIter.hpp"
+#include "IterImpl.hpp"
 
 template<typename T>
-using Iter = Implementation<RandomAccessIterator<T>>;
+using Iter = IterImpl<RAIter<T>>;
 
 template<typename T>
 class IEnumerable {

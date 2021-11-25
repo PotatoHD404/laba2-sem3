@@ -2,8 +2,7 @@
 // Created by korna on 08.05.2021.
 //
 
-#ifndef LABA3_BTREE_HPP
-#define LABA3_BTREE_HPP
+#pragma once
 
 #include "NAryTree.hpp"
 #include "Pair.hpp"
@@ -252,7 +251,56 @@ private:
             return static_cast<BNode *>(this->children[i]);
         }
     };
+    class Iterator : public ListIter<T> {
+    private:
+        Node<T> *current;
+        Stack<Node<T> *> fStack, bStack;
+    public:
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : RAIter<T>::RAIter(it,
+                                                                                     pos),
+                                                                   current(it.GetNode(pos)), fStack{current} {}
 
+        Iterator(Iterator &other) : RAIter<T>::RAIter(other.iterable, other.pos),
+                                    current(other.current), fStack{current} {}
+
+        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : RAIter<T>::RAIter(
+                it, pos), current(current), fStack{current} {}
+
+        T &operator*() const override { return current->data; }
+
+        T *operator->() override { return &current->data; }
+
+        Iterator &operator++() override {
+            current = fStack.Pop();
+            bStack.Push(current);
+
+            for (size_t i = 0; i < current->ChildrenCount(); ++i)
+                if (current->children[i] != NULL)
+                    fStack.Push(current->children[i]);
+
+            ++this->pos;
+            return *this;
+        }
+
+        Iterator &operator--() override {
+            current = bStack.Pop();
+            fStack.Push(current);
+
+            --this->pos;
+            return *this;
+        }
+
+        Iterator &operator=(const Iterator &list) {
+            if (this != &list) {
+                this->fStack = list.fStack;
+                this->bStack = list.bStack;
+                this->iterable = list.iterable;
+                this->pos = list.pos;
+                this->current = list.current;
+            }
+            return *this;
+        }
+    };
 
     size_t t{};
 
@@ -286,20 +334,6 @@ public:
         this->root = new BNode(*static_cast<BNode *>(list.root));
         return *this;
     }
-
-//    bool operator==(BTree<T>& list) noexcept {
-//        return *list.root == *this->root;
-//    }
-
-//    BTree<T> &operator=(NAryTree<T> &&list) {
-//        this->~BTree();
-//
-//        this->n = list.GetN();
-//        count = list.Count();
-//        t = list.t;
-//        this->root = new BNode(*list.root);
-//        return *this;
-//    }
 
     string AscendingOrder() {
         if (this->root == NULL)
@@ -335,23 +369,7 @@ public:
                 if (length != this->count && length)
                     buffer << " ";
             }
-
-//            else {
-//                int i = 0;
-//                buffer << i;
-//            }
         }
-//        function<void(BNode *)> VisitNode = [&](BNode *node) {
-//            size_t length = node->keys.Count();
-//            for (size_t i = 0; i < length; ++i) {
-//                if (!node->IsLeaf())
-//                    VisitNode(node->GetChild(i));
-//                res.Add(node->keys[i]);
-//            }
-//            if (!node->IsLeaf())
-//                VisitNode(node->GetChild(length));
-//        };
-//        VisitNode(this->root);
         return buffer.str();
     }
 
@@ -407,7 +425,7 @@ public:
         if (this->root->keys.Count() == 0 && !static_cast<BNode *>(this->root)->IsLeaf()) {
             BNode *tmp = static_cast<BNode *>(this->root);
 //            if (!static_cast<BNode *>(this->root)->IsLeaf())
-                this->root = this->root->children[0];
+            this->root = this->root->children[0];
 
             // Free the old root
             tmp->children.Clear();
@@ -423,5 +441,3 @@ public:
 
 };
 
-
-#endif //LABA3_BTREE_HPP

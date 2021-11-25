@@ -2,8 +2,7 @@
 // Created by korna on 07.05.2021.
 //
 
-#ifndef LABA3_PAIR_HPP
-#define LABA3_PAIR_HPP
+#pragma once
 
 template<typename T1, typename T2>
 class Pair {
@@ -21,5 +20,3 @@ public:
         return !(x == *this);
     }
 };
-
-#endif //LABA3_PAIR_HPP

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "DynamicArray.hpp"
-#include "RandomAccessIterator.hpp"
+#include "RAIter.hpp"
 #include "ISequence.hpp"
 #include <iostream>
 #include <memory>

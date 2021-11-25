@@ -1,8 +1,7 @@
 //
 // Created by korna on 30.04.2021.
 //
-#ifndef LABA3_NARYTREE_HPP
-#define LABA3_NARYTREE_HPP
+#pragma once
 
 #include <iostream>
 #include <cstring>
@@ -12,11 +11,13 @@
 #include "Stack.hpp"
 #include "Pair.hpp"
 #include "Utils.hpp"
+#include "ITree.hpp"
+#include "ListIter.hpp"
 
 using namespace std;
 
 template<class T>
-class NAryTree {
+class NAryTree : ITree<T> {
 protected:
     template<class T1>
     class Node {
@@ -87,7 +88,6 @@ protected:
                 throw invalid_argument("mapper is NULL");
             T res = c;
             Stack<Node<T> *> s;
-            Stack<Node<T1> *> s1;
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
@@ -131,10 +131,67 @@ protected:
         }
     };
 
+    class Iterator : public ListIter<T> {
+    private:
+        Node<T> *current;
+        Stack<Node<T> *> fStack, bStack;
+    public:
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : RAIter<T>::RAIter(it,
+                                                                                     pos),
+                                                                   current(it.GetNode(pos)), fStack{current} {}
+
+        Iterator(Iterator &other) : RAIter<T>::RAIter(other.iterable, other.pos),
+                                    current(other.current), fStack{current} {}
+
+        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : RAIter<T>::RAIter(
+                it, pos), current(current), fStack{current} {}
+
+        T &operator*() const override { return current->data; }
+
+        T *operator->() override { return &current->data; }
+
+        Iterator &operator++() override {
+            current = fStack.Pop();
+            bStack.Push(current);
+
+            for (size_t i = 0; i < current->ChildrenCount(); ++i)
+                if (current->children[i] != NULL)
+                    fStack.Push(current->children[i]);
+
+            ++this->pos;
+            return *this;
+        }
+
+        Iterator &operator--() override {
+            current = bStack.Pop();
+            fStack.Push(current);
+
+            --this->pos;
+            return *this;
+        }
+
+        Iterator &operator=(const Iterator &list) {
+            if (this != &list) {
+                this->fStack = list.fStack;
+                this->bStack = list.bStack;
+                this->iterable = list.iterable;
+                this->pos = list.pos;
+                this->current = list.current;
+            }
+            return *this;
+        }
+    };
+
+public:
+    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
+
+    Iter<T> end() const override {
+        return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+    }
 
     Node<T> *GetNode(initializer_list<size_t> indexes) {
         Node<T> *res = root;
-        for (size_t item : indexes)
+        for (size_t item: indexes)
             res = res->children[item];
         return res;
     }
@@ -266,17 +323,19 @@ public:
 
     size_t GetN() { return n; }
 
-    NAryTree<T> &operator=(NAryTree<T> &&list) {
-        this->~NAryTree();
-        n = list.n;
-        count = list.count;
-        root = new Node<T>(*list.root);
+    NAryTree<T> &operator=(const NAryTree<T> &list) {
+        if (this != &list) {
+            this->~NAryTree();
+            n = list.n;
+            count = list.count;
+            root = new Node<T>(*list.root);
+        }
         return *this;
     }
 
     size_t Count() { return count; }
 
-    string Order(){
+    string Order() {
         return Order("{K}(2)[1]<3>d4b\\5/");
     }
 
@@ -309,14 +368,6 @@ public:
             brackets[num * 2 + 1] = match_str[match_str.size() - 1];
             ++j;
         }
-//        if (length >= n) {
-//            indexes[length - 1] = n;
-//            brackets[n][0] = brackets[--length][0];
-//            brackets[n][1] = brackets[length][1];
-//            length = n + 1;
-//        }
-//        if (length != n + 1)
-//            throw runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
             throw runtime_error("Root is NULL");
         stringstream buffer;
@@ -365,5 +416,3 @@ public:
         delete root;
     }
 };
-
-#endif //LABA3_NARYTREE_HPP

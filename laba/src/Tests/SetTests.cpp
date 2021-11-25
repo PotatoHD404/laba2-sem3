@@ -49,7 +49,7 @@ TEST(SetTest, Map) {
         return a * 2;
     };
 
-    function<string(string)> mapper2 = [](const string& a) -> string {
+    function<string(string)> mapper2 = [](const string &a) -> string {
         return a + " sampleText";
     };
     Set<int> set = Set<int>({4, 3, 2, 0});

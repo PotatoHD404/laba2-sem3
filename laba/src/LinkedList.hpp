@@ -6,11 +6,11 @@
 #include <iostream>
 #include <cstring>
 #include "IList.hpp"
-#include "RandomAccessIterator.hpp"
-#include "IterImplementation.hpp"
+#include "ListIter.hpp"
+#include "IterImpl.hpp"
 
 template<typename T>
-using Iter = Implementation<RandomAccessIterator<T>>;
+using Iter = IterImpl<RAIter<T>>;
 
 
 using namespace std;
@@ -50,26 +50,26 @@ private:
         return res;
     }
 
-    class Iterator : public RandomAccessIterator<T> {
+    class Iterator : public ListIter<T> {
     private:
         Node *current;
     public:
 
-        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RandomAccessIterator<T>::RandomAccessIterator(it,
-                                                                                                                   pos),
+        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RAIter<T>::RAIter(it,
+                                                                                       pos),
                                                                      current(it.GetNode(pos)) {}
 
-        Iterator(Iterator &other) : RandomAccessIterator<T>::RandomAccessIterator(other.iterable, other.pos),
+        Iterator(Iterator &other) : RAIter<T>::RAIter(other.iterable, other.pos),
                                     current(other.current) {}
 
-        Iterator(const LinkedList<T> &it, Node *current, size_t pos) : RandomAccessIterator<T>::RandomAccessIterator(
+        Iterator(const LinkedList<T> &it, Node *current, size_t pos) : RAIter<T>::RAIter(
                 it, pos), current(current) {}
 
         T &operator*() const override { return current->data; }
 
         T *operator->() override { return &current->data; }
 
-//        using RandomAccessIterator<T>::RandomAccessIterator;
+//        using RAIter<T>::RAIter;
         Iterator &operator++() override {
             current = current->next;
             ++this->pos;
@@ -85,59 +85,6 @@ private:
             return *this;
         }
 
-//        Iter<T> operator-(const Iterator &b) const override {
-//            Node *curr = current;
-//            size_t pos = b.GetPos();
-//            if (curr == nullptr && this->pos == this->iterable.Count()) {
-//                curr = ((LinkedList<T> &) this->iterable).tail;
-//                pos--;
-//            }
-//
-//            for (size_t i = 0; i < pos; ++i) {
-//                curr = curr->prev;
-//            }
-//            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, curr, this->pos - pos + 1));
-//        }
-
-        Iter<T> operator-(const size_t &b) const override {
-            Node *curr = current;
-            size_t pos = b;
-            if (curr == nullptr) {
-                curr = ((LinkedList<T> &) this->iterable).tail;
-                pos--;
-            }
-            for (size_t i = 0; i < pos; ++i) {
-                curr = curr->prev;
-            }
-            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, curr, this->pos - b));
-        }
-
-//    IEnumerator &operator/(const IEnumerator *b) const override {
-//        return new IEnumerable(this->iterable, this->pos / b);
-//    }
-
-        Iter<T> operator/(const size_t &b) const override {
-            if (b == 0)
-                throw invalid_argument("b equals 0");
-            return *this - this->pos * (1 - 1 / b);
-        }
-
-//        Iter<T> operator+(const Iterator &b) const override {
-//            Node *curr = current;
-//            size_t pos = b.GetPos();
-//            for (size_t i = 0; i < pos; ++i) {
-//                curr = curr->next;
-//            }
-//            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, curr, this->pos + b.GetPos()));
-//        }
-
-        Iter<T> operator+(const size_t &b) const override {
-            Node *curr = current;
-            for (size_t i = 0; i < b; ++i) {
-                curr = curr->next;
-            }
-            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, this->pos + b));
-        }
 
         Iterator &operator=(const Iterator &list) {
             if (this != &list) {

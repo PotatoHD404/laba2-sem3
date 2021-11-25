@@ -20,18 +20,6 @@ namespace Utils {
         return res;
     }
 
-//    template<template<typename> class SortType = Sorts::QuickSort, typename T>
-//    ISequence<T> &Sort(ISequence<T> &seq) {
-////    Sequence<T> res(seq);
-//        SortType<T> sort;
-//        sort(seq);
-//        return seq;
-//    }
-//
-//    template<template<typename> class SortType = Sorts::QuickSort, typename T>
-//    ISequence<T> &Sort(ISequence<T> &&seq) {
-//        return Sort<SortType>(unmove(seq));
-//    }
 
     template<template<typename> class SortType = Sorts::QuickSort, typename T,
             template<typename> class Sequence>

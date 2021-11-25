@@ -10,11 +10,11 @@ template<typename T>
 class IList : public ICollection<T> {
 public:
     Iter<T> begin() const override {
-        return Iter<T>(RandomAccessIterator<T>(*this));
+        return Iter<T>(RAIter<T>(*this));
     }
 
     Iter<T> end() const override {
-        return Iter<T>(RandomAccessIterator<T>(*this, this->Count() > 0 ? this->Count() : 0));
+        return Iter<T>(RAIter<T>(*this, this->Count() > 0 ? this->Count() : 0));
     }
 
     virtual T RemoveAt(size_t index) = 0;

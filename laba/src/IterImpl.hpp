@@ -4,11 +4,12 @@
 #pragma once
 
 template<typename Interface>
-class Implementation {
+class IterImpl {
 private:
     Interface *storage;
 
     Interface *(*copy)(Interface &);
+
 public:
     using T = typename Interface::type;
     using difference_type = typename Interface::difference_type;
@@ -23,25 +24,25 @@ public:
 
 
 
-    [[nodiscard]] virtual bool Equals(const Implementation &b) const { return storage->Equals(*b.storage); }
+    [[nodiscard]] virtual bool Equals(const IterImpl &b) const { return storage->Equals(*b.storage); }
 
     [[nodiscard]] size_t GetPos() const {
         return storage->GetPos();
     }
 
-    friend bool operator==(const Implementation &a, const Implementation &b) {
+    friend bool operator==(const IterImpl &a, const IterImpl &b) {
         return *a.storage == *b.storage;
     }
 
-    friend bool operator!=(const Implementation &a, const Implementation &b) {
+    friend bool operator!=(const IterImpl &a, const IterImpl &b) {
         return *a.storage != *b.storage;
     }
 
-    Implementation(const Implementation &a) : storage(a.copy(*a.storage)), copy(a.copy) {}
-//    Implementation(Interface &a) : storage(a.copy(a.storage)), copy(a.copy) {}
+    IterImpl(const IterImpl &a) : storage(a.copy(*a.storage)), copy(a.copy) {}
+//    IterImpl(Interface &a) : storage(a.copy(a.storage)), copy(a.copy) {}
 
     template<typename ConcreteType>
-    [[maybe_unused]] explicit Implementation(ConcreteType *object)
+    [[maybe_unused]] explicit IterImpl(ConcreteType *object)
             : storage(new ConcreteType(*object)),
               copy([](Interface &strg) -> Interface * {
                   return new ConcreteType(dynamic_cast<ConcreteType &>(strg));
@@ -49,12 +50,12 @@ public:
 
 
     template<typename ConcreteType>
-    [[maybe_unused]] explicit Implementation(ConcreteType &object)
-            : Implementation(&object) {}
+    [[maybe_unused]] explicit IterImpl(ConcreteType &object)
+            : IterImpl(&object) {}
 
     template<typename ConcreteType>
-    [[maybe_unused]] explicit Implementation(ConcreteType &&object)
-            : Implementation(&object) {}
+    [[maybe_unused]] explicit IterImpl(ConcreteType &&object)
+            : IterImpl(&object) {}
 
     virtual T *operator->() { return storage->operator->(); }
 
@@ -63,14 +64,14 @@ public:
 //    virtual Seq *operator->() const = 0;
 
     // Prefix increment
-    virtual Implementation &operator++() {
+    virtual IterImpl &operator++() {
         ++(*storage);
         return *this;
     }
 
     // Postfix increment
-    virtual Implementation operator++(int) {
-        Implementation tmp = Implementation(this->storage);
+    virtual IterImpl operator++(int) {
+        IterImpl tmp = IterImpl(this->storage);
         ++(*this);
         return tmp;
     }
@@ -82,33 +83,33 @@ public:
 
     // Prefix increment
 
-    virtual Implementation &operator--() {
+    virtual IterImpl &operator--() {
         --(*storage);
         return *this;
     }
 
-    virtual Implementation operator--(int) { // NOLINT(cert-dcl21-cpp)
-        Implementation tmp = Implementation(this->storage);
+    virtual IterImpl operator--(int) { // NOLINT(cert-dcl21-cpp)
+        IterImpl tmp = IterImpl(this->storage);
         --(*this);
         return tmp;
     }
 
-    virtual Implementation &operator+=(size_t num) {
+    virtual IterImpl &operator+=(size_t num) {
         *this = *this + num;
         return *this;
     };
 
-    virtual Implementation &operator-=(size_t num) {
+    virtual IterImpl &operator-=(size_t num) {
         *this = *this - num;
         return *this;
     };
 
-    virtual Implementation operator-(const Implementation &b) const {
-//        IEnumerator &tmp = RandomAccessIterator(*this);
+    virtual IterImpl operator-(const IterImpl &b) const {
+//        IEnumerator &tmp = RAIter(*this);
         return *storage - *b.storage;
     }
 
-    virtual Implementation operator-(const size_t &b) const {
+    virtual IterImpl operator-(const size_t &b) const {
         return *storage - b;
     }
 
@@ -116,15 +117,15 @@ public:
 //        return new IEnumerable(this->iterable, this->pos / b);
 //    }
 
-    virtual Implementation operator/(const size_t &b) const {
+    virtual IterImpl operator/(const size_t &b) const {
         return *storage / b;
     }
 
-    virtual Implementation operator+(const Implementation &b) const {
+    virtual IterImpl operator+(const IterImpl &b) const {
         return *storage + *b.storage;
     }
 
-    virtual Implementation operator+(const size_t &b) const {
+    virtual IterImpl operator+(const size_t &b) const {
         return *storage + b;
     }
 
@@ -144,25 +145,25 @@ public:
         return *storage >= b;
     }
 
-    virtual bool operator<(const Implementation &b) const {
+    virtual bool operator<(const IterImpl &b) const {
         return *storage < *b.storage;
     }
 
-    virtual bool operator<=(const Implementation &b) const {
+    virtual bool operator<=(const IterImpl &b) const {
         return *storage <= *b.storage;
     }
 
-    virtual bool operator>(const Implementation &b) const {
+    virtual bool operator>(const IterImpl &b) const {
         return *storage > *b.storage;
     }
 
-    virtual bool operator>=(const Implementation &b) const {
+    virtual bool operator>=(const IterImpl &b) const {
         return *storage >= *b.storage;
     }
 
     explicit operator int() const { return storage->GetPos(); }
 
-    Implementation &operator=(const Implementation &list) {
+    IterImpl &operator=(const IterImpl &list) {
         if (this != &list) {
             delete storage;
             storage = list.copy(*list.storage);
@@ -173,5 +174,7 @@ public:
 
 //    Interface *operator->() { return &getter(storage); }
 
-    ~Implementation() { delete storage; }
+    ~IterImpl() {
+        delete storage;
+    }
 };

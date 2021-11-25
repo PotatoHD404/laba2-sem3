@@ -2,14 +2,14 @@
 // Created by korna on 17.05.2021.
 //
 
-#ifndef LABA3_SET_H
-#define LABA3_SET_H
+#pragma once
 
 #include "BTree.hpp"
 #include "ISequence.hpp"
+#include "ISet.hpp"
 
 template<typename T>
-class Set {
+class Set : ISet<T> {
 private:
     BTree<T> items;
 
@@ -21,7 +21,7 @@ public:
     }
 
     Set(initializer_list<T> const &items) : Set() {
-        for (T item : items)
+        for (T item: items)
             this->Add(item);
     }
 
@@ -53,7 +53,7 @@ public:
     }
 
     template<typename T1>
-    Set<T1> Map(function<T1(T)>bijectiveFunc) {
+    Set<T1> Map(function<T1(T)> bijectiveFunc) {
         Set<T1> res;
         static_cast<NAryTree<T> &>(res.items) = items.Map(bijectiveFunc);
         ArraySequence<T> x = res.items.ToArraySequence();
@@ -200,5 +200,3 @@ public:
         return Difference(list);
     }
 };
-
-#endif //LABA3_SET_H
