@@ -12,7 +12,7 @@
 #include "Pair.hpp"
 #include "Utils.hpp"
 #include "ITree.hpp"
-#include "ListIter.hpp"
+#include "GraphIter.hpp"
 
 using namespace std;
 
@@ -131,19 +131,21 @@ protected:
         }
     };
 
-    class Iterator : public ListIter<T> {
+    class Iterator : public GraphIter<T> {
     private:
         Node<T> *current;
         Stack<Node<T> *> fStack, bStack;
     public:
-        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : RAIter<T>::RAIter(it,
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it,
                                                                                      pos),
-                                                                   current(it.GetNode(pos)), fStack{current} {}
+                                                                   current(it.GetNode(pos)), fStack(), bStack() {
 
-        Iterator(Iterator &other) : RAIter<T>::RAIter(other.iterable, other.pos),
+        }
+
+        Iterator(Iterator &other) : ListIter<T>::ListIter(other.iterable, other.pos),
                                     current(other.current), fStack{current} {}
 
-        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : RAIter<T>::RAIter(
+        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : ListIter<T>::ListIter(
                 it, pos), current(current), fStack{current} {}
 
         T &operator*() const override { return current->data; }
@@ -151,12 +153,19 @@ protected:
         T *operator->() override { return &current->data; }
 
         Iterator &operator++() override {
-            current = fStack.Pop();
-            bStack.Push(current);
-
-            for (size_t i = 0; i < current->ChildrenCount(); ++i)
-                if (current->children[i] != NULL)
-                    fStack.Push(current->children[i]);
+            stringstream buffer;
+            function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node) {
+                for (size_t i = 0; i < this->iterable.Count(); ++i)
+                    if (i == this->iterable.Count() - 1) {
+                        for (size_t k = 0; k < node->keys.Count(); ++k) {
+                            buffer << node->keys[k];
+                            if (k != node->keys.Count() - 1)
+                                buffer << " ";
+                        }
+                    } else if (i < node->ChildrenCount())
+                        VisitNode(node->children[i]);
+            };
+            VisitNode(root);
 
             ++this->pos;
             return *this;

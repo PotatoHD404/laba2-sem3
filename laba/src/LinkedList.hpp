@@ -6,11 +6,11 @@
 #include <iostream>
 #include <cstring>
 #include "IList.hpp"
-#include "ListIter.hpp"
+#include "GraphIter.hpp"
 #include "IterImpl.hpp"
 
 template<typename T>
-using Iter = IterImpl<RAIter<T>>;
+using Iter = IterImpl<ListIter < T>>;
 
 
 using namespace std;
@@ -50,26 +50,25 @@ private:
         return res;
     }
 
-    class Iterator : public ListIter<T> {
+    class Iterator : public GraphIter<T> {
     private:
         Node *current;
     public:
 
-        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RAIter<T>::RAIter(it,
-                                                                                       pos),
+        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, pos),
                                                                      current(it.GetNode(pos)) {}
 
-        Iterator(Iterator &other) : RAIter<T>::RAIter(other.iterable, other.pos),
+        Iterator(Iterator &other) : GraphIter<T>::GraphIter(other.iterable, other.pos),
                                     current(other.current) {}
 
-        Iterator(const LinkedList<T> &it, Node *current, size_t pos) : RAIter<T>::RAIter(
-                it, pos), current(current) {}
+        Iterator(const LinkedList<T> &it, Node *current, size_t pos) : GraphIter<T>::GraphIter(it, pos),
+                                                                       current(current) {}
 
         T &operator*() const override { return current->data; }
 
-        T *operator->() override { return &current->data; }
+        T *operator->() const override { return &current->data; }
 
-//        using RAIter<T>::RAIter;
+//        using ListIter<T>::ListIter;
         Iterator &operator++() override {
             current = current->next;
             ++this->pos;
@@ -88,7 +87,6 @@ private:
 
         Iterator &operator=(const Iterator &list) {
             if (this != &list) {
-                this->iterable = list.iterable;
                 this->pos = list.pos;
                 this->current = list.current;
             }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include <array>
+#include <chrono>
 #include "Utils.hpp"
 #include "ArraySequence.hpp"
 #include "Complex.hpp"

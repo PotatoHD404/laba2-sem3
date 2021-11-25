@@ -251,19 +251,19 @@ private:
             return static_cast<BNode *>(this->children[i]);
         }
     };
-    class Iterator : public ListIter<T> {
+    class Iterator : public GraphIter<T> {
     private:
         Node<T> *current;
         Stack<Node<T> *> fStack, bStack;
     public:
-        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : RAIter<T>::RAIter(it,
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it,
                                                                                      pos),
                                                                    current(it.GetNode(pos)), fStack{current} {}
 
-        Iterator(Iterator &other) : RAIter<T>::RAIter(other.iterable, other.pos),
+        Iterator(Iterator &other) : ListIter<T>::ListIter(other.iterable, other.pos),
                                     current(other.current), fStack{current} {}
 
-        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : RAIter<T>::RAIter(
+        Iterator(const LinkedList<T> &it, Node<T> *current, size_t pos) : ListIter<T>::ListIter(
                 it, pos), current(current), fStack{current} {}
 
         T &operator*() const override { return current->data; }
