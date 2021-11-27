@@ -42,7 +42,7 @@ public:
             this->Add(item);
     }
 
-    ArraySequence(ArraySequence<T> const &list) : items(list.items) {
+    ArraySequence(const ArraySequence<T> &list) : items(list.items) {
     }
 
     explicit ArraySequence(ISequence<T> &list) : ArraySequence((*dynamic_cast<ArraySequence<T> *>(&list))) {}
@@ -178,6 +178,8 @@ public:
         items.Clear();
         return *this;
     }
+
+    ArraySequence<T> &operator=(const ArraySequence<T> &) = default;
 
 //    ArraySequence<Seq> *Concat(const ArraySequence<Seq> *list) {
 //        return Concat(*list);

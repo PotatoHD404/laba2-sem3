@@ -16,7 +16,6 @@ template<typename T>
 class ListIter : public BaseIter<T> {
 protected:
     const IList<T> *iterable;
-
 public:
 
 
@@ -42,7 +41,7 @@ public:
     }
 
     bool Equals(const BaseIter<T> &b) const override {
-        return (this->GetPos() == b.GetPos()) && (&this->iterable == &static_cast<const ListIter &>(b).iterable);
+        return (this->GetPos() == b.GetPos()) && (this->iterable == static_cast<const ListIter &>(b).iterable);
     }
 
     ListIter<T> &operator-=(size_t b_pos) override {

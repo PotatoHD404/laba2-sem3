@@ -8,6 +8,7 @@
 #include "Complex.hpp"
 #include "Exceptions.hpp"
 #include "ListSequence.hpp"
+#include "ArraySequence.hpp"
 #include "Sorts.hpp"
 #include "Utils.hpp"
 
@@ -15,7 +16,7 @@
 using namespace std;
 using namespace Utils;
 
-const int itemNum = 100;
+const int itemNum = 2;
 
 template<typename T>
 T GenRandom(mt19937 &rng) {
@@ -70,13 +71,14 @@ auto test_data() {
 int main() {
     using T = int;
     array<T, itemNum> test_data = ::test_data<T>();
-    auto seq = ListSequence<T>();
+    auto seq = ArraySequence<T>();
     for (const T &el: test_data) {
         seq.Add(el);
     }
     auto b = seq.end();
-    auto c = b - 1;
-    cout << *c << endl;
+    auto c = seq.end();
+//    auto c = b;
+    cout << (b == c) << endl;
 
     seq = Sort<Sorts::QuickSort>(seq);
     return 0;
