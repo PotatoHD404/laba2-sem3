@@ -17,7 +17,7 @@ using namespace std;
 
 template<class T>
 class NAryTree : public ICollection<T> {
-protected:
+public:
     template<class T1>
     class Node {
     public:
@@ -76,7 +76,7 @@ protected:
                 Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                value(data), parent(parent), children(children) {}
+                values(data), parent(parent), children(children) {}
 
 //        Node(TKey value, Node<TKey> *parent, ArraySequence<Node<TKey> *> children) :
 //                value(value), parent(parent), children(children) {}
@@ -129,6 +129,7 @@ protected:
         }
     };
 
+protected:
     class Iterator : public GraphIter<T> {
     private:
         Node<T> *current;

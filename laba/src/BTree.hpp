@@ -9,11 +9,13 @@
 #include "Stack.hpp"
 
 template<typename T>
-class BTree : public NAryTree<T> {
+class BTree : ICollection<T> {
 private:
-    class BNode : public NAryTree<T>::template Node<T> {
+    using NAryTree = NAryTree<T>;
+
+    class BNode : public NAryTree::template Node<T> {
     public:
-        using NAryTree<T>::template Node<T>::Node;
+        using NAryTree::template Node<T>::Node;
 
         BNode *Search(T k) {
             size_t i = FindKey(k);
@@ -255,21 +257,24 @@ private:
     class Iterator : public GraphIter<T> {
     private:
         BNode *current;
+        size_t k{};
         Stack<BNode *> fStack, bStack;
     public:
-        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : ListIter<T>::ListIter(it,
-                                                                                         pos),
-                                                                   current(it.GetNode(pos)), fStack{current} {}
+        explicit Iterator(const BTree *it, size_t pos = 0) : current(it->root), fStack{current},
+                                                             GraphIter<T>(it, pos + 1) {
+            this->pos -= 1;
+        }
 
-        Iterator(Iterator &other) : ListIter<T>::ListIter(other.iterable, other.pos),
-                                    current(other.current), fStack{current} {}
+        Iterator(Iterator &other) : current(other.current), GraphIter<T>(other.it) {
+            *this = other;
+        }
 
         Iterator(const LinkedList<T> &it, BNode *current, size_t pos) : ListIter<T>::ListIter(
                 it, pos), current(current), fStack{current} {}
 
-        T &operator*() const override { return current->data; }
+        T &operator*() const override { return current->values[k]; }
 
-        T *operator->() override { return &current->data; }
+        T *operator->() const override { return &current->values[k]; }
 
         Iterator &operator++() override {
             current = fStack.Pop();
@@ -277,7 +282,7 @@ private:
 
             for (size_t i = 0; i < current->ChildrenCount(); ++i)
                 if (current->children[i] != NULL)
-                    fStack.Push(current->children[i]);
+                    fStack.Push(current->GetChild(i));
 
             ++this->pos;
             return *this;
@@ -291,27 +296,35 @@ private:
             return *this;
         }
 
-        Iterator &operator=(const Iterator &list) {
-            if (this != &list) {
-                this->fStack = list.fStack;
-                this->bStack = list.bStack;
-                this->iterable = list.iterable;
-                this->pos = list.pos;
-                this->current = list.current;
+        Iterator &operator=(const Iterator &other) {
+            if (this != &other) {
+                this->fStack = other.fStack;
+                this->bStack = other.bStack;
+                this->it = other.it;
+                this->pos = other.pos;
+                this->current = other.current;
             }
             return *this;
+        }
+
+        bool Equals(const BaseIter<T> &a) const override {
+            return ((const Iterator &) a).current == current && ((const Iterator &) a).it == this->it &&
+                   this->pos == a.GetPos();
         }
     };
 
     size_t t{};
-
+    size_t count{};
+    BNode *root;
 public:
     BTree() : BTree(3) {}
 
-    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
+    BTree(const BTree &tree) : BTree() { *this = tree; }
+
+    Iter<T> begin() const override { return Iter<T>(new Iterator(this)); }
 
     Iter<T> end() const override {
-        return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+        return Iter<T>(new Iterator(this, this->Count() > 0 ? this->Count() : 0));
     }
 
     ArraySequence<T> ToArraySequence() {
@@ -329,7 +342,7 @@ public:
             if (!node->IsLeaf())
                 VisitNode(node->GetChild(length));
         };
-        VisitNode(static_cast<BNode *>(this->root));
+        VisitNode(this->root);
         return res;
     }
 
@@ -341,15 +354,16 @@ public:
     }
 
     [[nodiscard]] size_t Count() const override {
-        return ((NAryTree *) this)->Count();
+        return count;
     }
 
-    BTree &operator=(BTree &&list) noexcept {
-        this->~BTree();
-        this->n = list.n;
-        this->count = list.count;
-        t = list.t;
-        this->root = new BNode(*static_cast<BNode *>(list.root));
+    BTree &operator=(const BTree &list) {
+        if (this != &list) {
+            this->~BTree();
+            this->count = list.count;
+            t = list.t;
+            this->root = new BNode(*(list.root));
+        }
         return *this;
     }
 
@@ -358,7 +372,7 @@ public:
             throw runtime_error("Root is NULL");
         stringstream buffer;
         Stack<Pair<BNode *, size_t>> stack;
-        stack.Push(Pair(static_cast<BNode *>(this->root), (size_t) 0));
+        stack.Push(Pair(this->root, (size_t) 0));
         size_t length = this->count;
         while (!stack.IsEmpty()) {
             if (!stack.Top().first->IsLeaf()) {
@@ -391,36 +405,36 @@ public:
         return buffer.str();
     }
 
-    explicit BTree(size_t t) : NAryTree(new BNode(), 2 * t, 0), t(t) {}
+    explicit BTree(size_t t) : root(new BNode()), t(t) {}
 
     BTree &Add(T k) override {
-        if (static_cast<BNode *>(this->root)->values.Count() == 2 * t - 1) {
+        if (this->root->values.Count() == 2 * t - 1) {
             BNode *s = new BNode();
             s->children.Add(this->root);
-            s->SplitChild(0, static_cast<BNode *>(this->root), t);
+            s->SplitChild(0, this->root, t);
             size_t i = 0;
-            if (s->value[i] < k)
+            if (s->values[i] < k)
                 i++;
 
             if (s->InsertNonFull(k, t))
                 this->count++;
             this->root = s;
         } else {
-            if (static_cast<BNode *>(this->root)->InsertNonFull(k, t))
+            if (this->root->InsertNonFull(k, t))
                 this->count++;
         }
         return *this;
     }
 
     T GetMin() {
-        BNode *tmp = static_cast<BNode *>(this->root);
+        BNode *tmp = this->root;
         while (!tmp->IsLeaf())
-            tmp = static_cast<BNode *>(tmp->children.GetFirst());
+            tmp = tmp->children.GetFirst();
         return tmp->values.GetFirst();
     }
 
     T GetMax() {
-        BNode *tmp = static_cast<BNode *>(this->root);
+        BNode *tmp = this->root;
         while (!tmp->IsLeaf())
             tmp = tmp->children.GetLast();
         return tmp->values.GetLast();
@@ -435,16 +449,16 @@ public:
     BTree &Remove(T k) override {
 
         // Call the remove function for root
-        if (static_cast<BNode *>(this->root)->Remove(k, t)) {
+        if (this->root->Remove(k, t)) {
             this->count--;
         }
 
         // If the root node has 0 this->values, make its first child as the new root
         //  if it has a child, otherwise BTree root as NULL
-        if (this->root->values.Count() == 0 && !static_cast<BNode *>(this->root)->IsLeaf()) {
-            BNode *tmp = static_cast<BNode *>(this->root);
+        if (this->root->values.Count() == 0 && !this->root->IsLeaf()) {
+            BNode *tmp = this->root;
 //            if (!static_cast<BNode *>(this->root)->IsLeaf())
-            this->root = this->root->children[0];
+            this->root = this->root->GetChild(0);
 
             // Free the old root
             tmp->children.Clear();
@@ -453,11 +467,12 @@ public:
         return *this;
     }
 
-    bool Contains(TKey key) override {
-        return static_cast<BNode *>(this->root)->Search(key) != nullptr;
+    bool Contains(T key) override {
+        return this->root->Search(key) != nullptr;
     }
 
-    BTree(BTree &tree) : NAryTree(static_cast<NAryTree &>(tree)), t(tree.t) {}
-
+    ~BTree() {
+        delete root;
+    }
 };
 

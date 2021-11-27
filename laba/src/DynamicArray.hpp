@@ -126,7 +126,7 @@ public:
         return *this;
     }
 
-    DynamicArray<T> &operator=(const IList<T> &list) override {
+    DynamicArray<T> &operator=(const DynamicArray<T> &list) {
         if (&list != this) {
 //            this->~DynamicArray();
             if (actual_array) {
@@ -137,7 +137,7 @@ public:
             if (length > 0) {
                 actual_array = new T[length]();
                 for (size_t i = 0; i < length; ++i) {
-                    actual_array[i] = ((const DynamicArray<T> &) list).actual_array[i];
+                    actual_array[i] = list.actual_array[i];
                 }
             } else
                 actual_array = new T[1]();

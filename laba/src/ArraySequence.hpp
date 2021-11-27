@@ -183,6 +183,4 @@ public:
 //        return Concat(*list);
 //    }
 
-    ArraySequence<T> &
-    operator=(const IList<T> &list) override { this->items = ((const ArraySequence<T> &) list).items; }
 };

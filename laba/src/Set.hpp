@@ -60,21 +60,21 @@ public:
         return *this;
     }
 
-    template<typename T1>
-    Set<T1> Map(function<T1(T)> bijectiveFunc) {
-        Set<T1> res;
-        static_cast<NAryTree<T> &>(res.items) = items.Map(bijectiveFunc);
-        ArraySequence<T> x = res.items.ToArraySequence();
-        res.items = BTree<T>();
-        for (size_t i = 0; i < x.Count(); ++i)
-            res.Add(x[i]);
+//    template<typename T1>
+//    Set<T1> Map(function<T1(T)> bijectiveFunc) {
+//        Set<T1> res;
+//        res.items = items.Map(bijectiveFunc);
+//        ArraySequence<T> x = res.items.ToArraySequence();
+//        res.items = BTree<T>();
+//        for (size_t i = 0; i < x.Count(); ++i)
+//            res.Add(x[i]);
+//
+//        return res;
+//    }
 
-        return res;
-    }
-
-    T Reduce(T (*func)(T, T), T x) {
-        return items.Reduce(func, x);
-    }
+//    T Reduce(T (*func)(T, T), T x) {
+//        return items.Reduce(func, x);
+//    }
 
     T Pop() {
         return items.Pop();
@@ -82,6 +82,7 @@ public:
 
     Set &Add(T item) override {
         items.Add(item);
+        return *this;
     }
 
     bool Contains(T item) override {

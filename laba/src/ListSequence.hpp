@@ -130,13 +130,12 @@ public:
         return items.RemoveLast();
     }
 
+    ListSequence &operator=(const ListSequence &) = default;
+
     T RemoveAt(size_t index) override {
         if (index < 0 || index >= items.Count())
             throw range_error("index < 0 or index >= length");
         return items.RemoveAt(index);
     }
-
-
-    ListSequence<T> &operator=(const IList<T> &list) override { this->items = ((const ListSequence<T> &) list).items; }
 
 };

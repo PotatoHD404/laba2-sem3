@@ -1,25 +1,21 @@
-#define _CRTDBG_MAP_ALLOC
-
-#include <map>
 #include <iostream>
-#include <vector>
-#include <random>
 #include <array>
+#include <algorithm>
+#include <random>
+#include <type_traits>
+#include <limits>
 #include <chrono>
-#include "Utils.hpp"
-#include "ArraySequence.hpp"
 #include "Complex.hpp"
+#include "Exceptions.hpp"
+#include "ListSequence.hpp"
+#include "Sorts.hpp"
+#include "Utils.hpp"
+
 
 using namespace std;
 using namespace Utils;
 
-template<class Iter>
-void insertion_sort(Iter begin, Iter end) {
-    iter_swap(begin, min_element(begin, end));
-    for (Iter b = begin; ++b < end; begin = b)
-        for (Iter c = b; *c < *begin; --c, --begin)
-            iter_swap(begin, c);
-}
+const int itemNum = 100;
 
 template<typename T>
 T GenRandom(mt19937 &rng) {
@@ -37,7 +33,7 @@ T GenRandom(mt19937 &rng) {
         uniform_real_distribution<float> distribution(-1, 1);
         return Complex((float) distribution(rng), (float) distribution(rng));
     } else if constexpr(std::is_same<T, int>::value) {
-        uniform_int_distribution<int> distribution(-1000, 1000);
+        uniform_int_distribution<int> distribution(-itemNum * 10, itemNum * 10);
         return (int) distribution(rng);
     } else if constexpr(std::is_same<T, float>::value) {
         uniform_real_distribution<float> distribution(-10, 10);
@@ -47,10 +43,8 @@ T GenRandom(mt19937 &rng) {
     }
 }
 
-int main() {
-    ArraySequence<int> a;
-//    cout << Sort<Sorts::ShellSort>(a) << endl;
-//    cout << Sort<Sorts::QuickSort>(a) << endl;
+template<typename T>
+auto test_data() {
     static random_device rd;
     static mt19937::result_type seed = rd() ^ (
             (mt19937::result_type)
@@ -61,17 +55,29 @@ int main() {
                     chrono::duration_cast<chrono::microseconds>(
                             chrono::high_resolution_clock::now().time_since_epoch()
                     ).count());
-    static auto rng = mt19937(seed);
-    static array<int, 10000> data;
-
-    generate(data.begin(), data.end(), []() { return GenRandom<int>(rng); });
-    for (int i = 0; i < 10000; ++i) {
-        a.Add(data[i]);
+    static mt19937 rng = mt19937(seed);
+    static array<T, itemNum> data;
+    static bool called;
+    if (!called) {
+        generate(
+                data.begin(), data.end(), []() { return GenRandom<T>(rng); });
+        called = true;
     }
-    vector<int> b(data.begin(), data.end());
-    insertion_sort(b.begin(), b.end());
-    insertion_sort(a.begin(), a.end());
-    for (size_t i = 0; i < b.size(); i++)
-        cout << b[i] << " " << a[i] << endl;
+    return data;
+}
+
+
+int main() {
+    using T = int;
+    array<T, itemNum> test_data = ::test_data<T>();
+    auto seq = ListSequence<T>();
+    for (const T &el: test_data) {
+        seq.Add(el);
+    }
+    auto b = seq.end();
+    auto c = b - 1;
+    cout << *c << endl;
+
+    seq = Sort<Sorts::QuickSort>(seq);
     return 0;
 }

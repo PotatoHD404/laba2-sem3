@@ -23,7 +23,7 @@ public:
     typedef T *pointer; //almost always Seq* or const Seq*
     typedef std::random_access_iterator_tag iterator_category;  //usually std::forward_iterator_tag or similar
 
-    explicit BaseIter(size_t pos = 0) : pos(pos) {}
+    explicit BaseIter(size_t pos) : pos(pos) {}
 
     [[nodiscard]] size_t GetPos() const {
         return pos;
