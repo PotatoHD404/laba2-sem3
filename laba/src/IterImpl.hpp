@@ -30,26 +30,14 @@ public:
         return !a.storage->Equals(*b.storage);
     }
 
-    IterImpl(Interface *storage, Interface *(*copy)(Interface &)) : storage(copy(storage)), copy(copy) {}
+    IterImpl(const IterImpl &iter) : storage(iter.copy(*iter.storage)), copy(iter.copy) {}
 
-    template<typename ConcreteType>
-    [[maybe_unused]] explicit IterImpl(const ConcreteType *object)
-            : storage(new ConcreteType(*object)),
+    template<class ConcreteType>
+    [[maybe_unused]] explicit IterImpl(ConcreteType *it)
+            : storage(it),
               copy([](Interface &strg) -> Interface * {
                   return new ConcreteType(dynamic_cast<ConcreteType &>(strg));
               }) {}
-
-
-    template<typename ConcreteType>
-    [[maybe_unused]] explicit IterImpl(const ConcreteType &object)
-            : IterImpl(&object) {}
-
-//    template<typename ConcreteType>
-//    [[maybe_unused]] explicit IterImpl(ConcreteType &&object)
-//            : storage(new ConcreteType(object)),
-//              copy([](Interface &strg) -> Interface * {
-//                  return new ConcreteType(dynamic_cast<ConcreteType &>(strg));
-//              }) {}
 
     virtual T *operator->() { return storage->operator->(); }
 

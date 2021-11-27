@@ -15,12 +15,12 @@ class IList;
 template<typename T>
 class ListIter : public BaseIter<T> {
 protected:
-    IList<T> &iterable;
+    const IList<T> &iterable;
 
 public:
 
 
-    explicit ListIter(IList<T> &it, size_t pos = 0) : BaseIter<T>(pos), iterable(it) {}
+    explicit ListIter(const IList<T> &it, size_t pos = 0) : BaseIter<T>(pos), iterable(it) {}
 
     ListIter(const ListIter &other) : iterable(*static_cast<IList<T> *>(nullptr)) { *this = other; }
 
@@ -68,8 +68,9 @@ public:
     }
 
     ListIter<T> &operator=(const ListIter<T> &list) {
+        if (&this->iterable != &list.iterable)
+            throw invalid_argument("Iterables must be equal");
         if (this != &list) {
-            this->iterable = list.iterable;
             this->pos = list.pos;
         }
         return *this;

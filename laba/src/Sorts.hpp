@@ -8,7 +8,7 @@
 #include <utility>
 #include "IEnumerable.hpp"
 
-//template<typename T>
+//template<typename TKey>
 //class Enumerable;
 
 template<typename T>
@@ -81,7 +81,7 @@ namespace Sorts {
             }
         }
 
-//        static void sort(Iter<T> first, Iter<T> last) {
+//        static void sort(Iter<TKey> first, Iter<TKey> last) {
 //
 //        }
     };

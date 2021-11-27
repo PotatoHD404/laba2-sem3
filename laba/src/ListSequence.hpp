@@ -18,9 +18,9 @@ private:
     mutable LinkedList<T> items;
 
 public:
-    Iter<T> begin() override { return items.begin(); }
+    Iter<T> begin() const override { return items.begin(); }
 
-    Iter<T> end() override { return items.end(); }
+    Iter<T> end() const override { return items.end(); }
 
     ListSequence Copy() {
         return ListSequence<T>(*this);
@@ -93,7 +93,7 @@ public:
     }
 //    virtual bool operator==(const ISequence<Seq> &list) = 0;
 
-//    virtual bool operator==(const ListSequence<T> &list) {
+//    virtual bool operator==(const ListSequence<TKey> &list) {
 //        return items == list.items;
 //    }
 

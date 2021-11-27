@@ -76,12 +76,12 @@ protected:
                 Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                values{data}, parent(parent), children(children) {}
+                value(data), parent(parent), children(children) {}
 
-        Node(ArraySequence<T1> keys, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                values(keys), parent(parent), children(children) {}
-
-        T1 Reduce(function<T1(T1, T1)> f, T1 c) {
+//        Node(TKey value, Node<TKey> *parent, ArraySequence<Node<TKey> *> children) :
+//                value(value), parent(parent), children(children) {}
+        template<typename T2>
+        T1 Reduce(function<T1(T2, T1)> f, T1 c) {
             if (f == nullptr)
                 throw invalid_argument("mapper is NULL");
             T res = c;
@@ -140,7 +140,7 @@ protected:
             *this += (pos + 1);
         }
 
-        Iterator(const Iterator &other) { *this = other; }
+        Iterator(const Iterator &other) : GraphIter<T>(other.iterable) { *this = other; }
 
         T &operator*() const override { return current->values[i]; }
 
@@ -180,11 +180,13 @@ protected:
         }
 
         Iterator &operator=(const Iterator &list) {
+            if (&this->iterable != &list.iterable)
+                throw invalid_argument("Iterables must be equal");
             if (this != &list) {
                 this->i = list.i;
                 this->fStack = list.fStack;
                 this->bStack = list.bStack;
-                this->iterable = list.iterable;
+//                this->iterable = list.iterable;
                 this->pos = list.pos;
                 this->current = list.current;
             }
@@ -193,10 +195,10 @@ protected:
     };
 
 public:
-    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
+    Iter<T> begin() const override { return Iter<T>(new Iterator(*this)); }
 
     Iter<T> end() const override {
-        return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+        return Iter<T>(new Iterator(*this, this->Count() > 0 ? this->Count() : 0));
     }
 
     Node<T> *GetNode(initializer_list<size_t> indexes) {
@@ -333,6 +335,19 @@ public:
         return *this;
     }
 
+//    NAryTree &Clear() override {
+//        delete root;
+//        root = new Node<T>();
+//        return *this;
+//    }
+//
+//    NAryTree &Add(T) override {
+//        throw NotImplemented();
+//    }
+//
+//    NAryTree &Remove(T) override {
+//        throw NotImplemented();
+//    }
 
     size_t GetN() { return n; }
 

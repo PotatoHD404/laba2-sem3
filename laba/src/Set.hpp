@@ -167,8 +167,8 @@ public:
         }
         return in;
     }
-//    bool operator==(Set<T> &x) { return x.items == this->items; }
-//    bool operator==(Set<T> &&x) { return x.items == this->items; }
+//    bool operator==(Set<TKey> &x) { return x.items == this->items; }
+//    bool operator==(Set<TKey> &&x) { return x.items == this->items; }
 
     bool operator==(Set<T> &list) {
         return list.items.ToArraySequence() == items.ToArraySequence();

@@ -18,9 +18,9 @@ private:
     mutable DynamicArray<T> items;
 
 public:
-    Iter<T> begin() override { return items.begin(); }
+    Iter<T> begin() const override { return items.begin(); }
 
-    Iter<T> end() override { return items.end(); }
+    Iter<T> end() const override { return items.end(); }
 
     //Creation of the object
     ArraySequence() : items() {}
@@ -83,7 +83,7 @@ public:
 
     T RemoveAt(size_t index) override { return items.RemoveAt(index); }
 
-//    bool operator==(const IList<T> &list) override {
+//    bool operator==(const IList<TKey> &list) override {
 //        if(this == &list)
 //            return true;
 //        size_t len = list.Count();

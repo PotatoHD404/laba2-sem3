@@ -341,10 +341,10 @@ public:
     }
 
     [[nodiscard]] size_t Count() const override {
-        return ((NAryTree<T> *) this)->Count();
+        return ((NAryTree *) this)->Count();
     }
 
-    BTree<T> &operator=(BTree<T> &&list) noexcept {
+    BTree &operator=(BTree &&list) noexcept {
         this->~BTree();
         this->n = list.n;
         this->count = list.count;
@@ -391,7 +391,7 @@ public:
         return buffer.str();
     }
 
-    explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t, 0), t(t) {}
+    explicit BTree(size_t t) : NAryTree(new BNode(), 2 * t, 0), t(t) {}
 
     BTree &Add(T k) override {
         if (static_cast<BNode *>(this->root)->values.Count() == 2 * t - 1) {
@@ -399,7 +399,7 @@ public:
             s->children.Add(this->root);
             s->SplitChild(0, static_cast<BNode *>(this->root), t);
             size_t i = 0;
-            if (s->values[i] < k)
+            if (s->value[i] < k)
                 i++;
 
             if (s->InsertNonFull(k, t))
@@ -453,11 +453,11 @@ public:
         return *this;
     }
 
-    bool Contains(T key) override {
+    bool Contains(TKey key) override {
         return static_cast<BNode *>(this->root)->Search(key) != nullptr;
     }
 
-    BTree(BTree<T> &tree) : NAryTree<T>(static_cast<NAryTree<T> &>(tree)), t(tree.t) {}
+    BTree(BTree &tree) : NAryTree(static_cast<NAryTree &>(tree)), t(tree.t) {}
 
 };
 

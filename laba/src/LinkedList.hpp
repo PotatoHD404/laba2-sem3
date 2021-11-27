@@ -64,7 +64,7 @@ private:
 
         T *operator->() const override { return &current->data; }
 
-//        using ListIter<T>::ListIter;
+//        using ListIter<TKey>::ListIter;
         Iterator &operator++() override {
             current = current->next;
             ++this->pos;
@@ -91,10 +91,10 @@ private:
     };
 
 public:
-    Iter<T> begin() override { return Iter<T>(Iterator(*this)); }
+    Iter<T> begin() const override { return Iter<T>(new Iterator(*this)); }
 
-    Iter<T> end() override {
-        return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+    Iter<T> end() const override {
+        return Iter<T>(new Iterator(*this, this->Count() > 0 ? this->Count() : 0));
     }
     //Creation of the object
 
@@ -166,9 +166,9 @@ public:
 
     LinkedList<T> &Clear() override { throw NotImplemented("", "in LinkedList Clear"); };
 
-//    bool operator==(const IList<T> &list) override {
-//        if (dynamic_cast<const LinkedList<T> *>(&list) != nullptr) {
-//            auto castedList = dynamic_cast<const LinkedList<T> &>(list);
+//    bool operator==(const IList<TKey> &list) override {
+//        if (dynamic_cast<const LinkedList<TKey> *>(&list) != nullptr) {
+//            auto castedList = dynamic_cast<const LinkedList<TKey> &>(list);
 //            if (this->Count() != castedList.Count())
 //                return false;
 //            auto head1 = this->head;
@@ -184,7 +184,7 @@ public:
 //        if (this->Count() != list.Count())
 //            return false;
 //        int i = 0;
-//        for (T el: *this) {
+//        for (TKey el: *this) {
 //            if (el != list[i])
 //                return false;
 //            i++;
