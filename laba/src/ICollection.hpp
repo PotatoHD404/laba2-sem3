@@ -16,7 +16,7 @@ public:
 
     [[nodiscard]] virtual size_t Count() const = 0;
 
-    virtual bool Contains(T item) {
+    virtual bool Contains(T item) const {
         for (auto el: *this)
             if (el == item)
                 return true;
@@ -28,7 +28,33 @@ public:
 
     virtual ICollection<T> &Add(T item) = 0;
 
-    virtual T Remove(T item) = 0;
+    virtual ICollection<T> &Remove(T item) = 0;
 
     virtual ~ICollection() = default;
 };
+namespace Utils {
+    template<typename T>
+    ostream &Print(ostream &out, const T &x) {
+        if constexpr(std::is_same<T, string>::value) {
+            out << "\'" << x << "\'";
+        } else {
+            out << x;
+        }
+        return out;
+    }
+}
+
+template<typename T>
+ostream &operator<<(ostream &out, const ICollection<T> &x) {
+    out << "{";
+    size_t length = x.Count();
+    size_t i = 0;
+    for (auto el: x) {
+        Utils::Print(out, el);
+        if (i != length - 1)
+            out << ", ";
+        ++i;
+    }
+    out << "}";
+    return out;
+}

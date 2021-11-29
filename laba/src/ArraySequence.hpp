@@ -4,7 +4,7 @@
 #pragma once
 
 #include "DynamicArray.hpp"
-#include "RandomAccessIterator.hpp"
+#include "ListIter.hpp"
 #include "ISequence.hpp"
 #include <iostream>
 #include <memory>
@@ -42,7 +42,7 @@ public:
             this->Add(item);
     }
 
-    ArraySequence(ArraySequence<T> const &list) : items(list.items) {
+    ArraySequence(const ArraySequence<T> &list) : items(list.items) {
     }
 
     explicit ArraySequence(ISequence<T> &list) : ArraySequence((*dynamic_cast<ArraySequence<T> *>(&list))) {}
@@ -83,7 +83,7 @@ public:
 
     T RemoveAt(size_t index) override { return items.RemoveAt(index); }
 
-//    bool operator==(const IList<T> &list) override {
+//    bool operator==(const IList<TKey> &list) override {
 //        if(this == &list)
 //            return true;
 //        size_t len = list.Count();
@@ -179,9 +179,10 @@ public:
         return *this;
     }
 
+    ArraySequence<T> &operator=(const ArraySequence<T> &) = default;
+
 //    ArraySequence<Seq> *Concat(const ArraySequence<Seq> *list) {
 //        return Concat(*list);
 //    }
 
-    ArraySequence<T> &operator=(const ArraySequence<T> &list) = default;
 };

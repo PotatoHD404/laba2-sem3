@@ -1,5 +1,5 @@
 //
-// Created by korna on 05.05.2021.
+// Created by PotatoHD on 25.11.2021.
 //
 
 #pragma once
@@ -7,20 +7,20 @@
 #include "ListSequence.hpp"
 
 template<class T>
-class Stack : ListSequence<T> {
+class Queue : ListSequence<T> {
 public:
-    using ListSequence<T>::ListSequence;
+    Queue() = default;
 
     void Push(T item) {
         this->AddFirst(item);
     }
 
     T Pop() {
-        return this->RemoveFirst();
+        return this->RemoveLast();
     }
 
     T &Top() {
-        return this->GetFirst();
+        return this->GetLast();
     }
 
     bool IsEmpty() {

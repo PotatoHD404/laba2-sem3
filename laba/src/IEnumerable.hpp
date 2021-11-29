@@ -3,16 +3,16 @@
 //
 #pragma once
 
-#include "RandomAccessIterator.hpp"
-#include "IterImplementation.hpp"
+#include "BaseIter.hpp"
+#include "IterImpl.hpp"
 
 template<typename T>
-using Iter = Implementation<RandomAccessIterator<T>>;
+using Iter = IterImpl<BaseIter<T>>;
 
 template<typename T>
 class IEnumerable {
 public:
-    virtual Iter<T> begin() const = 0;
+    [[nodiscard]] virtual Iter<T> begin() const = 0;
 
-    virtual Iter<T> end() const= 0;
+    [[nodiscard]] virtual Iter<T> end() const = 0;
 };

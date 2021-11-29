@@ -44,28 +44,28 @@ TEST(SetTest, Add_Remove) {
 
 }
 
-TEST(SetTest, Map) {
-    function<int(int)> mapper1 = [](int a) -> int {
-        return a * 2;
-    };
-
-    function<string(string)> mapper2 = [](const string& a) -> string {
-        return a + " sampleText";
-    };
-    Set<int> set = Set<int>({4, 3, 2, 0});
-    Set<int> mapSet = set.Map(mapper1);
-    ASSERT_TRUE(mapSet == Set<int>({8, 6, 4, 0}));
-
-    Set<string> setString = Set<string>({"", "0"});
-    Set<string> mapSetString = setString.Map(mapper2);
-    ASSERT_TRUE(mapSetString == Set<string>({" sampleText", "0 sampleText"}));
-}
-
-TEST(SetTest, Reduce) {
-    Set<int> set = Set<int>({2, 3, 4, 0});
-    int reduce = set.Reduce(ReduceCheck, 0);
-    ASSERT_EQ(reduce, 9);
-}
+//TEST(SetTest, Map) {
+//    function<int(int)> mapper1 = [](int a) -> int {
+//        return a * 2;
+//    };
+//
+//    function<string(string)> mapper2 = [](const string &a) -> string {
+//        return a + " sampleText";
+//    };
+//    Set<int> set = Set<int>({4, 3, 2, 0});
+//    Set<int> mapSet = set.Map(mapper1);
+//    ASSERT_TRUE(mapSet == Set<int>({8, 6, 4, 0}));
+//
+//    Set<string> setString = Set<string>({"", "0"});
+//    Set<string> mapSetString = setString.Map(mapper2);
+//    ASSERT_TRUE(mapSetString == Set<string>({" sampleText", "0 sampleText"}));
+//}
+//
+//TEST(SetTest, Reduce) {
+//    Set<int> set = Set<int>({2, 3, 4, 0});
+//    int reduce = set.Reduce(ReduceCheck, 0);
+//    ASSERT_EQ(reduce, 9);
+//}
 
 TEST(SetTest, Inersection) {
     Set<int> set = Set<int>({1, 2, 3, 4, 5});

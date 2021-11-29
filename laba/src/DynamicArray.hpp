@@ -10,7 +10,7 @@
 using namespace std;
 
 template<class T>
-class DynamicArray : public IList<T>{
+class DynamicArray : public IList<T> {
 private:
     T *actual_array;
     size_t length{};
@@ -133,7 +133,7 @@ public:
                 delete[] actual_array;
                 actual_array = nullptr;
             }
-            length = list.length;
+            length = list.Count();
             if (length > 0) {
                 actual_array = new T[length]();
                 for (size_t i = 0; i < length; ++i) {

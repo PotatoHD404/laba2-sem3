@@ -2,18 +2,33 @@
 // Created by korna on 17.05.2021.
 //
 
-#ifndef LABA3_SET_H
-#define LABA3_SET_H
+#pragma once
 
 #include "BTree.hpp"
 #include "ISequence.hpp"
+#include "ISet.hpp"
 
 template<typename T>
-class Set {
+class Set : ISet<T> {
 private:
     BTree<T> items;
 
+    template<typename TKey, typename TValue>
+    friend
+    class Dictionary;
+
+    typename BTree<T>::BNode *Find(T key) const {
+        return this->items.root->Search(key);
+    }
+
 public:
+
+    Iter<const T> begin() const override { return items.begin(); }
+
+    Iter<const T> end() const override {
+        return items.end();
+    }
+
     //Creation of the object
     Set() : items() {}
 
@@ -21,7 +36,7 @@ public:
     }
 
     Set(initializer_list<T> const &items) : Set() {
-        for (T item : items)
+        for (T item: items)
             this->Add(item);
     }
 
@@ -43,45 +58,32 @@ public:
         return res;
     }
 
-    size_t Count() {
+    [[nodiscard]] size_t Count() const override {
         return items.Count();
     }
 
     //Operations
-    void Clear() {
+    Set &Clear() override {
         items = BTree<T>();
-    }
-
-    template<typename T1>
-    Set<T1> Map(function<T1(T)>bijectiveFunc) {
-        Set<T1> res;
-        static_cast<NAryTree<T> &>(res.items) = items.Map(bijectiveFunc);
-        ArraySequence<T> x = res.items.ToArraySequence();
-        res.items = BTree<T>();
-        for (size_t i = 0; i < x.Count(); ++i)
-            res.Add(x[i]);
-
-        return res;
-    }
-
-    T Reduce(T (*func)(T, T), T x) {
-        return items.Reduce(func, x);
+        return *this;
     }
 
     T Pop() {
         return items.Pop();
     }
 
-    void Add(T item) {
-        items.Insert(item);
+    Set &Add(T item) override {
+        items.Add(item);
+        return *this;
     }
 
-    bool Contains(T item) {
+    bool Contains(T item) const override {
         return items.Contains(item);
     }
 
-    void Remove(T item) {
-        return items.Remove(item);
+    Set &Remove(T item) override {
+        items.Remove(item);
+        return *this;
     }
 
     Set<T> Union(Set<T> &list) {
@@ -129,37 +131,11 @@ public:
         return res;
     }
 
-    friend ostream &operator<<(ostream &out, Set<T> &x) {
-        ArraySequence<T> tmp = x.items.ToArraySequence();
-        out << "{";
-        size_t length = tmp.Count();
-        for (size_t i = 0; i < length; ++i) {
-            out << tmp[i];
-            if (i != length - 1)
-                out << ", ";
-        }
-        out << "}";
-        return out;
-    }
-
     ArraySequence<T> ToArraySequence() {
         return items.ToArraySequence();
     }
-
-    friend ostream &operator<<(ostream &out, Set<T> &&x) { return operator<<(out, x); }
-
-    friend istream &operator>>(istream &in, Set<T> &x) {
-        string tmp;
-        getline(in, tmp);
-        stringstream ss(tmp);
-        T t;
-        while (ss >> t) {
-            x.Add(t);
-        }
-        return in;
-    }
-//    bool operator==(Set<T> &x) { return x.items == this->items; }
-//    bool operator==(Set<T> &&x) { return x.items == this->items; }
+//    bool operator==(Set<TKey> &x) { return x.items == this->items; }
+//    bool operator==(Set<TKey> &&x) { return x.items == this->items; }
 
     bool operator==(Set<T> &list) {
         return list.items.ToArraySequence() == items.ToArraySequence();
@@ -201,4 +177,32 @@ public:
     }
 };
 
-#endif //LABA3_SET_H
+template<typename T>
+ostream &operator<<(ostream &out, const Set<T> &x) {
+    ArraySequence<T> tmp = x.items.ToArraySequence();
+    out << "{";
+    size_t length = tmp.Count();
+    for (size_t i = 0; i < length; ++i) {
+        if constexpr(std::is_same<T, string>::value) {
+            out << "\'" << x[i] << "\'";
+        } else {
+            out << x[i];
+        }
+        if (i != length - 1)
+            out << ", ";
+    }
+    out << "}";
+    return out;
+}
+
+template<typename T>
+istream &operator>>(istream &in, Set<T> &x) {
+    string tmp;
+    getline(in, tmp);
+    stringstream ss(tmp);
+    T t;
+    while (ss >> t) {
+        x.Add(t);
+    }
+    return in;
+}

@@ -2,8 +2,7 @@
 // Created by korna on 17.05.2021.
 //
 
-#ifndef LABA3_FUNCTIONS_H
-#define LABA3_FUNCTIONS_H
+#pragma once
 
 #include <cmath>
 
@@ -27,9 +26,7 @@ int subtract2(int x) {
     return x - 2;
 }
 
-string ToString(int x){
+string ToString(int x) {
     return to_string(x);
 }
 
-
-#endif //LABA3_FUNCTIONS_H

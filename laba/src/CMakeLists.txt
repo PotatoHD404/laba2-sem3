@@ -3,7 +3,7 @@ project(Laba3)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wunused-parameter -Wunknown-pragmas -fexceptions -Werror -Wno-ambiguous-reversed-operator")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wunused-parameter -Wunknown-pragmas -fexceptions -Werror -Wno-null-dereference -Wno-reorder-ctor")
 # -Werror
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
@@ -19,7 +19,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     add_subdirectory(Tests)
 endif ()
 
-add_executable(Laba3 main.cpp WebAssembly.hpp RandomAccessIterator.hpp IEnumerable.hpp Sorts.hpp Exceptions.hpp IterImplementation.hpp IList.hpp Utils.hpp ISet.hpp)
+add_executable(Laba3 main.cpp WebAssembly.hpp ListIter.hpp IEnumerable.hpp Sorts.hpp Exceptions.hpp IterImpl.hpp IList.hpp Utils.hpp ISet.hpp GraphIter.hpp Queue.hpp BaseIter.hpp Dictionary.hpp IDictionary.hpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     #    set(CMAKE_EXECUTABLE_SUFFIX .mjs)

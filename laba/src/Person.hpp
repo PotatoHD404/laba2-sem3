@@ -4,8 +4,7 @@
 // Created by korna on 04.05.2021.
 //
 
-#ifndef LABA3_PERSON_H
-#define LABA3_PERSON_H
+#pragma once
 
 struct PersonID { //0982 123243
     unsigned short series;
@@ -92,4 +91,3 @@ public:
 
 };
 
-#endif //LABA3_PERSON_H

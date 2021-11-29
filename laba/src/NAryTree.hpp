@@ -1,8 +1,7 @@
 //
 // Created by korna on 30.04.2021.
 //
-#ifndef LABA3_NARYTREE_HPP
-#define LABA3_NARYTREE_HPP
+#pragma once
 
 #include <iostream>
 #include <cstring>
@@ -12,21 +11,21 @@
 #include "Stack.hpp"
 #include "Pair.hpp"
 #include "Utils.hpp"
+#include "GraphIter.hpp"
 
 using namespace std;
 
 template<class T>
-class NAryTree {
-protected:
+class NAryTree : public IEnumerable<T> {
+public:
     template<class T1>
     class Node {
     public:
-        ArraySequence<T1> keys;
         ArraySequence<T1> values;
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
 
-        Node() : keys(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
+        Node() : values(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
 
         Node(Node<T1> &node) : Node(&node) {}
 
@@ -37,7 +36,7 @@ protected:
             while (!s.IsEmpty()) {
                 Node<T1> *node = s.Pop();
                 Node<T1> *tmp = s1.Pop();
-                tmp->keys = node->keys;
+                tmp->values = node->values;
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -57,7 +56,7 @@ protected:
             while (!s.IsEmpty()) {
                 Node<T1> *node = s.Pop();
                 Node<T2> *tmp = s1.Pop();
-                tmp->keys = Utils::Map(node->keys, bijectiveFunc);
+                tmp->values = Utils::Map(node->values, bijectiveFunc);
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -77,21 +76,20 @@ protected:
                 Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                keys({data}), parent(parent), children(children) {}
+                values(data), parent(parent), children(children) {}
 
-        Node(ArraySequence<T1> keys, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                keys(keys), parent(parent), children(children) {}
-
-        T1 Reduce(function<T1(T1, T1)> f, T1 c) {
+//        Node(TKey value, Node<TKey> *parent, ArraySequence<Node<TKey> *> children) :
+//                value(value), parent(parent), children(children) {}
+        template<typename T2>
+        T1 Reduce(function<T1(T2, T1)> f, T1 c) {
             if (f == nullptr)
                 throw invalid_argument("mapper is NULL");
             T res = c;
             Stack<Node<T> *> s;
-            Stack<Node<T1> *> s1;
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
-                res = Utils::Reduce(node->keys, f, res);
+                res = Utils::Reduce(node->values, f, res);
                 for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL)
                         s.Push(node->children[i]);
@@ -131,10 +129,82 @@ protected:
         }
     };
 
+protected:
+    class Iterator : public GraphIter<T> {
+    private:
+        Node<T> *current;
+        size_t i{};
+        Stack<Node<T> *> fStack, bStack;
+    public:
+        explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, -1), i(),
+                                                                   fStack{it.root}, bStack() {
+            *this += (pos + 1);
+        }
+
+        Iterator(const Iterator &other) : GraphIter<T>(other.iterable) { *this = other; }
+
+        T &operator*() const override { return current->values[i]; }
+
+        T *operator->() const override { return &current->values[i]; }
+
+        Iterator &operator++() override {
+            if (i + 1 < current->values.Count()) {
+                i++;
+            } else {
+                i = 0;
+                do {
+                    if (current != nullptr)
+                        bStack.Push(current);
+                    current = fStack.Pop();
+
+                    for (size_t j = 0; j < current->ChildrenCount(); ++j)
+                        if (current->children[j] != NULL)
+                            fStack.Push(current->children[j]);
+                } while (current->values.Count() != 0);
+            }
+            ++this->pos;
+            return *this;
+        }
+
+        Iterator &operator--() override {
+            if (i - 1 >= 0) {
+                i--;
+            } else {
+                do {
+                    fStack.Push(current);
+                    current = bStack.Pop();
+                } while (current->values.Count() != 0);
+                i = current->values.Count() - 1;
+            }
+            --this->pos;
+            return *this;
+        }
+
+        Iterator &operator=(const Iterator &list) {
+            if (&this->iterable != &list.iterable)
+                throw invalid_argument("Iterables must be equal");
+            if (this != &list) {
+                this->i = list.i;
+                this->fStack = list.fStack;
+                this->bStack = list.bStack;
+//                this->iterable = list.iterable;
+                this->pos = list.pos;
+                this->current = list.current;
+            }
+            return *this;
+        }
+    };
+
+public:
+    Iter<T> begin() const override { return Iter<T>(new Iterator(*this)); }
+
+    Iter<T> end() const override {
+        return Iter<T>(new Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+    }
 
     Node<T> *GetNode(initializer_list<size_t> indexes) {
         Node<T> *res = root;
-        for (size_t item : indexes)
+        for (size_t item: indexes)
             res = res->children[item];
         return res;
     }
@@ -239,10 +309,10 @@ public:
                 try {
                     stringstream ss(str.substr(tmp + 1, i));
                     T d;
-                    ss >> node->keys[0];
+                    ss >> node->values[0];
                     while (ss >> d) {
                         count++;
-                        node->keys.Append(d);
+                        node->values.Append(d);
                     }
 
                 }
@@ -256,27 +326,45 @@ public:
             throw std::runtime_error("Wrong input");
     }
 
-    void Insert(size_t at, initializer_list<size_t> indexes, T k) {
-        GetNode(indexes)->keys.InsertAt(at, k);
-    }
-
-    void Remove(size_t at, initializer_list<size_t> indexes) {
-        GetNode(indexes)->keys.RemoveAt(at);
-    }
-
-    size_t GetN() { return n; }
-
-    NAryTree<T> &operator=(NAryTree<T> &&list) {
-        this->~NAryTree();
-        n = list.n;
-        count = list.count;
-        root = new Node<T>(*list.root);
+    NAryTree &Insert(size_t at, initializer_list<size_t> indexes, T k) {
+        GetNode(indexes)->values.InsertAt(at, k);
         return *this;
     }
 
-    size_t Count() { return count; }
+    NAryTree &Remove(size_t at, initializer_list<size_t> indexes) {
+        GetNode(indexes)->values.RemoveAt(at);
+        return *this;
+    }
 
-    string Order(){
+//    NAryTree &Clear() override {
+//        delete root;
+//        root = new Node<T>();
+//        return *this;
+//    }
+//
+//    NAryTree &Add(T) override {
+//        throw NotImplemented();
+//    }
+//
+//    NAryTree &Remove(T) override {
+//        throw NotImplemented();
+//    }
+
+    size_t GetN() { return n; }
+
+    NAryTree<T> &operator=(const NAryTree<T> &list) {
+        if (this != &list) {
+            this->~NAryTree();
+            n = list.n;
+            count = list.count;
+            root = new Node<T>(*list.root);
+        }
+        return *this;
+    }
+
+    [[nodiscard]] size_t Count() const { return count; }
+
+    string Order() {
         return Order("{K}(2)[1]<3>d4b\\5/");
     }
 
@@ -309,14 +397,6 @@ public:
             brackets[num * 2 + 1] = match_str[match_str.size() - 1];
             ++j;
         }
-//        if (length >= n) {
-//            indexes[length - 1] = n;
-//            brackets[n][0] = brackets[--length][0];
-//            brackets[n][1] = brackets[length][1];
-//            length = n + 1;
-//        }
-//        if (length != n + 1)
-//            throw runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
             throw runtime_error("Root is NULL");
         stringstream buffer;
@@ -326,9 +406,9 @@ public:
             for (size_t i = 0; i < length; ++i)
                 if (indexes[i] == length - 1) {
                     buffer << brackets[2 * length - 2];
-                    for (size_t k = 0; k < node->keys.Count(); ++k) {
-                        buffer << node->keys[k];
-                        if (k != node->keys.Count() - 1)
+                    for (size_t k = 0; k < node->values.Count(); ++k) {
+                        buffer << node->values[k];
+                        if (k != node->values.Count() - 1)
                             buffer << " ";
                     }
                     buffer << brackets[2 * length - 1];
@@ -343,14 +423,14 @@ public:
     }
 
 
-    NAryTree<T> Subtree(initializer_list<size_t> indexes) {
-        return NAryTree<T>(new Node(GetNode(indexes)));
-    }
-
-    template<size_t N>
-    NAryTree<T> Subtree(const size_t (&indexes)[N]) {
-        return NAryTree<T>(new Node(GetNode(indexes)));
-    }
+//    NAryTree<T> Subtree(initializer_list<size_t> indexes) {
+//        return NAryTree<T>(new Node(GetNode(indexes)));
+//    }
+//
+//    template<size_t N>
+//    NAryTree<T> Subtree(const size_t (&indexes)[N]) {
+//        return NAryTree<T>(new Node(GetNode(indexes)));
+//    }
 
     template<typename T1>
     NAryTree<T1> Map(function<T1(T)> bijectiveFunc) {
@@ -365,5 +445,3 @@ public:
         delete root;
     }
 };
-
-#endif //LABA3_NARYTREE_HPP

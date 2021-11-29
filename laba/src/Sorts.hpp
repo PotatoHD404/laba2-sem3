@@ -8,7 +8,7 @@
 #include <utility>
 #include "IEnumerable.hpp"
 
-//template<typename T>
+//template<typename TKey>
 //class Enumerable;
 
 template<typename T>
@@ -20,7 +20,7 @@ public:
 namespace std {
     template<typename T>
     int distance(const Iter<T> &ra1, const Iter<T> &ra2) {
-        return abs((long) (ra1 - ra2).GetPos());
+        return abs((long) (ra1.GetPos() - ra2.GetPos()));
     }
 }
 namespace Sorts {
@@ -70,7 +70,7 @@ namespace Sorts {
         void shell_sort(Iter<T> &&first, Iter<T> &&last) const {
             auto size = last - first;
             auto h = 1;
-            while (h < (int)(size / 3)) h = 3 * h + 1;
+            while (h < (int) (size / 3)) h = 3 * h + 1;
 
             while (h >= 1) {
                 for (auto i = first + h; i != last; i++) {
@@ -81,7 +81,7 @@ namespace Sorts {
             }
         }
 
-//        static void sort(Iter<T> first, Iter<T> last) {
+//        static void sort(Iter<TKey> first, Iter<TKey> last) {
 //
 //        }
     };

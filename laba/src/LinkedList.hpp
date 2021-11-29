@@ -6,11 +6,8 @@
 #include <iostream>
 #include <cstring>
 #include "IList.hpp"
-#include "RandomAccessIterator.hpp"
-#include "IterImplementation.hpp"
-
-template<typename T>
-using Iter = Implementation<RandomAccessIterator<T>>;
+#include "GraphIter.hpp"
+#include "IterImpl.hpp"
 
 
 using namespace std;
@@ -50,26 +47,30 @@ private:
         return res;
     }
 
-    class Iterator : public RandomAccessIterator<T> {
+    class Iterator : public GraphIter<T> {
     private:
         Node *current;
     public:
 
-        explicit Iterator(const LinkedList<T> &it, size_t pos = 0) : RandomAccessIterator<T>::RandomAccessIterator(it,
-                                                                                                                   pos),
-                                                                     current(it.GetNode(pos)) {}
+        explicit Iterator(const LinkedList<T> *it, size_t pos = 0) : current(it->head), GraphIter<T>(it, pos) {
+            if (pos == it->Count())
+                current = nullptr;
+            else if (pos <= it->Count() / 2)
+                *this += pos;
+            else {
+                current = it->tail;
+                *this -= pos - 1;
+            }
+        }
 
-        Iterator(Iterator &other) : RandomAccessIterator<T>::RandomAccessIterator(other.iterable, other.pos),
-                                    current(other.current) {}
+        Iterator(const Iterator &other) : GraphIter<T>(other.it) { *this = other; }
 
-        Iterator(const LinkedList<T> &it, Node *current, size_t pos) : RandomAccessIterator<T>::RandomAccessIterator(
-                it, pos), current(current) {}
 
         T &operator*() const override { return current->data; }
 
-        T *operator->() override { return &current->data; }
+        T *operator->() const override { return &current->data; }
 
-//        using RandomAccessIterator<T>::RandomAccessIterator;
+//        using ListIter<TKey>::ListIter;
         Iterator &operator++() override {
             current = current->next;
             ++this->pos;
@@ -77,83 +78,35 @@ private:
         }
 
         Iterator &operator--() override {
-            if (current == nullptr && this->pos == this->iterable.Count())
-                current = ((LinkedList<T> &) this->iterable).tail;
+            if (current == nullptr && this->pos == this->it->Count())
+                current = ((LinkedList<T> *) this->it)->tail;
             else
                 current = current->prev;
             --this->pos;
             return *this;
         }
 
-//        Iter<T> operator-(const Iterator &b) const override {
-//            Node *curr = current;
-//            size_t pos = b.GetPos();
-//            if (curr == nullptr && this->pos == this->iterable.Count()) {
-//                curr = ((LinkedList<T> &) this->iterable).tail;
-//                pos--;
-//            }
-//
-//            for (size_t i = 0; i < pos; ++i) {
-//                curr = curr->prev;
-//            }
-//            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, curr, this->pos - pos + 1));
-//        }
-
-        Iter<T> operator-(const size_t &b) const override {
-            Node *curr = current;
-            size_t pos = b;
-            if (curr == nullptr) {
-                curr = ((LinkedList<T> &) this->iterable).tail;
-                pos--;
-            }
-            for (size_t i = 0; i < pos; ++i) {
-                curr = curr->prev;
-            }
-            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, curr, this->pos - b));
-        }
-
-//    IEnumerator &operator/(const IEnumerator *b) const override {
-//        return new IEnumerable(this->iterable, this->pos / b);
-//    }
-
-        Iter<T> operator/(const size_t &b) const override {
-            if (b == 0)
-                throw invalid_argument("b equals 0");
-            return *this - this->pos * (1 - 1 / b);
-        }
-
-//        Iter<T> operator+(const Iterator &b) const override {
-//            Node *curr = current;
-//            size_t pos = b.GetPos();
-//            for (size_t i = 0; i < pos; ++i) {
-//                curr = curr->next;
-//            }
-//            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, curr, this->pos + b.GetPos()));
-//        }
-
-        Iter<T> operator+(const size_t &b) const override {
-            Node *curr = current;
-            for (size_t i = 0; i < b; ++i) {
-                curr = curr->next;
-            }
-            return Iter<T>(Iterator((LinkedList<T> &) this->iterable, this->pos + b));
-        }
 
         Iterator &operator=(const Iterator &list) {
             if (this != &list) {
-                this->iterable = list.iterable;
+                this->it = list.it;
                 this->pos = list.pos;
                 this->current = list.current;
             }
             return *this;
         }
+
+        bool Equals(const BaseIter<T> &other) const override {
+            return ((const Iterator &) other).current == current && ((const Iterator &) other).it == this->it &&
+                   this->pos == other.GetPos();
+        }
     };
 
 public:
-    Iter<T> begin() const override { return Iter<T>(Iterator(*this)); }
+    Iter<T> begin() const override { return Iter<T>(new Iterator(this)); }
 
     Iter<T> end() const override {
-        return Iter<T>(Iterator(*this, this->Count() > 0 ? this->Count() : 0));
+        return Iter<T>(new Iterator(this, this->Count() > 0 ? this->Count() : 0));
     }
     //Creation of the object
 
@@ -225,9 +178,9 @@ public:
 
     LinkedList<T> &Clear() override { throw NotImplemented("", "in LinkedList Clear"); };
 
-//    bool operator==(const IList<T> &list) override {
-//        if (dynamic_cast<const LinkedList<T> *>(&list) != nullptr) {
-//            auto castedList = dynamic_cast<const LinkedList<T> &>(list);
+//    bool operator==(const IList<TKey> &list) override {
+//        if (dynamic_cast<const LinkedList<TKey> *>(&list) != nullptr) {
+//            auto castedList = dynamic_cast<const LinkedList<TKey> &>(list);
 //            if (this->Count() != castedList.Count())
 //                return false;
 //            auto head1 = this->head;
@@ -243,7 +196,7 @@ public:
 //        if (this->Count() != list.Count())
 //            return false;
 //        int i = 0;
-//        for (T el: *this) {
+//        for (TKey el: *this) {
 //            if (el != list[i])
 //                return false;
 //            i++;
@@ -373,7 +326,6 @@ public:
         next->prev = prev;
         --length;
         return data;
-
     }
 
     LinkedList<T> Concat(LinkedList<T> &list) {
@@ -391,7 +343,7 @@ public:
         if (&list != this) {
             while (length)
                 RemoveFirst();
-            if (list.length > 0) {
+            if (list.Count() > 0) {
                 Node *tmp = list.head;
                 head = new Node(tmp->data);
                 Node *prev = head;
@@ -403,7 +355,7 @@ public:
                     tmp = tmp->next;
                 }
                 tail = prev;
-                length = list.length;
+                length = list.Count();
             } else {
                 head = nullptr;
                 tail = nullptr;

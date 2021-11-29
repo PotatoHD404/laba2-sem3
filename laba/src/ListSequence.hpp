@@ -93,7 +93,7 @@ public:
     }
 //    virtual bool operator==(const ISequence<Seq> &list) = 0;
 
-//    virtual bool operator==(const ListSequence<T> &list) {
+//    virtual bool operator==(const ListSequence<TKey> &list) {
 //        return items == list.items;
 //    }
 
@@ -130,12 +130,12 @@ public:
         return items.RemoveLast();
     }
 
+    ListSequence &operator=(const ListSequence &) = default;
+
     T RemoveAt(size_t index) override {
         if (index < 0 || index >= items.Count())
             throw range_error("index < 0 or index >= length");
         return items.RemoveAt(index);
     }
 
-
-    ListSequence<T> &operator=(const ListSequence<T> &list) = default;
 };
