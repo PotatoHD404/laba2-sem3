@@ -95,11 +95,6 @@ private:
             }
             return *this;
         }
-
-        bool Equals(const BaseIter<T> &other) const override {
-            return ((const Iterator &) other).current == current && ((const Iterator &) other).it == this->it &&
-                   this->pos == other.GetPos();
-        }
     };
 
 public:

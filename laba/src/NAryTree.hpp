@@ -159,12 +159,12 @@ protected:
                 i = 0;
                 do {
                     if (current != nullptr)
-                        bList.Push(current);
+                        bList.AddFirst(current);
                     current = fStack.Pop();
 
-                    for (size_t j = 0; j < current->ChildrenCount(); ++j)
-                        if (current->children[j] != NULL)
-                            fStack.Push(current->children[j]);
+                    for (size_t k = 0; k < current->ChildrenCount(); ++k)
+                        if (current->children[k] != NULL)
+                            fStack.Push(current->children[k]);
                 } while (current->values.Count() != 0);
             }
             ++this->pos;
@@ -175,10 +175,8 @@ protected:
             if (i - 1 >= 0) {
                 i--;
             } else {
-                do {
-                    fStack.Push(current);
-                    current = bList[++j];
-                } while (current->values.Count() != 0);
+//                fStack.Push(current);
+                current = bList[++j];
                 i = current->values.Count() - 1;
             }
             --this->pos;

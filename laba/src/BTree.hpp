@@ -263,60 +263,55 @@ private:
 
     class Iterator : public GraphIter<const T> {
     private:
-        BNode *current;
-        size_t k{};
-        Stack<BNode *> fStack, bStack;
+        Stack<Pair<BNode *, size_t>> stack;
     public:
-        explicit Iterator(const BTree *it, size_t pos = 0) : current(it->root), fStack{current},
-                                                             GraphIter<const T>(it, pos + 1) {
-            this->pos -= 1;
+        explicit Iterator(const BTree *it, size_t pos = 0) : GraphIter<const T>::GraphIter(it, -1),
+                                                             stack{Pair(it->root, (size_t) 0)} {
+            *this += pos;
         }
 
-        Iterator(Iterator &other) : current(other.current), GraphIter<const T>(other.it) {
-            *this = other;
+        Iterator(const Iterator &other) : GraphIter<const T>(other.it) { *this = other; }
+
+        const T &operator*() const override {
+//            std::cout << stack << endl;
+            return stack.Top().first->values[stack.Top().second];
         }
 
-//        Iterator(const LinkedList<T> &it, BNode *current, size_t pos) : ListIter<T>::ListIter(
-//                it, pos), current(current), fStack{current} {}
-
-        T &operator*() const override { return current->values[k]; }
-
-        T *operator->() const override { return &current->values[k]; }
+        const T *operator->() const override { return &stack.Top().first->values[stack.Top().second]; }
 
         Iterator &operator++() override {
-            current = fStack.Pop();
-            bStack.Push(current);
-
-            for (size_t i = 0; i < current->ChildrenCount(); ++i)
-                if (current->children[i] != NULL)
-                    fStack.Push(current->GetChild(i));
-
+            if ((stack.Top().first->IsLeaf() && !(stack.Top().first->ChildrenCount() < ++stack.Top().second)) ||
+                (stack.Top().first->ChildrenCount() == stack.Top().second)) {
+                stack.Pop();
+            } else {
+                while (!stack.Top().first->IsLeaf())
+                    stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
+            }
             ++this->pos;
             return *this;
         }
 
         Iterator &operator--() override {
-            current = bStack.Pop();
-            fStack.Push(current);
-
+            if ((stack.Top().first->IsLeaf() && !(0 > --stack.Top().second)) ||
+                (-1 == (long) stack.Top().second)) {
+                stack.Pop();
+            } else {
+                while (!stack.Top().first->IsLeaf()) {
+                    BNode *child = stack.Top().first->GetChild(stack.Top().second--);
+                    stack.Push(Pair(child, (size_t) (child->values.Count() - 1)));
+                }
+            }
             --this->pos;
             return *this;
         }
 
-        Iterator &operator=(const Iterator &other) {
-            if (this != &other) {
-                this->fStack = other.fStack;
-                this->bStack = other.bStack;
-                this->it = other.it;
-                this->pos = other.pos;
-                this->current = other.current;
+        Iterator &operator=(const Iterator &list) {
+            if (this != &list) {
+                this->it = list.it;
+                this->stack = list.stack;
+                this->pos = list.pos;
             }
             return *this;
-        }
-
-        bool Equals(const BaseIter<const T> &a) const override {
-            return ((const Iterator &) a).current == current && ((const Iterator &) a).it == this->it &&
-                   this->pos == a.GetPos();
         }
     };
 
