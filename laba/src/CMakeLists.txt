@@ -19,7 +19,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     add_subdirectory(Tests)
 endif ()
 
-add_executable(Laba3 main.cpp WebAssembly.hpp ListIter.hpp IEnumerable.hpp Sorts.hpp Exceptions.hpp IterImpl.hpp IList.hpp Utils.hpp ISet.hpp GraphIter.hpp Queue.hpp BaseIter.hpp Dictionary.hpp IDictionary.hpp)
+add_executable(Laba3 main.cpp WebAssembly.hpp ListIter.hpp IEnumerable.hpp Sorts.hpp Exceptions.hpp IterImpl.hpp IList.hpp Utils.hpp ISet.hpp GraphIter.hpp Queue.hpp BaseIter.hpp Dictionary.hpp IDictionary.hpp MapCollection.hpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     #    set(CMAKE_EXECUTABLE_SUFFIX .mjs)

@@ -74,8 +74,8 @@ public:
 
 template<typename TKey, typename TValue>
 ostream &operator<<(ostream &out, const KeyValue<TKey, TValue> &x) {
-    Utils::Print(out, x.GetKey());
+    Utils::PPrint(out, x.GetKey());
     out << ": ";
-    Utils::Print(out, x.GetValue());
+    Utils::PPrint(out, x.GetValue());
     return out;
 }

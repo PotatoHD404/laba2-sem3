@@ -25,7 +25,7 @@ public:
 
     explicit BaseIter(size_t pos) : pos(pos) {}
 
-    [[nodiscard]] size_t GetPos() const {
+    [[nodiscard]] virtual size_t GetPos() const {
         return pos;
     }
 

@@ -71,7 +71,7 @@ auto test_data() {
 int main() {
     Dictionary<string, int> dictionary;
     dictionary.Add("a", 4);
-    dictionary.Remove("a");
-    cout << dictionary << endl;
+//    dictionary.Remove("a");
+    cout << dictionary.values << endl;
     return 0;
 }
