@@ -267,38 +267,47 @@ private:
     public:
         explicit Iterator(const BTree *it, size_t pos = 0) : GraphIter<const T>::GraphIter(it, -1),
                                                              stack{Pair(it->root, (size_t) 0)} {
-            *this += pos;
+            if (it->Count() == pos) {
+                this->pos += pos + 1;
+            } else {
+                *this += pos + 1;
+            }
         }
 
         Iterator(const Iterator &other) : GraphIter<const T>(other.it) { *this = other; }
 
         const T &operator*() const override {
 //            std::cout << stack << endl;
-            return stack.Top().first->values[stack.Top().second];
+            return stack.Top().first->values[stack.Top().second - 1];
         }
 
-        const T *operator->() const override { return &stack.Top().first->values[stack.Top().second]; }
+        const T *operator->() const override { return &stack.Top().first->values[stack.Top().second - 1]; }
 
         Iterator &operator++() override {
-            if ((stack.Top().first->IsLeaf() && !(stack.Top().first->ChildrenCount() < ++stack.Top().second)) ||
+            if ((stack.Top().first->IsLeaf() && !(stack.Top().first->values.Count() <= ++stack.Top().second)) ||
                 (stack.Top().first->ChildrenCount() == stack.Top().second)) {
                 stack.Pop();
-            } else {
-                while (!stack.Top().first->IsLeaf())
+                cout << "Popped ";
+            } else if(!stack.Top().first->IsLeaf()){
+                cout << "Whiled ";
+                while (!stack.Top().first->IsLeaf()) {
                     stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
+                }
+                ++stack.Top().second;
             }
+
             ++this->pos;
             return *this;
         }
 
         Iterator &operator--() override {
-            if ((stack.Top().first->IsLeaf() && !(0 > --stack.Top().second)) ||
+            if ((stack.Top().first->IsLeaf() && !(0 >= --stack.Top().second)) ||
                 (-1 == (long) stack.Top().second)) {
                 stack.Pop();
             } else {
                 while (!stack.Top().first->IsLeaf()) {
                     BNode *child = stack.Top().first->GetChild(stack.Top().second--);
-                    stack.Push(Pair(child, (size_t) (child->values.Count() - 1)));
+                    stack.Push(Pair(child, (size_t) (child->values.Count())));
                 }
             }
             --this->pos;

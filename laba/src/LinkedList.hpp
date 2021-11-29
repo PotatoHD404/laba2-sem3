@@ -53,9 +53,9 @@ private:
     public:
 
         explicit Iterator(const LinkedList<T> *it, size_t pos = 0) : current(it->head), GraphIter<T>(it, pos) {
-            if (pos == it->Count())
+            if (it->Count() == pos) {
                 current = nullptr;
-            else if (pos <= it->Count() / 2)
+            } else if (pos <= it->Count() / 2)
                 *this += pos;
             else {
                 current = it->tail;

@@ -76,10 +76,12 @@ int main() {
     dictionary.Add("d", 4);
     dictionary.Add("e", 4);
     dictionary.Add("f", 4);
+//    dictionary.Get("b");
 //    dictionary.Add("g", 4);
 //    dictionary.Add("h", 4);
 //    dictionary.Add("i", 4);
 //    dictionary.Remove("a");
+    cout << dictionary.Get("f") << endl;
     cout << dictionary << endl;
     return 0;
 }
