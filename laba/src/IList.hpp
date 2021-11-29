@@ -39,18 +39,6 @@ public:
             }
         throw invalid_argument("Item was not found");
     }
-
-    virtual bool operator==(const IList<T> &list) const {
-        if (list.Count() != this->Count())
-            return false;
-        for (Iter<T> iter1 = this->begin(), iter2 = list.begin(); iter1.GetPos() < list.Count(); iter1++, iter2++) {
-            if (*iter1 != *iter2) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 };
 
 template<typename T>

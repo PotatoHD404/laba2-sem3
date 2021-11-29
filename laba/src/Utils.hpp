@@ -80,4 +80,48 @@ namespace Utils {
         }
         return res;
     }
+
+    template<typename T, template<typename> class Sequence>
+    Sequence<T> Union(const Sequence<T> &first, const Sequence<T> &second) {
+        Sequence<T> res = Sequence<T>(first);
+        for (auto el: second) {
+            res.Add(el);
+        }
+        return res;
+    }
+
+
+    template<typename T, template<typename> class Sequence>
+    Sequence<T> Intersection(const Sequence<T> &first, const Sequence<T> &second) {
+        Sequence<T> res = Sequence<T>();
+        auto begin1 = first.begin();
+        auto end1 = first.end();
+        auto begin2 = second.begin();
+        auto end2 = second.end();
+//        size_t begin1 = 0, begin2 = 0;
+        while (true) {
+            if (*begin1 == *begin2) {
+                res.Add(*begin1);
+                ++begin1;
+                ++begin2;
+            } else if (*begin1 < *begin2) {
+                if (++begin1 >= end1)
+                    break;
+            } else {
+                if (++begin2 >= end2)
+                    break;
+            }
+        }
+        return res;
+    }
+
+
+    template<typename T, template<typename> class Sequence>
+    Sequence<T> Difference(const Sequence<T> &first, const Sequence<T> &second) {
+        Sequence<T> res = Sequence<T>(first);
+        for (auto el: second) {
+            res.Remove(el);
+        }
+        return res;
+    }
 }

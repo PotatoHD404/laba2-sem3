@@ -284,18 +284,18 @@ private:
         const T *operator->() const override { return &stack.Top().first->values[stack.Top().second - 1]; }
 
         Iterator &operator++() override {
-            if ((stack.Top().first->IsLeaf() && stack.Top().first->values.Count() < ++stack.Top().second) ||
-                (stack.Top().first->ChildrenCount() == stack.Top().second)) {
+            if (++this->pos == this->it->Count()) {
+            } else if ((stack.Top().first->IsLeaf() && stack.Top().first->values.Count() < ++stack.Top().second) ||
+                       (stack.Top().first->ChildrenCount() == stack.Top().second)) {
                 stack.Pop();
 //                cout << "Popped ";
-            } else if(!stack.Top().first->IsLeaf()){
+            } else if (!stack.Top().first->IsLeaf()) {
 //                cout << "Whiled ";
                 while (!stack.Top().first->IsLeaf()) {
                     stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
                 }
                 ++stack.Top().second;
             }
-            ++this->pos;
             return *this;
         }
 
@@ -337,25 +337,6 @@ public:
         return Iter<const T>(new Iterator(this, this->Count() > 0 ? this->Count() : 0));
     }
 
-    ArraySequence<T> ToArraySequence() {
-        ArraySequence<T> res;
-        if (this->root == NULL)
-            throw runtime_error("Root is NULL");
-
-        function<void(BNode *)> VisitNode = [&](BNode *node) {
-            size_t length = node->values.Count();
-            for (size_t i = 0; i < length; ++i) {
-                if (!node->IsLeaf())
-                    VisitNode(node->GetChild(i));
-                res.Add(node->values[i]);
-            }
-            if (!node->IsLeaf())
-                VisitNode(node->GetChild(length));
-        };
-        VisitNode(this->root);
-        return res;
-    }
-
     BTree &Clear() override {
         delete this->root;
         this->root = new BNode();
@@ -375,44 +356,6 @@ public:
             this->root = new BNode(*(list.root));
         }
         return *this;
-    }
-
-    string AscendingOrder() {
-        if (this->root == NULL)
-            throw runtime_error("Root is NULL");
-        stringstream buffer;
-        Stack<Pair<BNode *, size_t>> stack;
-        stack.Push(Pair(this->root, (size_t) 0));
-        size_t length = this->count;
-        while (!stack.IsEmpty()) {
-            if (!stack.Top().first->IsLeaf()) {
-                if (stack.Top().first->ChildrenCount() == stack.Top().second)
-                    stack.Pop();
-                else {
-
-                    if (stack.Top().second != 0) {
-                        buffer << stack.Top().first->values[stack.Top().second - 1];
-                        length--;
-                        if (length != this->count && length)
-                            buffer << " ";
-                    }
-
-                    stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
-                }
-            } else {
-                size_t len = stack.Top().first->values.Count();
-                length -= len;
-                for (size_t i = 0; i < len; ++i) {
-                    buffer << stack.Top().first->values[i];
-                    if (i != len - 1)
-                        buffer << " ";
-                }
-                stack.Pop();
-                if (length != this->count && length)
-                    buffer << " ";
-            }
-        }
-        return buffer.str();
     }
 
     explicit BTree(size_t t) : root(new BNode()), t(t) {}
