@@ -26,6 +26,10 @@ public:
         return a.storage->Equals(*b.storage);
     }
 
+    friend bool operator==(const IterImpl &a, const BaseIter<T> &b) {
+        return a.storage->Equals(b);
+    }
+
     friend bool operator!=(const IterImpl &a, const IterImpl &b) {
         return !a.storage->Equals(*b.storage);
     }

@@ -7,7 +7,7 @@
 #include "ListSequence.hpp"
 
 template<class T>
-class Stack : ListSequence<T> {
+class Stack : public ListSequence<T> {
 public:
     using ListSequence<T>::ListSequence;
 
@@ -19,8 +19,8 @@ public:
         return this->RemoveFirst();
     }
 
-    T &Top() {
-        return this->GetFirst();
+    T &Top() const {
+        return this->Get(0);
     }
 
     bool IsEmpty() {

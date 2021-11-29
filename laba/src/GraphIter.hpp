@@ -39,6 +39,10 @@ public:
         return *this;
     }
 
+    bool Equals(const BaseIter<T> &other) const override {
+        return ((const GraphIter &) other).it == this->it && this->pos == other.GetPos();
+    }
+
     GraphIter<T> &operator/=(size_t b_pos) override {
         if (b_pos == 0)
             throw invalid_argument("b equals 0");

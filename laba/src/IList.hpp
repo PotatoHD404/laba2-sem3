@@ -59,7 +59,7 @@ ostream &operator<<(ostream &out, const IList<T> &x) {
     size_t length = x.Count();
     size_t i = 0;
     for (auto el: x) {
-        Print(out, el);
+        Utils::PPrint(out, el);
         if (i != length - 1)
             out << ", ";
         ++i;

@@ -71,7 +71,17 @@ auto test_data() {
 int main() {
     Dictionary<string, int> dictionary;
     dictionary.Add("a", 4);
+    dictionary.Add("b", 4);
+    dictionary.Add("c", 4);
+    dictionary.Add("d", 4);
+    dictionary.Add("e", 2);
+    dictionary.Add("f", 4);
+//    dictionary.Get("b");
+    dictionary.Add("g", 5);
+    dictionary.Add("h", 4);
+    dictionary.Add("i", 4);
     dictionary.Remove("a");
+    cout << dictionary.Get("f") << endl;
     cout << dictionary << endl;
     return 0;
 }

@@ -74,8 +74,16 @@ public:
 
 template<typename TKey, typename TValue>
 ostream &operator<<(ostream &out, const KeyValue<TKey, TValue> &x) {
-    Utils::Print(out, x.GetKey());
+    Utils::PPrint(out, x.GetKey());
     out << ": ";
-    Utils::Print(out, x.GetValue());
+    Utils::PPrint(out, x.GetValue());
+    return out;
+}
+
+template<typename T1, typename T2>
+ostream &operator<<(ostream &out, const Pair<T1, T2> &x) {
+    Utils::PPrint(out, x.first);
+    out << ": ";
+    Utils::PPrint(out, x.second);
     return out;
 }

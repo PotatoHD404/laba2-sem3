@@ -7,6 +7,7 @@
 #include "Set.hpp"
 #include "Pair.hpp"
 #include "IDictionary.hpp"
+#include "MapCollection.hpp"
 
 template<typename TKey, typename TValue>
 class Dictionary : public IDictionary<TKey, TValue> {
@@ -16,15 +17,14 @@ private:
     Set<KeyValue> set;
 
 public:
-    template<typename T>
-    class KeySet : public ISet<T> {
-        Dictionary *dict;
-    };
-
-    template<typename T>
-    class ValueSet : public ISet<T> {
-        Dictionary *dict;
-    };
+    using KeySet = MapCollection<const TKey, const KeyValue>;
+    using ValueSet = MapCollection<TValue, const KeyValue>;
+    const KeySet keys{this, [](const KeyValue &keyValue) -> const TKey & {
+        return keyValue.GetKey();
+    }};
+    const ValueSet values{this, [](const KeyValue &keyValue) -> TValue & {
+        return keyValue.GetValue();
+    }};
 
 
     KeyValue &Get(TKey key) const override {
@@ -49,10 +49,6 @@ public:
     Iter<const KeyValue> end() const override { return set.end(); }
 
     [[nodiscard]] size_t Count() const override { return set.Count(); }
-
-//    TValue &Get(TKey key) {
-//        return set.Get(Pair(key));
-//    }
 
     Dictionary &Add(KeyValue item) override {
         set.Add(item);
@@ -86,6 +82,8 @@ public:
     bool Contains(TKey key) const {
         Contains(KeyValue(key));
     }
+
+    Dictionary &operator=(const Dictionary &) = delete;
 };
 
 

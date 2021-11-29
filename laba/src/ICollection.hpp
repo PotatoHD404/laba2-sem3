@@ -34,8 +34,10 @@ public:
 };
 namespace Utils {
     template<typename T>
-    ostream &Print(ostream &out, const T &x) {
+    ostream &PPrint(ostream &out, const T &x) {
         if constexpr(std::is_same<T, string>::value) {
+            out << "\"" << x << "\"";
+        } else if constexpr(std::is_same<T, char>::value) {
             out << "\'" << x << "\'";
         } else {
             out << x;
@@ -50,7 +52,7 @@ ostream &operator<<(ostream &out, const ICollection<T> &x) {
     size_t length = x.Count();
     size_t i = 0;
     for (auto el: x) {
-        Utils::Print(out, el);
+        Utils::PPrint(out, el);
         if (i != length - 1)
             out << ", ";
         ++i;

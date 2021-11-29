@@ -134,10 +134,12 @@ protected:
     private:
         Node<T> *current;
         size_t i{};
-        Stack<Node<T> *> fStack, bStack;
+        size_t j{};
+        Stack<Node<T> *> fStack;
+        LinkedList<Node<T> *> bList;
     public:
         explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, -1), i(),
-                                                                   fStack{it.root}, bStack() {
+                                                                   fStack{it.root}, bList() {
             *this += (pos + 1);
         }
 
@@ -150,16 +152,19 @@ protected:
         Iterator &operator++() override {
             if (i + 1 < current->values.Count()) {
                 i++;
+            } else if ((long) j > 0) {
+                current = bList[--j];
             } else {
+                j = 0;
                 i = 0;
                 do {
                     if (current != nullptr)
-                        bStack.Push(current);
+                        bList.AddFirst(current);
                     current = fStack.Pop();
 
-                    for (size_t j = 0; j < current->ChildrenCount(); ++j)
-                        if (current->children[j] != NULL)
-                            fStack.Push(current->children[j]);
+                    for (size_t k = 0; k < current->ChildrenCount(); ++k)
+                        if (current->children[k] != NULL)
+                            fStack.Push(current->children[k]);
                 } while (current->values.Count() != 0);
             }
             ++this->pos;
@@ -170,10 +175,8 @@ protected:
             if (i - 1 >= 0) {
                 i--;
             } else {
-                do {
-                    fStack.Push(current);
-                    current = bStack.Pop();
-                } while (current->values.Count() != 0);
+//                fStack.Push(current);
+                current = bList[++j];
                 i = current->values.Count() - 1;
             }
             --this->pos;
@@ -184,10 +187,7 @@ protected:
             if (&this->iterable != &list.iterable)
                 throw invalid_argument("Iterables must be equal");
             if (this != &list) {
-                this->i = list.i;
-                this->fStack = list.fStack;
-                this->bStack = list.bStack;
-//                this->iterable = list.iterable;
+                this->indexes = list.indexes;
                 this->pos = list.pos;
                 this->current = list.current;
             }
