@@ -86,5 +86,8 @@ int main() {
 
 //    seq = Sort<Sorts::QuickSort>(seq);
     Dictionary<string, int> dictionary;
+    dictionary.Add("a", 4);
+    dictionary["a"] = 5;
+    cout << dictionary["a"] << endl;
     return 0;
 }

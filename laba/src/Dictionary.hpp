@@ -40,7 +40,9 @@ public:
         throw invalid_argument("Key was not found");
     }
 
-    TValue &operator[](TKey key) const override { return this->Get(key); }
+    TValue &operator[](TKey key) const override {
+        return Get(key);
+    }
 
     Iter<const KeyValue> begin() const override { return set.begin(); }
 
@@ -66,6 +68,15 @@ public:
         set.Clear();
         return *this;
     };
+
+    Dictionary &Add(TKey key, TValue value) override {
+        this->Add(KeyValue(key, value));
+        return *this;
+    }
+    Dictionary &Remove(TKey key) override{
+        this->Remove(KeyValue(key, TValue()));
+        return *this;
+    }
 
 };
 

@@ -14,17 +14,11 @@ public:
 
     IDictionary &Remove(KeyValue<TKey, TValue>) override = 0;
 
-    virtual IDictionary &Add(TKey key, TValue value) {
-        this->Add(KeyValue(key, value));
-        return *this;
-    }
-
     virtual TValue &Get(TKey key) const = 0;
 
     virtual TValue &operator[](TKey key) const = 0;
 
-    virtual IDictionary &Remove(TKey key) {
-        this->Remove(KeyValue(key, TValue()));
-        return *this;
-    }
+    virtual IDictionary &Add(TKey key, TValue value) = 0;
+
+    virtual IDictionary &Remove(TKey key) = 0;
 };
