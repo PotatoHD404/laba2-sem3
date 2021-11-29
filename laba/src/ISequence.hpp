@@ -12,7 +12,6 @@ using namespace std;
 template<typename T>
 class ISequence : public IList<T> {
 public:
-    ISequence() = default;
 
     virtual ISequence &AddFirst(T item) = 0;
 
@@ -27,7 +26,6 @@ public:
 
     virtual T &Last() { return this->Get(this->Count() - 1); }
 
-    virtual ~ISequence() = default;
 };
 
 template<typename T>

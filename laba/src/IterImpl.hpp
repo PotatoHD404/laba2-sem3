@@ -89,42 +89,50 @@ public:
     };
 
     virtual IterImpl operator+(const IterImpl &b) const {
-        auto res = IterImpl(*this) += b.GetPos();
+        auto res = IterImpl(*this);
+        res += b.GetPos();
         return res;
     }
 
     virtual IterImpl operator-(const IterImpl &b) const {
-        auto res = IterImpl(*this) -= b.GetPos();
+        auto res = IterImpl(*this);
+        res -= b.GetPos();
         return res;
     }
 
     virtual IterImpl operator*(const IterImpl &b) const {
-        auto res = IterImpl(*this) *= b.GetPos();
+        auto res = IterImpl(*this);
+        res *= b.GetPos();
         return res;
     }
 
     virtual IterImpl operator/(const IterImpl &b) const {
-        auto res = IterImpl(*this) /= b.GetPos();
+        auto res = IterImpl(*this);
+        res /= b.GetPos();
         return res;
     }
 
     virtual IterImpl operator+(size_t b_pos) const {
-        auto res = IterImpl(*this) += b_pos;
+        auto res = IterImpl(*this);
+        res += b_pos;
         return res;
     }
 
     virtual IterImpl operator-(size_t b_pos) const {
-        auto res = IterImpl(*this) -= b_pos;
+        auto res = IterImpl(*this);
+        res -= b_pos;
         return res;
     }
 
     virtual IterImpl operator*(size_t b_pos) const {
-        auto res = IterImpl(*this) *= b_pos;
+        auto res = IterImpl(*this);
+        res *= b_pos;
         return res;
     }
 
     virtual IterImpl operator/(size_t b_pos) const {
-        auto res = IterImpl(*this) /= b_pos;
+        auto res = IterImpl(*this);
+        res /= b_pos;
         return res;
     }
 

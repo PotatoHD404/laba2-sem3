@@ -326,7 +326,6 @@ public:
         next->prev = prev;
         --length;
         return data;
-
     }
 
     LinkedList<T> Concat(LinkedList<T> &list) {

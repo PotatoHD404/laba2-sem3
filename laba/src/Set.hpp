@@ -13,11 +13,19 @@ class Set : ISet<T> {
 private:
     BTree<T> items;
 
+    template<typename TKey, typename TValue>
+    friend
+    class Dictionary;
+
+    typename BTree<T>::BNode *Find(T key) const {
+        return this->items.root->Search(key);
+    }
+
 public:
 
-    Iter<T> begin() const override { return items.begin(); }
+    Iter<const T> begin() const override { return items.begin(); }
 
-    Iter<T> end() const override {
+    Iter<const T> end() const override {
         return items.end();
     }
 
@@ -59,22 +67,6 @@ public:
         items = BTree<T>();
         return *this;
     }
-
-//    template<typename T1>
-//    Set<T1> Map(function<T1(T)> bijectiveFunc) {
-//        Set<T1> res;
-//        res.items = items.Map(bijectiveFunc);
-//        ArraySequence<T> x = res.items.ToArraySequence();
-//        res.items = BTree<T>();
-//        for (size_t i = 0; i < x.Count(); ++i)
-//            res.Add(x[i]);
-//
-//        return res;
-//    }
-
-//    T Reduce(T (*func)(T, T), T x) {
-//        return items.Reduce(func, x);
-//    }
 
     T Pop() {
         return items.Pop();

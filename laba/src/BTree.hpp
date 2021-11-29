@@ -8,10 +8,17 @@
 #include "Pair.hpp"
 #include "Stack.hpp"
 
+#include "IDictionary.hpp"
+
+
 template<typename T>
-class BTree : ICollection<T> {
+class BTree : ICollection<const T> {
 private:
     using NAryTree = NAryTree<T>;
+
+    template<typename T1>
+    friend
+    class Set;
 
     class BNode : public NAryTree::template Node<T> {
     public:
@@ -254,23 +261,23 @@ private:
         }
     };
 
-    class Iterator : public GraphIter<T> {
+    class Iterator : public GraphIter<const T> {
     private:
         BNode *current;
         size_t k{};
         Stack<BNode *> fStack, bStack;
     public:
         explicit Iterator(const BTree *it, size_t pos = 0) : current(it->root), fStack{current},
-                                                             GraphIter<T>(it, pos + 1) {
+                                                             GraphIter<const T>(it, pos + 1) {
             this->pos -= 1;
         }
 
-        Iterator(Iterator &other) : current(other.current), GraphIter<T>(other.it) {
+        Iterator(Iterator &other) : current(other.current), GraphIter<const T>(other.it) {
             *this = other;
         }
 
-        Iterator(const LinkedList<T> &it, BNode *current, size_t pos) : ListIter<T>::ListIter(
-                it, pos), current(current), fStack{current} {}
+//        Iterator(const LinkedList<T> &it, BNode *current, size_t pos) : ListIter<T>::ListIter(
+//                it, pos), current(current), fStack{current} {}
 
         T &operator*() const override { return current->values[k]; }
 
@@ -307,7 +314,7 @@ private:
             return *this;
         }
 
-        bool Equals(const BaseIter<T> &a) const override {
+        bool Equals(const BaseIter<const T> &a) const override {
             return ((const Iterator &) a).current == current && ((const Iterator &) a).it == this->it &&
                    this->pos == a.GetPos();
         }
@@ -321,10 +328,10 @@ public:
 
     BTree(const BTree &tree) : BTree() { *this = tree; }
 
-    Iter<T> begin() const override { return Iter<T>(new Iterator(this)); }
+    Iter<const T> begin() const override { return Iter<const T>(new Iterator(this)); }
 
-    Iter<T> end() const override {
-        return Iter<T>(new Iterator(this, this->Count() > 0 ? this->Count() : 0));
+    Iter<const T> end() const override {
+        return Iter<const T>(new Iterator(this, this->Count() > 0 ? this->Count() : 0));
     }
 
     ArraySequence<T> ToArraySequence() {
@@ -470,6 +477,8 @@ public:
     bool Contains(T key) override {
         return this->root->Search(key) != nullptr;
     }
+
+//    T &Find()
 
     ~BTree() {
         delete root;

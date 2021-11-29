@@ -7,6 +7,6 @@
 #include "ICollection.hpp"
 
 template<typename T>
-class ISet : public ICollection<T> {
-
+class ISet : public ICollection<const T> {
+public:
 };

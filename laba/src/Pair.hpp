@@ -23,13 +23,24 @@ public:
 
 template<typename TKey, typename TValue>
 class KeyValue {
-public:
-    mutable TKey key;
+private:
+    TKey key;
     mutable TValue value;
+public:
 
     KeyValue() = default;
 
     KeyValue(TKey key, TValue value) : key(key), value(value) {}
+
+    KeyValue(const KeyValue &other) : key(other.key), value(other.value) {}
+
+    const TKey &GetKey() const {
+        return key;
+    }
+
+    TValue &GetValue() const {
+        return value;
+    }
 
     bool operator==(const KeyValue &x) const { return key == x.key; }
 
@@ -40,18 +51,20 @@ public:
     }
 
     bool operator>(const KeyValue &keyValue) const {
-        return this->first > keyValue.first;
+        return this->key > keyValue.key;
     }
 
     bool operator<(const KeyValue &keyValue) const {
-        return this->first < keyValue.first;
+        return this->key < keyValue.key;
     }
 
     bool operator>=(const KeyValue &keyValue) const {
-        return this->first >= keyValue.first;
+        return this->key >= keyValue.key;
     }
 
     bool operator<=(const KeyValue &keyValue) const {
-        return this->first <= keyValue.first;
+        return this->key <= keyValue.key;
     }
+
+    KeyValue &operator=(const KeyValue &) = default;
 };

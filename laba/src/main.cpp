@@ -11,7 +11,7 @@
 #include "ArraySequence.hpp"
 #include "Sorts.hpp"
 #include "Utils.hpp"
-
+#include "Dictionary.hpp"
 
 using namespace std;
 using namespace Utils;
@@ -69,17 +69,22 @@ auto test_data() {
 
 
 int main() {
-    using T = int;
-    array<T, itemNum> test_data = ::test_data<T>();
-    auto seq = ArraySequence<T>();
-    for (const T &el: test_data) {
-        seq.Add(el);
-    }
-    auto b = seq.end();
-    auto c = seq.end();
+//    using T = int;
+//    KeyValue<T, T> a(1, 2);
+//    const KeyValue<T, T> &b = a;
+//    b.key = 4;
+//    cout << b.key << endl;
+//    array<T, itemNum> test_data = ::test_data<T>();
+//    auto seq = ArraySequence<T>();
+//    for (const T &el: test_data) {
+//        seq.Add(el);
+//    }
+//    auto b = seq.end();
+//    auto c = seq.end();
 //    auto c = b;
-    cout << (b == c) << endl;
+//    cout << (b == c) << endl;
 
-    seq = Sort<Sorts::QuickSort>(seq);
+//    seq = Sort<Sorts::QuickSort>(seq);
+    Dictionary<string, int> dictionary;
     return 0;
 }

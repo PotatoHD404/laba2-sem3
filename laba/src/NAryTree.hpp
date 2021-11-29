@@ -16,7 +16,7 @@
 using namespace std;
 
 template<class T>
-class NAryTree : public ICollection<T> {
+class NAryTree : public IEnumerable<T> {
 public:
     template<class T1>
     class Node {
@@ -362,7 +362,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] size_t Count() const override { return count; }
+    [[nodiscard]] size_t Count() const { return count; }
 
     string Order() {
         return Order("{K}(2)[1]<3>d4b\\5/");
