@@ -46,27 +46,6 @@ public:
             }
         }
 
-        template<class T2>
-        Node<T2> *Map(function<T2(T1)> bijectiveFunc) {
-            Stack<Node<T1> *> s;
-            Stack<Node<T2> *> s1;
-            Node<T2> *res = new Node<T2>();
-            s.Push(this);
-            s1.Push(res);
-            while (!s.IsEmpty()) {
-                Node<T1> *node = s.Pop();
-                Node<T2> *tmp = s1.Pop();
-                tmp->values = Utils::Map(node->values, bijectiveFunc);
-                for (size_t i = 0; i < node->ChildrenCount(); ++i)
-                    if (node->children[i] != NULL) {
-                        tmp->AddChild();
-                        s.Push(node->children[i]);
-                        s1.Push(tmp->children[i]);
-                    }
-            }
-            return res;
-        }
-
         explicit Node(T1 data) : Node(data, nullptr, ArraySequence<Node<T1> *>()) {}
 
         Node(T1 data, Node<T1> *parent) : Node(data, parent, ArraySequence<Node<T1> *>()) {}
@@ -336,20 +315,6 @@ public:
         return *this;
     }
 
-//    NAryTree &Clear() override {
-//        delete root;
-//        root = new Node<T>();
-//        return *this;
-//    }
-//
-//    NAryTree &Add(T) override {
-//        throw NotImplemented();
-//    }
-//
-//    NAryTree &Remove(T) override {
-//        throw NotImplemented();
-//    }
-
     size_t GetN() { return n; }
 
     NAryTree<T> &operator=(const NAryTree<T> &list) {
@@ -431,15 +396,6 @@ public:
 //    NAryTree<T> Subtree(const size_t (&indexes)[N]) {
 //        return NAryTree<T>(new Node(GetNode(indexes)));
 //    }
-
-    template<typename T1>
-    NAryTree<T1> Map(function<T1(T)> bijectiveFunc) {
-        return NAryTree<T1>(root->Map(bijectiveFunc), n);
-    }
-
-    T Reduce(T (*f)(T, T), T const &c) {
-        return root->Reduce(f, c);
-    }
 
     ~NAryTree() {
         delete root;

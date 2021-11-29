@@ -7,9 +7,10 @@
 #include "BTree.hpp"
 #include "ISequence.hpp"
 #include "ISet.hpp"
+#include "Utils.hpp"
 
 template<typename T>
-class Set : ISet<T> {
+class Set : public ISet<T> {
 private:
     BTree<T> items;
 
@@ -40,7 +41,7 @@ public:
             this->Add(item);
     }
 
-    Set(Set<T> &list) : items(list.items) {}
+    Set(const Set<T> &list) : items(list.items) {}
 
     explicit Set(const Set<T> *list) : Set(*list) {}
 
@@ -85,69 +86,16 @@ public:
         items.Remove(item);
         return *this;
     }
-
-    Set<T> Union(Set<T> &list) {
-        Set<T> res = Set<T>(*this);
-        ArraySequence<T> arr = list.items.ToArraySequence();
-        for (size_t i = 0; i < arr.Count(); ++i) {
-            res.Add(arr[i]);
-        }
-        return res;
-    }
-
-    string AsTree() {
-        return items.Order();
-    }
-
-    Set<T> Intersection(Set<T> &list) {
-        Set<T> res = Set<T>();
-        ArraySequence<T> arr1 = items.ToArraySequence();
-        ArraySequence<T> arr2 = list.items.ToArraySequence();
-        size_t i = 0, j = 0;
-        while (true) {
-            if (arr1[i] == arr2[j]) {
-                res.Add(arr1[i]);
-                i++;
-                j++;
-            } else if (arr1[i] < arr2[j]) {
-                if (i == arr1.Count() - 1)
-                    break;
-                i++;
-            } else if (arr1[i] > arr2[j]) {
-                if (j == arr2.Count() - 1)
-                    break;
-                j++;
-            }
-        }
-        return res;
-    }
-
-    Set<T> Difference(Set<T> &list) {
-        Set<T> res = Set<T>(*this);
-        ArraySequence<T> arr = list.items.ToArraySequence();
-        for (size_t i = 0; i < arr.Count(); ++i) {
-            res.Remove(arr[i]);
-        }
-        return res;
-    }
-
-    ArraySequence<T> ToArraySequence() {
-        return items.ToArraySequence();
-    }
 //    bool operator==(Set<TKey> &x) { return x.items == this->items; }
 //    bool operator==(Set<TKey> &&x) { return x.items == this->items; }
 
-    bool operator==(Set<T> &list) {
-        return list.items.ToArraySequence() == items.ToArraySequence();
-    }
+//    bool operator==(Set<T> &list) {
+//        return list.items.ToArraySequence() == items.ToArraySequence();
+//    }
 
-    bool operator==(Set<T> &&list) {
-        return list.items.ToArraySequence() == items.ToArraySequence();
-    }
-
-    bool operator!=(const Set<T> &x) const {
-        return x.items != this->items;
-    }
+//    bool operator!=(const Set<T> &x) const {
+//        return x.items != this->items;
+//    }
 
     Set<T> &operator+=(const Set<T> &list) {
         *this = *this + list;
@@ -165,35 +113,17 @@ public:
     }
 
     Set<T> operator+(Set<T> &list) {
-        return Union(list);
+        return Utils::Union(*this, list);
     }
 
     Set<T> operator*(Set<T> &list) {
-        return Intersection(list);
+        return Utils::Intersection(*this, list);
     }
 
     Set<T> operator-(Set<T> &list) {
-        return Difference(list);
+        return Utils::Difference(*this, list);
     }
 };
-
-template<typename T>
-ostream &operator<<(ostream &out, const Set<T> &x) {
-    ArraySequence<T> tmp = x.items.ToArraySequence();
-    out << "{";
-    size_t length = tmp.Count();
-    for (size_t i = 0; i < length; ++i) {
-        if constexpr(std::is_same<T, string>::value) {
-            out << "\'" << x[i] << "\'";
-        } else {
-            out << x[i];
-        }
-        if (i != length - 1)
-            out << ", ";
-    }
-    out << "}";
-    return out;
-}
 
 template<typename T>
 istream &operator>>(istream &in, Set<T> &x) {

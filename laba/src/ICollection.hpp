@@ -23,6 +23,19 @@ public:
         return false;
     }
 
+    virtual bool operator==(const ICollection<T> &list) const {
+        if (list.Count() != this->Count())
+            return false;
+        for (Iter<T> iter1 = this->begin(), iter2 = list.begin(); iter1.GetPos() < list.Count(); iter1++, iter2++) {
+            if (*iter1 != *iter2) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    virtual bool operator!=(const ICollection<T> &list) const { return !(*this == list); }
+
     //Operations
     virtual ICollection<T> &Clear() = 0;
 
