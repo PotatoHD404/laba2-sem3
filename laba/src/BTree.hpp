@@ -284,24 +284,23 @@ private:
         const T *operator->() const override { return &stack.Top().first->values[stack.Top().second - 1]; }
 
         Iterator &operator++() override {
-            if ((stack.Top().first->IsLeaf() && !(stack.Top().first->values.Count() <= ++stack.Top().second)) ||
+            if ((stack.Top().first->IsLeaf() && stack.Top().first->values.Count() < ++stack.Top().second) ||
                 (stack.Top().first->ChildrenCount() == stack.Top().second)) {
                 stack.Pop();
-                cout << "Popped ";
+//                cout << "Popped ";
             } else if(!stack.Top().first->IsLeaf()){
-                cout << "Whiled ";
+//                cout << "Whiled ";
                 while (!stack.Top().first->IsLeaf()) {
                     stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
                 }
                 ++stack.Top().second;
             }
-
             ++this->pos;
             return *this;
         }
 
         Iterator &operator--() override {
-            if ((stack.Top().first->IsLeaf() && !(0 >= --stack.Top().second)) ||
+            if ((stack.Top().first->IsLeaf() && 0 >= --stack.Top().second) ||
                 (-1 == (long) stack.Top().second)) {
                 stack.Pop();
             } else {
