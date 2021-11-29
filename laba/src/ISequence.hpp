@@ -27,33 +27,3 @@ public:
     virtual T &Last() { return this->Get(this->Count() - 1); }
 
 };
-
-template<typename T>
-ostream &operator<<(ostream &out, const ISequence<T> &x) {
-    out << "[";
-    size_t length = x.Count();
-    for (size_t i = 0; i < length; ++i) {
-        if constexpr(std::is_same<T, string>::value) {
-            out << "\'" << x[i] << "\'";
-        } else {
-            out << x[i];
-        }
-        if (i != length - 1)
-            out << ", ";
-    }
-    out << "]";
-//        out << ")" << endl;
-    return out;
-}
-
-template<typename T>
-istream &operator>>(istream &in, ISequence<T> &x) {
-//    string tmp;
-//    getline(in, tmp);
-//    stringstream ss(tmp);
-    T t;
-    while (in >> t) {
-        x.Add(t);
-    }
-    return in;
-}

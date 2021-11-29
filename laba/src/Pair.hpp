@@ -32,6 +32,9 @@ public:
 
     KeyValue(TKey key, TValue value) : key(key), value(value) {}
 
+    explicit KeyValue(TKey key) : key(key), value() {}
+
+
     KeyValue(const KeyValue &other) : key(other.key), value(other.value) {}
 
     const TKey &GetKey() const {
@@ -68,3 +71,11 @@ public:
 
     KeyValue &operator=(const KeyValue &) = default;
 };
+
+template<typename TKey, typename TValue>
+ostream &operator<<(ostream &out, const KeyValue<TKey, TValue> &x) {
+    Utils::Print(out, x.GetKey());
+    out << ": ";
+    Utils::Print(out, x.GetValue());
+    return out;
+}

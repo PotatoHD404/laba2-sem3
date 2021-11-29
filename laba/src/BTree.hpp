@@ -474,7 +474,7 @@ public:
         return *this;
     }
 
-    bool Contains(T key) override {
+    bool Contains(T key) const override {
         return this->root->Search(key) != nullptr;
     }
 

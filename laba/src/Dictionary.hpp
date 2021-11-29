@@ -9,7 +9,7 @@
 #include "IDictionary.hpp"
 
 template<typename TKey, typename TValue>
-class Dictionary : IDictionary<TKey, TValue> {
+class Dictionary : public IDictionary<TKey, TValue> {
 private:
     using ICollection = ICollection<KeyValue<TKey, TValue>>;
     using KeyValue = KeyValue<TKey, TValue>;
@@ -27,21 +27,21 @@ public:
     };
 
 
-    TValue &Get(TKey key) const override {
-        auto pair = KeyValue(key, TValue());
+    KeyValue &Get(TKey key) const override {
+        auto pair = KeyValue(key);
         auto node = set.Find(pair);
         if (node == nullptr)
             throw invalid_argument("Key was not found");
         for (KeyValue &el: node->values) {
             if (el == pair) {
-                return el.GetValue();
+                return el;
             }
         }
         throw invalid_argument("Key was not found");
     }
 
     TValue &operator[](TKey key) const override {
-        return Get(key);
+        return Get(key).GetValue();
     }
 
     Iter<const KeyValue> begin() const override { return set.begin(); }
@@ -51,7 +51,7 @@ public:
     [[nodiscard]] size_t Count() const override { return set.Count(); }
 
 //    TValue &Get(TKey key) {
-//        return set.Get(Pair(key, TValue()));
+//        return set.Get(Pair(key));
 //    }
 
     Dictionary &Add(KeyValue item) override {
@@ -73,11 +73,19 @@ public:
         this->Add(KeyValue(key, value));
         return *this;
     }
-    Dictionary &Remove(TKey key) override{
-        this->Remove(KeyValue(key, TValue()));
+
+    Dictionary &Remove(TKey key) override {
+        this->Remove(KeyValue(key));
         return *this;
     }
 
+    bool Contains(KeyValue pair) const override {
+        return set.Contains(pair);
+    }
+
+    bool Contains(TKey key) const {
+        Contains(KeyValue(key));
+    }
 };
 
 

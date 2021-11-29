@@ -77,7 +77,7 @@ public:
         return *this;
     }
 
-    bool Contains(T item) override {
+    bool Contains(T item) const override {
         return items.Contains(item);
     }
 
@@ -131,34 +131,8 @@ public:
         return res;
     }
 
-    friend ostream &operator<<(ostream &out, Set<T> &x) {
-        ArraySequence<T> tmp = x.items.ToArraySequence();
-        out << "{";
-        size_t length = tmp.Count();
-        for (size_t i = 0; i < length; ++i) {
-            out << tmp[i];
-            if (i != length - 1)
-                out << ", ";
-        }
-        out << "}";
-        return out;
-    }
-
     ArraySequence<T> ToArraySequence() {
         return items.ToArraySequence();
-    }
-
-    friend ostream &operator<<(ostream &out, Set<T> &&x) { return operator<<(out, x); }
-
-    friend istream &operator>>(istream &in, Set<T> &x) {
-        string tmp;
-        getline(in, tmp);
-        stringstream ss(tmp);
-        T t;
-        while (ss >> t) {
-            x.Add(t);
-        }
-        return in;
     }
 //    bool operator==(Set<TKey> &x) { return x.items == this->items; }
 //    bool operator==(Set<TKey> &&x) { return x.items == this->items; }
@@ -202,3 +176,33 @@ public:
         return Difference(list);
     }
 };
+
+template<typename T>
+ostream &operator<<(ostream &out, const Set<T> &x) {
+    ArraySequence<T> tmp = x.items.ToArraySequence();
+    out << "{";
+    size_t length = tmp.Count();
+    for (size_t i = 0; i < length; ++i) {
+        if constexpr(std::is_same<T, string>::value) {
+            out << "\'" << x[i] << "\'";
+        } else {
+            out << x[i];
+        }
+        if (i != length - 1)
+            out << ", ";
+    }
+    out << "}";
+    return out;
+}
+
+template<typename T>
+istream &operator>>(istream &in, Set<T> &x) {
+    string tmp;
+    getline(in, tmp);
+    stringstream ss(tmp);
+    T t;
+    while (ss >> t) {
+        x.Add(t);
+    }
+    return in;
+}

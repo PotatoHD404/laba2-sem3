@@ -53,3 +53,30 @@ public:
 
 };
 
+template<typename T>
+ostream &operator<<(ostream &out, const IList<T> &x) {
+    out << "[";
+    size_t length = x.Count();
+    size_t i = 0;
+    for (auto el: x) {
+        Print(out, el);
+        if (i != length - 1)
+            out << ", ";
+        ++i;
+    }
+    out << "]";
+//        out << ")" << endl;
+    return out;
+}
+
+template<typename T>
+istream &operator>>(istream &in, IList<T> &x) {
+//    string tmp;
+//    getline(in, tmp);
+//    stringstream ss(tmp);
+    T t;
+    while (in >> t) {
+        x.Add(t);
+    }
+    return in;
+}
