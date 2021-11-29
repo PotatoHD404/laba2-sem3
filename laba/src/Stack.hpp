@@ -19,7 +19,7 @@ public:
         return this->RemoveFirst();
     }
 
-    T &Top() {
+    T & Top() const {
         return this->GetFirst();
     }
 

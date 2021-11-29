@@ -134,10 +134,12 @@ protected:
     private:
         Node<T> *current;
         size_t i{};
-        Stack<Node<T> *> fStack, bStack;
+        size_t j{};
+        Stack<Node<T> *> fStack;
+        LinkedList<Node<T> *> bList;
     public:
         explicit Iterator(const NAryTree<T> &it, size_t pos = 0) : GraphIter<T>::GraphIter(it, -1), i(),
-                                                                   fStack{it.root}, bStack() {
+                                                                   fStack{it.root}, bList() {
             *this += (pos + 1);
         }
 
@@ -150,11 +152,14 @@ protected:
         Iterator &operator++() override {
             if (i + 1 < current->values.Count()) {
                 i++;
+            } else if ((long) j > 0) {
+                current = bList[--j];
             } else {
+                j = 0;
                 i = 0;
                 do {
                     if (current != nullptr)
-                        bStack.Push(current);
+                        bList.Push(current);
                     current = fStack.Pop();
 
                     for (size_t j = 0; j < current->ChildrenCount(); ++j)
@@ -172,7 +177,7 @@ protected:
             } else {
                 do {
                     fStack.Push(current);
-                    current = bStack.Pop();
+                    current = bList[++j];
                 } while (current->values.Count() != 0);
                 i = current->values.Count() - 1;
             }
@@ -184,10 +189,7 @@ protected:
             if (&this->iterable != &list.iterable)
                 throw invalid_argument("Iterables must be equal");
             if (this != &list) {
-                this->i = list.i;
-                this->fStack = list.fStack;
-                this->bStack = list.bStack;
-//                this->iterable = list.iterable;
+                this->indexes = list.indexes;
                 this->pos = list.pos;
                 this->current = list.current;
             }
