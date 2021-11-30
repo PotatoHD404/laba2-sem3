@@ -69,24 +69,24 @@ auto test_data() {
 
 
 int main() {
-//    Dictionary<string, int> dictionary;
-//    dictionary.Add("a", 4);
-//    dictionary.Add("b", 4);
-//    dictionary.Add("c", 4);
-//    dictionary.Add("d", 4);
-//    dictionary.Add("e", 2);
-//    dictionary.Add("f", 4);
-////    dictionary.Get("b");
-//    dictionary.Add("g", 5);
-//    dictionary.Add("h", 4);
-//    dictionary.Add("i", 4);
-//    dictionary.Remove("a");
-//    cout << dictionary.Get("f") << endl;
-//    cout << dictionary << endl;
+    Dictionary<string, int> dictionary;
+    dictionary.Add("a", 4);
+    dictionary.Add("b", 4);
+    dictionary.Add("c", 4);
+    dictionary.Add("d", 4);
+    dictionary.Add("e", 2);
+    dictionary.Add("f", 4);
+//    dictionary.Get("b");
+    dictionary.Add("g", 5);
+    dictionary.Add("h", 4);
+    dictionary.Add("i", 4);
+    dictionary.Remove("a");
+    cout << dictionary.Get("f") << endl;
+    cout << dictionary << endl;
 
-    Set<int> set = Set<int>({1, 2});
-    Set<int> set1 = Set<int>({2, 3});
-    Set<int> intersection = set * set1;
-    cout << intersection << endl;
+//    Set<int> set = Set<int>({1, 2, 3, 4, 5});
+//    Set<int> set1 = Set<int>({4, 5, 6, 7, 8});
+//    Set<int> uni = set + set1;
+//    cout << uni << endl;
     return 0;
 }

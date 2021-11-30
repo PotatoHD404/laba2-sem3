@@ -52,7 +52,7 @@ private:
         Node *current;
     public:
 
-        explicit Iterator(const LinkedList<T> *it, size_t pos = 0) : current(it->head), GraphIter<T>(it, pos) {
+        explicit Iterator(const LinkedList<T> *it, size_t pos = 0) : GraphIter<T>(it, pos), current(it->head) {
             if (it->Count() == pos) {
                 current = nullptr;
             } else if (pos <= it->Count() / 2)

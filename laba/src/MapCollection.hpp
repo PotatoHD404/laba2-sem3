@@ -20,11 +20,10 @@ private:
         T1 &(*bijectiveFunc)(T2 &);
 
     public:
-        explicit Iterator(Iter<T2> iter, T1 &(*bijectiveFunc)(T2 &)) : iter(iter), bijectiveFunc(bijectiveFunc),
-                                                                       BaseIter<T1>(0) {
+        explicit Iterator(Iter<T2> iter, T1 &(*bijectiveFunc)(T2 &)) : BaseIter<T1>(0), iter(iter), bijectiveFunc(bijectiveFunc){
         }
 
-        Iterator(const Iterator &other) : iter(other.iter), bijectiveFunc(other.bijectiveFunc), BaseIter<T1>(0) {
+        Iterator(const Iterator &other) : BaseIter<T1>(0), iter(other.iter), bijectiveFunc(other.bijectiveFunc) {
         }
 
         [[nodiscard]] size_t GetPos() const override {

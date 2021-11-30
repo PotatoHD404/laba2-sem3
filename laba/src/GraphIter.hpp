@@ -12,7 +12,7 @@ class GraphIter : public BaseIter<T> {
 protected:
     const ICollection<T> *it;
 public:
-    explicit GraphIter(const ICollection<T> *it, size_t pos = 0) : it(it), BaseIter<T>(pos) {
+    explicit GraphIter(const ICollection<T> *it, size_t pos = 0) : BaseIter<T>(pos), it(it) {
     }
 
     GraphIter<T> &operator+=(size_t b_pos) override {

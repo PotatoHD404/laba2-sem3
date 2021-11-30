@@ -47,7 +47,7 @@ public:
 
     bool operator==(const KeyValue &x) const { return key == x.key; }
 
-//    bool Equals(const KeyValue &x) const { return key == x.key && value == x.value; }
+//    bool Equals(const keyValue &x) const { return key == x.key && value == x.value; }
 
     bool operator!=(const KeyValue &x) const {
         return !(*this == x);

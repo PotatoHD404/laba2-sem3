@@ -14,15 +14,15 @@
 template<typename T>
 class BTree : ICollection<const T> {
 private:
-    using NAryTree = NAryTree<T>;
+    using NTree = NAryTree<T>;
 
     template<typename T1>
     friend
     class Set;
 
-    class BNode : public NAryTree::template Node<T> {
+    class BNode : public NTree::template Node<T> {
     public:
-        using NAryTree::template Node<T>::Node;
+        using NTree::template Node<T>::Node;
 
         BNode *Search(T k) {
             size_t i = FindKey(k);
@@ -331,6 +331,8 @@ public:
 
     BTree(const BTree &tree) : BTree() { *this = tree; }
 
+    explicit BTree(size_t t) : t(t), root(new BNode()) {}
+
     Iter<const T> begin() const override { return Iter<const T>(new Iterator(this)); }
 
     Iter<const T> end() const override {
@@ -350,15 +352,13 @@ public:
 
     BTree &operator=(const BTree &list) {
         if (this != &list) {
-            this->~BTree();
+            delete root;
             this->count = list.count;
             t = list.t;
             this->root = new BNode(*(list.root));
         }
         return *this;
     }
-
-    explicit BTree(size_t t) : root(new BNode()), t(t) {}
 
     BTree &Add(T k) override {
         if (this->root->values.Count() == 2 * t - 1) {
