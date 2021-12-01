@@ -147,9 +147,6 @@ public:
 
     //Termination
     ~DynamicArray() {
-        if (actual_array) {
-            delete[] actual_array;
-            actual_array = nullptr;
-        }
+        delete[] actual_array;
     }
 };
