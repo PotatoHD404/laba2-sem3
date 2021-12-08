@@ -32,10 +32,11 @@
 </template>
 
 <script>
-import Input from '../components/input.svelte';
-import Select from '../components/select.svelte';
-import Field from '../components/field.svelte';
-import LabWorker from '../../static/scripts/service-worker.js?url';
+import Input from '../components/input-comp';
+import Select from '../components/select-comp';
+import Field from '../components/field-comp';
+// import Header from "../components/header";
+/*import LabWorker from '../../static/scripts/service-worker.js?url';
 // import LabWorker1 from '../../static/scripts/actual-service-worker.js?worker';
 import {onMount} from 'svelte';
 
@@ -155,6 +156,14 @@ function print(data) {
     }
   }, 5);
 
+}
+*/
+export default {
+  components: {
+    Input,
+    Select,
+    Field
+  }
 }
 </script>
 

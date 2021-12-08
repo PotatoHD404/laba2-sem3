@@ -18,7 +18,7 @@
 
 // https://github.com/google/googletest/blob/master/docs/advanced.md#type-parameterized-tests
 
-const int itemNum = 100;
+const int itemNum = 10000;
 
 using namespace std;
 using namespace Utils;

@@ -4,7 +4,7 @@
 
 #pragma once
 
-template<typename T1, typename T2>
+template<typename T1, typename T2=T1>
 class Pair {
 public:
     mutable T1 first;

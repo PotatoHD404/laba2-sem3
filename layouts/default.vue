@@ -1,20 +1,26 @@
 <template>
-  <Header/>
-  <Nuxt/>
+  <div>
+    <Header/>
+    <Nuxt/>
+  </div>
+
 </template>
 
 
 <script>
-import Header from '../components/header.vue';
+import Header from '../components/header-comp';
 import '../app.postcss';
 
-const site_name = 'PotatoHD website';
-const description = 'Lab 1 sem 3 that can sort your data';
+const site_name = "PotatoHD's website";
+const description = 'Lab 2 sem 3 that can win you in tic tac toe';
 
 export default {
+  components: {
+    Header
+  },
   data() {
     return {
-      title: 'Home page'
+      title: site_name
     }
   },
   head() {
@@ -36,7 +42,7 @@ export default {
         {
           property: 'og:title',
           content: site_name
-        }
+        },
         {
           name: 'twitter:title',
           content: site_name

@@ -41,8 +41,22 @@ export default {
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
+    icon: {
+      iconSrc: './static/favicon.png'
+    },
     manifest: {
-      lang: 'en'
+      lang: 'en',
+      // short_name: 'P',
+      // name: 'Project',
+      // start_url: '/',
+      // display: 'standalone',
+      // theme_color: '#00b5ad'
+    },
+    workbox: {
+      /* workbox options */
+      dev: true,
+      swURL: './static/scripts/actual-service-worker.js'
+
     }
   },
 

@@ -9,6 +9,7 @@
 #include "Exceptions.hpp"
 #include "ListSequence.hpp"
 #include "ArraySequence.hpp"
+#include "MiniMax.hpp"
 #include "Sorts.hpp"
 #include "Utils.hpp"
 #include "Dictionary.hpp"
@@ -70,6 +71,7 @@ auto test_data() {
 
 int main() {
     Dictionary<string, int> dictionary;
+
     dictionary.Add("a", 4);
     dictionary.Add("b", 4);
     dictionary.Add("c", 4);
