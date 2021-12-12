@@ -1,22 +1,33 @@
 {
-  "name": "laba2-sem3",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "nuxt",
-    "start": "nuxt start",
-    "build": "nuxt generate"
-  },
-  "dependencies": {
-    "core-js": "^3.15.1",
-    "nuxt": "^2.15.7",
-    "postcss-load-config": "^3.1.0",
-    "tailwindcss": "^2.2.19",
-    "vuex": "^3.6.2"
-  },
-  "devDependencies": {
-    "@nuxtjs/pwa": "^3.3.5",
-    "@nuxtjs/tailwindcss": "^4.2.0",
-    "postcss": "^8.4.4"
-  }
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "../laba1-sem3/node_modules/.bin/svelte-kit dev",
+		"build": "../laba1-sem3/node_modules/.bin/svelte-kit build --verbose",
+		"preview": "../laba1-sem3/node_modules/.bin/svelte-kit preview"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-vercel": "next",
+		"@sveltejs/kit": "next",
+		"autoprefixer": "^10.3.1",
+		"cssnano": "^5.0.6",
+		"postcss": "^8.3.5",
+		"postcss-load-config": "^3.1.0",
+		"svelte": "^3.38.3",
+		"svelte-preprocess": "^4.7.4",
+		"tailwindcss": "^2.2.4"
+	},
+	"dependencies": {
+		"highcharts": "^9.2.2",
+		"prettier": "^2.3.2",
+		"prettier-plugin-svelte": "^2.3.1",
+		"svelte-kit-cookie-session": "^1.3.3",
+		"svelte-local-storage-store": "^0.2.4"
+	},
+	"prettier": {
+		"arrowParens": "always",
+		"singleQuote": true,
+		"tabWidth": 2,
+		"trailingComma": "none"
+	}
 }

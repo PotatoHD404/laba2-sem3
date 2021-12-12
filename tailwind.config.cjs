@@ -4,7 +4,7 @@ const config = {
   mode: 'jit',
   darkMode: 'class',
   purge: [
-    './src/**/*.{html,scripts,vue,ts}'
+    './src/**/*.{html,scripts,svelte,ts}'
   ],
   variants: {
     extend: {
