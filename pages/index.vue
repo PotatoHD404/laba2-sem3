@@ -173,7 +173,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /*.greenBox {*/
 /*    background-color: rgba(0, 255, 0, 0.2);*/
 /*}*/
@@ -182,14 +182,6 @@ label {
   top: 0;
   transform: translateY(-100%);
   font-size: 11px;
-}
-
-:global(body) {
-  @apply m-auto transition-colors duration-300 bg-dark;
-}
-
-:global(body.light) {
-  @apply bg-white;
 }
 
 </style>

@@ -9,8 +9,9 @@ export const mutations = {
         document.body.classList.remove('dark');
         const value = state.dark ? 'dark' : 'light';
         document.body.classList.add(value);
-        if(process.client) {
-            localStorage.setItem('theme', value);
-        }
+        console.log(value);
+        // if (process.client) {
+        localStorage.setItem('theme', value);
+        // }
     },
 }

@@ -1,9 +1,10 @@
 <template>
+  <body class="dark m-auto transition-colors duration-300 dark:bg-dark">
   <div>
     <Header/>
     <Nuxt/>
   </div>
-
+  </body>
 </template>
 
 
@@ -62,4 +63,14 @@ export default {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/*body.dark {*/
+/*  @apply bg-dark m-auto;*/
+/*}*/
+html, body {
+  @apply h-screen;
+}
+
+/*body.light {*/
+/*  @apply bg-white;*/
+/*}*/
 </style>
