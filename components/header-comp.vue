@@ -10,8 +10,8 @@
       <button type='button' class='p-2 transition bg-light border border-transparent
      rounded-md focus:outline-none 0 ring-1 ring-outline-light dark:ring-outline-dark
       dark:hover:ring-gray-400 duration-300 dark:duration-200 hover:bg-gray-200 dark:bg-alt-dark'
-              v-on:click="() => { index = (index + 1) % themes.length; theme.set(themes[index]) }">
-        {{ icons[+ dark] }}
+              v-on:click="() => { }">
+        {{ icons[+dark] }}
       </button>
     </div>
   </nav>
@@ -24,34 +24,30 @@ import Field from "./field-comp";
 
 import {mapMutations} from 'vuex'
 
-const icons = ['🌙', '🌞'];
+// const icons = ['🌞', '🌙'];
 export default {
   beforeCreate() {
-    theme.subscribe((value) => {
+    if (process.client) {
       if (localStorage == null || localStorage.getItem('theme') == null) {
         localStorage.setItem('theme', 'dark');
-        theme.set('dark');
-      } else if (value === '' && localStorage.getItem('theme') != null)
-        theme.set(localStorage.getItem('theme'));
-      else {
-        if (value === 'light')
-          index = 1;
-        document.body.classList.remove('light');
-        document.body.classList.remove('dark');
-        document.body.classList.add(value);
-        localStorage.setItem('theme', value);
+      } else if (localStorage.getItem('theme') === 'light') {
+        this.$store.state.theme.dark = false;
       }
-
-    });
+    }
   },
   components: {
     Input,
     Select,
     Field
   },
+  data: () => {
+    return {
+      icons: ['🌙', '🌞']
+    }
+  },
   computed: {
-    todos() {
-      return this.$store.state.theme.dark
+    dark() {
+      return this.$store.state.theme.dark;
     }
   },
   methods: {

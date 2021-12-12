@@ -163,6 +163,12 @@ export default {
     Input,
     Select,
     Field
+  },
+  data: () => {
+    return {
+      type_selected: false,
+      consoleText: ''
+    }
   }
 }
 </script>

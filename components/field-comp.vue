@@ -4,15 +4,21 @@
           dark:bg-gray-900 dark:text-gray-200 focus:outline-none ring-1 ring-outline-light dark:ring-outline-dark'
          disabled>
   <label class='absolute left-2 transition-all px-1 bg-transparent dark:text-gray-200 select-none'>
-    {{label_text}}
+    {{ label_text }}
   </label>
 </div>
 </div>
 
 
 <script>
-export let label_text;
-export let text;
+export default {
+  data: () => {
+    return {
+      label_text: '',
+      text: ''
+    }
+  },
+}
 </script>
 
 

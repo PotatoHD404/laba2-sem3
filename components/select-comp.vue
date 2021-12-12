@@ -3,9 +3,10 @@
     <div class='relative input-component empty w-full h-8 px-1'>
       <select v-model="choice" class='px-2 bg-light w-full h-full overflow-hidden rounded-md
           dark:bg-gray-900 dark:text-gray-300 focus:outline-none ring-1 ring-outline-light dark:ring-outline-dark'>
-        <option v-for="option in options" :key="option" value={option}>
+        <option v-for="option in options" :key="option">
           {{ option }}
         </option>
+<!--         v-bind="option"-->
       </select>
       <label class='absolute left-2 transition-all px-1 bg-transparent dark:text-gray-200 select-none'>
         {{ text }}
@@ -24,11 +25,23 @@
 </template>
 
 <script>
-export let options;
-export let text;
-export let button_text;
-export let command;
-let choice;
+// export let options;
+// export let text;
+// export let button_text;
+// export let command;
+export default {
+  data: () => {
+    return {
+      icons: ['🌙', '🌞'],
+      choice: '',
+      options: ['ArraySequence', 'ListSequence'],
+      command: (i) => {
+      },
+      button_text: '',
+      text: ''
+    }
+  },
+}
 </script>
 
 <style scoped>

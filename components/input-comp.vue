@@ -1,8 +1,8 @@
 <template>
   <div class='flex my-2 w-full md:w-2/3 pt-1'>
     <div class='relative input-component empty w-full h-8 px-1'>
-      <input v-model="choice" type='text' name='items-input' class="{{choice ? '': 'empty'}} px-2 bg-light w-full h-full overflow-hidden rounded-md
-          dark:bg-gray-900 dark:text-white focus:outline-none ring-1 ring-outline-light dark:ring-outline-dark">
+      <input v-model="choice" type='text' name='items-input' :class="(choice ? '': 'empty') + 'px-2 bg-light w-full h-full overflow-hidden rounded-md \
+          dark:bg-gray-900 dark:text-white focus:outline-none ring-1 ring-outline-light dark:ring-outline-dark'">
       <label class='absolute left-2 transition-all px-1 bg-transparent dark:text-gray-200 select-none'>
         {{ text }}
       </label>
@@ -19,10 +19,17 @@
 </template>
 
 <script>
-export let text;
-export let button_text;
-export let command;
-export let choice;
+export default {
+  data: () => {
+    return {
+      choice: '',
+      command: (i) => {
+      },
+      button_text: '',
+      text: ''
+    }
+  },
+}
 </script>
 <style scoped>
 label {
