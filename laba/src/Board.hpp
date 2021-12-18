@@ -73,21 +73,24 @@ public:
     };
 
 private:
-    mutable ArraySequence<char> board;
+    mutable char *board;
     mutable char gameState{};
     mutable size_t count{};
     ArraySequence<Cluster> clusters;
 public:
 
 
-    explicit Board(size_t size) : size(size), board(size * size, '_'), clusters(), winConst(5 < size ? 5 : size) {
+    explicit Board(size_t size) : size(size), board(new char[size * size]), clusters(), winConst(5 < size ? 5 : size) {
+        for (size_t i = 0; i < size * size; ++i) {
+            board[i] = '_';
+        }
     }
 
     Board(const Board &) = default;
 
-    char operator[](Pair<size_t> pair) const {
-        return this->Get(pair.first, pair.second);
-    }
+//    char operator[](Pair<size_t> pair) const {
+//        return this->Get(pair.first, pair.second);
+//    }
 
 
     char Get(size_t i, size_t j) const {
@@ -95,6 +98,13 @@ public:
     }
 
     void Set(size_t i, size_t j, char item) const {
+        if (item == '_') {
+            gameState = 0;
+            if (board[i * size + j] != '_')
+                --count;
+            board[i * size + j] = item;
+            return;
+        }
         if (board[i * size + j] != '_' || gameState != 0)
             throw invalid_argument("Wrong move!");
         board[i * size + j] = item;
@@ -109,36 +119,9 @@ public:
         size_t upBound = i >= expand ? i - expand : 0;
         size_t downBound = i + expand < this->size ? i + expand : this->size - 1;
         bool won = true;
-        if (rightBound - leftBound >= winConst) {
-            for (size_t k = leftBound; k < rightBound; ++k) {
-                if (this->Get(i, k) != item) {
-                    won = false;
-                    break;
-                }
-            }
-            if (won) {
-                gameState = item;
-                return;
-            }
-            won = true;
-        }
-        if (downBound - upBound >= winConst) {
-            for (size_t k = downBound; k < upBound; ++k) {
-                if (this->Get(k, j) != item) {
-                    won = false;
-                    break;
-                }
-            }
-            if (won) {
-                gameState = item;
-                return;
-            }
-            won = true;
-        }
-        auto min = (long long) (leftBound - j > upBound - i ? leftBound - j : upBound - i);
-        auto max = (long long) (rightBound - j > downBound - i ? downBound - i : rightBound - j);
-        for (long long k = min; k < max; ++k) {
-            if (this->Get(i + k, j + k) != item) {
+
+        for (size_t k = leftBound; k <= rightBound; ++k) {
+            if (this->Get(i, k) != item) {
                 won = false;
                 break;
             }
@@ -148,10 +131,10 @@ public:
             return;
         }
         won = true;
-        min = (long long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
-        max = (long long) (rightBound - j > i- upBound ? upBound - i : rightBound - j);
-        for (long long k = min; k < max; ++k) {
-            if (this->Get(i + k, j - k) != item) {
+
+
+        for (size_t k = upBound; k <= downBound; ++k) {
+            if (this->Get(k, j) != item) {
                 won = false;
                 break;
             }
@@ -160,6 +143,38 @@ public:
             gameState = item;
             return;
         }
+        won = true;
+
+        auto min = (long long) (leftBound - j > upBound - i ? leftBound - j : upBound - i);
+        auto max = (long long) (rightBound - j > downBound - i ? downBound - i : rightBound - j);
+        if (max - min >= (long long) winConst) {
+            for (long long k = min; k <= max; ++k) {
+                if (this->Get(i + k, j + k) != item) {
+                    won = false;
+                    break;
+                }
+            }
+            if (won) {
+                gameState = item;
+                return;
+            }
+            won = true;
+        }
+        min = (long long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
+        max = (long long) (rightBound - j > i - upBound ? i - upBound : rightBound - j);
+        if (max - min >= (long long) winConst) {
+            for (long long k = min; k <= max; ++k) {
+                if (this->Get(i - k, j + k) != item) {
+                    won = false;
+                    break;
+                }
+            }
+            if (won) {
+                gameState = item;
+                return;
+            }
+        }
+
 
 
 
@@ -245,6 +260,10 @@ public:
 //            return '_';
 //        return 0;
         return gameState;
+    }
+
+    ~Board() {
+        delete[] board;
     }
 
 };

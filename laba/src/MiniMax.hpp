@@ -8,7 +8,7 @@
 #include <cwchar>
 #include "Pairs.hpp"
 
-size_t maxDepth = 120;
+size_t maxDepth = 8;
 
 int8_t
 MiniMax(const Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-value-param,misc-no-recursion)
@@ -26,7 +26,7 @@ MiniMax(const Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-
     }
     for (size_t i = 0; i < board.size; ++i) {
         for (size_t j = 0; j < board.size; ++j) {
-            if (board[Pair(i, j)] == '_') {
+            if (board.Get(i, j) == '_') {
 //                cout << i << ' ' << j << endl;
                 board.Set(i, j, isEnemyMove ? 'x' : 'o');
                 int8_t x = MiniMax(board, !isEnemyMove, depth + 1);
