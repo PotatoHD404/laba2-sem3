@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include "ICollection.hpp"
+
+using std::ostream;
+
 template<typename T1, typename T2=T1>
 class Pair {
 public:
@@ -83,7 +87,7 @@ ostream &operator<<(ostream &out, const KeyValue<TKey, TValue> &x) {
 template<typename T1, typename T2>
 ostream &operator<<(ostream &out, const Pair<T1, T2> &x) {
     Utils::PPrint(out, x.first);
-    out << ": ";
+    out << ", ";
     Utils::PPrint(out, x.second);
     return out;
 }

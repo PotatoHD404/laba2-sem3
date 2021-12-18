@@ -1,94 +1,27 @@
 #include <iostream>
-#include <array>
-#include <algorithm>
-#include <random>
-#include <type_traits>
-#include <limits>
-#include <chrono>
-#include "Complex.hpp"
-#include "Exceptions.hpp"
-#include "ListSequence.hpp"
-#include "ArraySequence.hpp"
+#include "Board.hpp"
 #include "MiniMax.hpp"
-#include "Sorts.hpp"
-#include "Utils.hpp"
-#include "Dictionary.hpp"
 
 using namespace std;
-using namespace Utils;
-
-const int itemNum = 2;
-
-template<typename T>
-T GenRandom(mt19937 &rng) {
-    if constexpr(std::is_same<T, string>::value) {
-        static string alphanum = "0123456789"
-                                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                 "abcdefghijklmnopqrstuvwxyz";
-        uniform_int_distribution<unsigned> distribution(0, alphanum.length() - 1);
-        string res;
-        for (int i = 0; i < 5; ++i) {
-            res += alphanum[distribution(rng)];
-        }
-        return res;
-    } else if constexpr(std::is_same<T, Complex>::value) {
-        uniform_real_distribution<float> distribution(-1, 1);
-        return Complex((float) distribution(rng), (float) distribution(rng));
-    } else if constexpr(std::is_same<T, int>::value) {
-        uniform_int_distribution<int> distribution(-itemNum * 10, itemNum * 10);
-        return (int) distribution(rng);
-    } else if constexpr(std::is_same<T, float>::value) {
-        uniform_real_distribution<float> distribution(-10, 10);
-        return (float) distribution(rng);
-    } else {
-        throw NotImplemented("", "");
-    }
-}
-
-template<typename T>
-auto test_data() {
-    static random_device rd;
-    static mt19937::result_type seed = rd() ^ (
-            (mt19937::result_type)
-                    chrono::duration_cast<chrono::seconds>(
-                            chrono::system_clock::now().time_since_epoch()
-                    ).count() +
-            (mt19937::result_type)
-                    chrono::duration_cast<chrono::microseconds>(
-                            chrono::high_resolution_clock::now().time_since_epoch()
-                    ).count());
-    static mt19937 rng = mt19937(seed);
-    static array<T, itemNum> data;
-    static bool called;
-    if (!called) {
-        generate(
-                data.begin(), data.end(), []() { return GenRandom<T>(rng); });
-        called = true;
-    }
-    return data;
-}
 
 
 int main() {
-    Dictionary<string, int> dictionary;
+    Board b(3);
+//    b.Get(0, 0) = 'x';
+//    b.Get(1, 0) = 'x';
+//    b.Get(2, 0) = 'x';
+    size_t x, y;
 
-    dictionary.Add("a", 4);
-    dictionary.Add("b", 4);
-    dictionary.Add("c", 4);
-    dictionary.Add("d", 4);
-    dictionary.Add("e", 2);
-    dictionary.Add("f", 4);
-//    dictionary.Get("b");
-    dictionary.Add("g", 5);
-    dictionary.Add("h", 4);
-    dictionary.Add("i", 4);
-    dictionary.Remove("a");
-    cout << dictionary.Get("f") << endl;
-    cout << dictionary << endl;
+//    cout << b.GetGameState() << endl;
+    while (b.GetGameState() == 0) {
+        cin >> x >> y;
+        b.Get(x, y) = 'x';
+        auto move = PredictMove(b);
+        cout << b << endl << move << endl;
+        b.Get(move.first, move.second) = 'o';
+        cout << b << endl;
 
-//    Set<int> set = Set<int>({1, 2, 3, 4, 5});
-//    Set<int> set1 = Set<int>({4, 5, 6, 7, 8});
-//    Set<int> uni = set + set1;
-//    cout << uni << endl;
+    }
+    cout << b << endl;
     return 0;
 }

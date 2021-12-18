@@ -9,7 +9,7 @@
 #include <regex>
 #include "ArraySequence.hpp"
 #include "Stack.hpp"
-#include "Pair.hpp"
+#include "Pairs.hpp"
 #include "Utils.hpp"
 #include "GraphIter.hpp"
 

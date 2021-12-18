@@ -5,7 +5,7 @@
 #pragma once
 
 #include "NAryTree.hpp"
-#include "Pair.hpp"
+#include "Pairs.hpp"
 #include "Stack.hpp"
 
 #include "IDictionary.hpp"

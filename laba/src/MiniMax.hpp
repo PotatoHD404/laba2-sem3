@@ -4,104 +4,59 @@
 
 #pragma  once
 
-#include "Pair.hpp"
+#include <cstdint>
+#include <cwchar>
+#include "Pairs.hpp"
 
-class Pole {
-private:
-    mutable char *pole;
-public:
-    const size_t size{};
+int8_t maxDepth = 20;
 
-    Pole(size_t size) : size(size), pole{new char[size * size]} {}
-
-    char &operator[](Pair<size_t> pair) const {
-        return this->Get(pair.first, pair.second);
-    }
-
-    char &Get(size_t i, size_t j) const {
-        return pole[i * size + j];
-    }
-
-    char GameEnded() const {
-        bool draw = true;
-        char *col = new char[size]();
-        char d1{};
-        char d2{};
-        for (size_t i = 0; i < size; ++i) {
-            char row = this->Get(i, 0);
-            for (size_t j = 0; j < size; ++j) {
-                if (this->Get(i, j) == '_')
-                    draw = false;
-
-                if (row != '_') {
-                    if (row != this->Get(i, j)) {
-                        row = '_';
-                    }
-                }
-                if (col[j] != 0 && col[j] != '_') {
-                    if (col[j] != this->Get(i, j)) {
-                        col[j] = '_';
-                    }
-                } else {
-                    col[j] = this->Get(i, j);
-                }
-            }
-            if (row != '_')
-                return row;
-            if (d1 != 0 && d1 != '_') {
-                if (d1 != this->Get(i, i)) {
-                    d1 = '_';
-                }
-            } else {
-                d1 = this->Get(i, i);
-            }
-            if (d2 != 0 && d2 != '_') {
-                if (d2 != this->Get(size - 1 - i, size - 1 - i)) {
-                    d2 = '_';
-                }
-            } else {
-                d2 = this->Get(size - 1 - i, size - 1 - i);
-            }
-        }
-        if (draw)
-            return 'd';
-        if (d1 != '_')
-            return d1;
-        if (d2 != '_')
-            return d2;
-        for (size_t i = 0; i < size; ++i) {
-            if (col[i] != '_')
-                return col[i];
-        }
-        return {};
-    }
-};
-
-// enemy - x
-// ally - o
-
-int8_t MiniMax(Pole pole, bool enemy) {
-    int8_t bestScore = -2;
-    int8_t worstScore = 2;
-    char ended = pole.GameEnded();
-    if (ended == 'd')
+int8_t
+MiniMax(const Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-value-param,misc-no-recursion)
+        int8_t depth) {
+    if (depth >= maxDepth)
         return 0;
-    if (ended != '_') {
-        if (enemy)
-            return ended == 'x' ? -1 : 1;
-        else
-            return ended == 'o' ? -1 : 1;
+    int8_t bestScore = isEnemyMove ? std::numeric_limits<int8_t>::max() : std::numeric_limits<int8_t>::min();
+//    int8_t worstScore = std::numeric_limits<int8_t>::max();
+    char gameState = board.GetGameState();
+    if (gameState == '_')
+        return 0;
+    else if (gameState != 0) {
+        return gameState == (isEnemyMove ? 'x' : 'o') ? -1 : 1;
     }
-    for (size_t i = 0; i < pole.size; ++i) {
-        for (size_t j = 0; j < pole.size; ++j) {
-            if (pole[Pair(i, j)] != '_') {
-                pole[Pair(i, j)] = enemy ? 'x' : 'o';
-                auto x = MiniMax(pole, !enemy);
-                if (x > bestScore && !enemy) bestScore = x;
-                else if (x < worstScore && enemy) worstScore = x;
+    for (size_t i = 0; i < board.size; ++i) {
+        for (size_t j = 0; j < board.size; ++j) {
+            if (board[Pair(i, j)] == '_') {
+                board[Pair(i, j)] = isEnemyMove ? 'x' : 'o';
+                auto x = MiniMax(board, !isEnemyMove, (int8_t) (depth + 1));
+                if ((x > bestScore && !isEnemyMove) || (x < bestScore && isEnemyMove)) bestScore = x;
+                cout << (long) bestScore << endl;
+                board[Pair(i, j)] = '_';
             }
         }
     }
+    return bestScore;
+}
 
-    return {};
+Pair<size_t> PredictMove(const Board &board) {
+
+    Pair<size_t> move{std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max()};
+    int8_t best_score = std::numeric_limits<int8_t>::min();
+
+    for (size_t i = 0; i < board.size; ++i) {
+        for (size_t j = 0; j < board.size; ++j) {
+            if (board.Get(i, j) == '_') {
+                board.Get(i, j) = 'o';
+                int8_t score = MiniMax(board, true, 0);
+                board.Get(i, j) = '_';
+                cout << board << endl;
+                if (score > best_score) {
+                    best_score = score;
+                    cout << (size_t) score << endl;
+                    move = {i, j};
+                }
+            }
+        }
+    }
+    return move;
+
 }

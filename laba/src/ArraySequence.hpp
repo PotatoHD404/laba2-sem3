@@ -28,7 +28,7 @@ public:
     explicit ArraySequence(int count) : ArraySequence((size_t) count) {
     }
 
-    explicit ArraySequence(size_t count) : items(count) {
+    ArraySequence(size_t count, T value = T()) : items(count, value) {
     }
 
     ArraySequence(T *items, size_t count) : items(items, count) {

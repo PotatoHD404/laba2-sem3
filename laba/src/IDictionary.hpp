@@ -5,7 +5,7 @@
 #pragma once
 
 #include "ICollection.hpp"
-#include "Pair.hpp"
+#include "Pairs.hpp"
 
 template<typename TKey, typename TValue>
 class IDictionary : public ICollection<const KeyValue<TKey, TValue>> {
