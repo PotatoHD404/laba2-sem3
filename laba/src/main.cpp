@@ -6,7 +6,7 @@ using namespace std;
 
 
 int main() {
-    Board b(3);
+    Board b(4);
 //    b.Get(0, 0) = 'x';
 //    b.Get(1, 0) = 'x';
 //    b.Get(2, 0) = 'x';
@@ -15,13 +15,15 @@ int main() {
 //    cout << b.GetGameState() << endl;
     while (b.GetGameState() == 0) {
         cin >> x >> y;
-        b.Get(x, y) = 'x';
+        b.Set(x, y, 'x');
         auto move = PredictMove(b);
         cout << b << endl << move << endl;
-        b.Get(move.first, move.second) = 'o';
+//        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
+        b.Set(move.first, move.second, 'o');
         cout << b << endl;
 
     }
-    cout << b << endl;
+//    cout << b << endl;
+    cout << b.GetGameState() << endl;
     return 0;
 }
