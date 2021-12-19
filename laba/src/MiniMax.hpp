@@ -8,7 +8,7 @@
 #include <cwchar>
 #include "Pairs.hpp"
 
-size_t maxDepth = 8;
+size_t maxDepth = 3;
 
 int8_t
 MiniMax(const Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-value-param,misc-no-recursion)
@@ -26,7 +26,7 @@ MiniMax(const Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-
     }
     for (size_t i = 0; i < board.size; ++i) {
         for (size_t j = 0; j < board.size; ++j) {
-            if (board.Get(i, j) == '_') {
+            if (board.Get(i, j) == '_' && board.IsInClusters(i, j)) {
 //                cout << i << ' ' << j << endl;
                 board.Set(i, j, isEnemyMove ? 'x' : 'o');
                 int8_t x = MiniMax(board, !isEnemyMove, depth + 1);
@@ -46,10 +46,15 @@ Pair<size_t> PredictMove(const Board &board) {
 
     Pair<size_t> move{std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max()};
     int8_t best_score = std::numeric_limits<int8_t>::min();
-
+    size_t movesCount = 1;
+    size_t boardSize = board.GetSize();
+    for (maxDepth = 0; movesCount < 1000000; ++maxDepth) {
+        movesCount *= boardSize - board.GetCount() - maxDepth;
+    }
+    --maxDepth;
     for (size_t i = 0; i < board.size; ++i) {
         for (size_t j = 0; j < board.size; ++j) {
-            if (board.Get(i, j) == '_') {
+            if (board.Get(i, j) == '_' && board.IsInClusters(i, j)) {
                 cout << i << ' ' << j << endl;
                 board.Set(i, j, 'o');
                 int8_t score = MiniMax(board, true, 0);
