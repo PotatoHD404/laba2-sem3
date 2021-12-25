@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <cwchar>
+#include <limits>
 #include "Pairs.hpp"
 
 size_t maxDepth = 3;
