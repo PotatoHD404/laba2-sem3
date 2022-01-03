@@ -1,52 +1,36 @@
 #include <iostream>
-#include "SquareMatrix.hpp"
-#include "SparseMatrix.hpp"
-#include "Graph.hpp"
-#include "Random.hpp"
+#include "Board.hpp"
+#include "MiniMax.hpp"
 
 using namespace std;
 
 
 int main() {
-    Graph<int> a(2, 1, false, false, true);
+    Board b(10);
+//    b.Set(0, 4, 'x');
+//    b.Set(1, 3, 'x');
+//    b.Set(2, 2, 'x');
+//    b.Set(3, 1, 'x');
+//    b.Set(4, 0, 'x');
+//    b.Set(0, 5, 'x');
+//    b.Set(3, 3, 'x');
+//    b.Set(0, 3, 'x');
+//    b.Set(1, 2, 'x');
+//    b.Set(2, 1, 'x');
+//    b.Set(3, 0, 'x');
+    size_t x, y;
 
-    cout << a.GraphvizPrint() << endl;
-//    SparseMatrix<size_t> a(100);
-//    SquareMatrix<size_t> a(3);
-//
-//    a.Set(1, 0, 20);
-//    a.Set(2, 0, 35);
-//    a.Set(2, 0, 0);
-//
-//    a.Set(0, 2, 100);
-//    cout << a << endl;
-//
-//    cout << a.data << endl;
-//
-//    for (const auto& el: a) {
-//        cout << el << endl;
-//    }
-//
-//
-//    a.Expand(1);
-//    cout << a << endl;
-//    cout << a.Size() << endl;
-//    a.Get(2, 1) = 1;
-//
-//    for (size_t i = 0; i < a.data.Count(); ++i) {
-//        a.data[i] = i;
-//    }
-//    a.Expand();
-//    cout << a << endl;
-//    cout << a.data << endl;
-//
-//    for (size_t i = 0; i < a.data.Count(); ++i) {
-//        a.data[i] = i;
-//    }
-//    cout << a << endl;
-//    cout << a.data << endl;
-//    cout << a.Get(0, 4) << endl;
-
-
+//    cout << b.GetGameState() << endl;
+    while (b.GetGameState() == 0) {
+        cin >> x >> y;
+        b.Set(x, y, 'x', true);
+        auto move = PredictMove(b);
+        cout << b << endl << move << endl;
+//        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
+        b.Set(move.first, move.second, 'o', true);
+        cout << b << endl;
+    }
+    cout << b << endl;
+    cout << b.GetGameState() << endl;
     return 0;
 }
