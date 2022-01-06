@@ -35,7 +35,7 @@ public:
     public:
         Cluster() = default;
 
-        Cluster(const Cluster &) = default;
+//        Cluster(const Cluster &) = default;
 
         Cluster(Point leftUpper, Point rightLower) : leftUpper(leftUpper), rightLower(rightLower) {
         }
@@ -61,7 +61,13 @@ public:
             return (rightLower.x - leftUpper.x + 1) * (rightLower.y - leftUpper.y + 1);
         }
 
-        bool operator==(const Cluster &) const = default;
+        bool operator==(const Cluster &other) const {
+            return leftUpper == other.leftUpper && rightLower == other.rightLower;
+        }
+
+        bool operator!=(const Cluster &other) {
+            return !(other == *this);
+        }
 
         void Expand(size_t x, size_t y) {
             if (x < leftUpper.x)
@@ -92,7 +98,7 @@ private:
 public:
 
 
-    explicit Board(size_t size) : size(size), board(new char[size * size]), clusters(), winConst(5 < size ? 5 : size) {
+    explicit Board(size_t size) : size(size), winConst(5 < size ? 5 : size), board(new char[size * size]), clusters() {
         for (size_t i = 0; i < size * size; ++i) {
             board[i] = '_';
         }

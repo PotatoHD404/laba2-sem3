@@ -2,9 +2,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "../laba1-sem3/node_modules/.bin/svelte-kit dev",
-		"build": "../laba1-sem3/node_modules/.bin/svelte-kit build --verbose",
-		"preview": "../laba1-sem3/node_modules/.bin/svelte-kit preview"
+		"dev": "svelte-kit dev",
+		"build": "svelte-kit build --verbose",
+		"preview": "svelte-kit preview"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-vercel": "next",

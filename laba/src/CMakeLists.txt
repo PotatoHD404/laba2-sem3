@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../static/scripts/)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../scripts/)
     set(CMAKE_GCC_COMPILER "em++")
     set(CMAKE_C_COMPILER "emcc")
 endif ()
@@ -19,7 +19,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     add_subdirectory(Tests)
 endif ()
 
-add_executable(Laba3 main.cpp WebAssembly.hpp ListIter.hpp IEnumerable.hpp Sorts.hpp Exceptions.hpp IterImpl.hpp IList.hpp Utils.hpp ISet.hpp GraphIter.hpp Queue.hpp BaseIter.hpp Dictionary.hpp IDictionary.hpp MapCollection.hpp MiniMax.hpp Board.hpp SquareMatrix.hpp SparseMatrix.hpp Graph.hpp Random.hpp)
+add_executable(Laba3 main.cpp WebAssembly.hpp ListIter.hpp IEnumerable.hpp Sorts.hpp Exceptions.hpp IterImpl.hpp IList.hpp Utils.hpp ISet.hpp GraphIter.hpp Queue.hpp BaseIter.hpp Dictionary.hpp IDictionary.hpp MapCollection.hpp MiniMax.hpp Board.hpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     #    set(CMAKE_EXECUTABLE_SUFFIX .mjs)
