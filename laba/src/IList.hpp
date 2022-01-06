@@ -27,7 +27,14 @@ public:
     virtual IList<T> &Set(size_t index, T value) {
         if (index < 0 || index >= this->Count())
             throw range_error("index < 0 or index >= length");
-        Get(index) = value;
+        if constexpr(std::is_const<T>::value) {
+            cout << value << endl;
+            throw range_error("T is const");
+        }
+        else{
+            Get(index) = value;
+        }
+
         return *this;
     }
 

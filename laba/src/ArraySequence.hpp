@@ -141,17 +141,16 @@ public:
     }
 
     ArraySequence<T> &Insert(size_t index, T item) override {
-        if (index == 0)
-            return AddFirst(item);
+//        if (index == 0)
+//            return AddFirst(item);
+        if (index > +items.Count() + 1)
+            throw range_error("index < 0 or index >= length + 1");
         items.Resize(items.Count() + 1);
 
         for (size_t i = items.Count() - 1; i > index; --i) {
             items.Set(i, items[i - 1]);
         }
-        if (items.Count() - 2 != index)
-            items.Set(index, item);
-        else
-            items.Set(items.Count() - 1, item);
+        items.Set(index, item);
         return *this;
     }
 

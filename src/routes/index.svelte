@@ -1,10 +1,26 @@
+<!--<script type="module">-->
+
+<!--  import dot2svg from '@aduh95/viz.js/async';-->
+<!--  // import * as d3 from "https://cdn.skypack.dev/d3@7";-->
+
+<!--  // const div = selectAll("div");-->
+
+<!--</script>-->
 <script>
   import Input from '../components/input.svelte';
   import Select from '../components/select.svelte';
   import Field from '../components/field.svelte';
-  import LabWorker from '../../scripts/service-worker.js?url';
-  // import LabWorker1 from '../../static/scripts/actual-service-worker.js?worker';
+  import Button from '../components/button.svelte';
+  import Canvas from '../components/canvas.svelte';
+  import Viz from 'viz.js';
+
+  import { Module, render } from 'viz.js/full.render.js';
+
+  // const vizRenderStringSync = import('@aduh95/viz.js/sync');
+  // import LabWorker from '../../scripts/actual-service-worker.js?url';
+  import LabWorker1 from '../../scripts/actual-service-worker.js?worker';
   import { onMount } from 'svelte';
+
 
   let worker;
   let ok = false;
@@ -12,9 +28,39 @@
   let type_selected = false;
   let sequence = '';
   let result = '';
+  let inputValue = ['', '', 'True', 'True', '', ''];
+  let dots = [];
+  let svg = '';
+  let text = '';
+  let viz = new Viz({ Module, render });
+
+  function render_graph(dot) {
+    viz.renderString(dot)
+      .then(result => {
+        svg = result;
+      })
+      .catch(error => {
+        // Create a new Viz instance (@see Caveats page for more info)
+        viz = new Viz({ Module, render });
+
+        // Possibly display the error
+        console.error(error);
+      });
+  }
+
+  function queue() {
+    if (dots.length !== 0) {
+      console.log();
+      const el = dots.shift();
+      render_graph(el);
+
+    }
+    // console.log(dots.length);
+  }
+
   onMount(async () => {
-    worker = new Worker(LabWorker);
-    // worker = new LabWorker1();
+    // worker = new Worker(LabWorker);
+    worker = new LabWorker1();
     worker.onmessage = (e) => {
       if (e && e.data) {
         print(e.data);
@@ -22,6 +68,10 @@
     };
     worker.postMessage('init');
     ok = true;
+    setInterval(queue, 1000);
+
+
+    // const graphviz1 = graphviz('#graph').renderDot(dots[0]);
     // console.log('initialized');
   });
 
@@ -38,87 +88,60 @@
 
     if (ok) {
       ok = false;
+      let message;
       switch (input) {
-        case 'type':
-          choice = choice.replace(/\s/g, '');
-          // console.log(choice);
-          switch (choice) {
-            case 'int':
-              choice = '1';
-              break;
-            case 'float':
-              choice = '2';
-              break;
-            case 'string':
-              choice = '3';
-              break;
-            case 'complex':
-              choice = '4';
-              break;
-          }
-          // const char *MSGS[] = {"0. Quit",
-          // "1. Int",
-          // "2. Float",
-          // "3. String",
-          // "4. Complex"};
-          //
-          //
-          // const char *MSGS1[] = {"0. Quit",
-          // "1. Init sequence",
-          // "2. Add value to sequence",
-          // "3. Remove value from sequence",
-          // "4. Print sequence",
-          // "5. Fill with random values",
-          // "6. Sort"};
-          //
-          // const char *MSGS2[] = {"0. Quit",
-          // "1. ListSequence",
-          // "2. ArraySequence"};
-          //
-          // const char *MSGS3[] = {"0. Quit",
-          // "1. QuickSort",
-          // "2. ShellSort",
-          // "3. InsertionSort"};
-          if (!type_selected)
-            worker.postMessage(choice + '\n' + '4');
-          else
-            worker.postMessage('0' + '\n' + choice + '\n' + '4');
-          type_selected = true;
-          break;
+
         case 'init':
-          switch (choice) {
-            case 'ListSequence':
-              choice = '1';
-              break;
-            case 'ArraySequence':
-              choice = '2';
-              break;
-          }
-          worker.postMessage('1' + '\n' + choice + '\n' + '4');
+          // console.log(inputValue);
+          message = '1' + '\n';
+          if (inputValue[0] === '')
+            message += '0';
+          else
+            message += inputValue[0];
+          message += '\n';
+          if (inputValue[1] === '')
+            message += '0';
+          else
+            message += inputValue[1];
+          message += '\n';
+          if (inputValue[2] === 'True')
+            message += '1';
+          else
+            message += '2';
+          message += '\n';
+          if (inputValue[3] === 'True')
+            message += '1';
+          else
+            message += '2';
+          message += '\n' + '9' + '\n';
+
+          worker.postMessage(message);
           break;
-        case 'input':
-          // console.log('2' + '\n' + choice + '\n' + '4');
-          worker.postMessage('2' + '\n' + choice + '\n' + '4');
+        case 'colorize':
+          worker.postMessage('8' + '\n');
+          break;
+        case 'top':
+          worker.postMessage('6' + '\n');
+          break;
+        case 'add':
+          worker.postMessage('2' + '\n' + '9' + '\n');
           break;
         case 'remove':
-          worker.postMessage('3' + '\n' + choice + '\n' + '4');
+          if (choice !== '')
+            worker.postMessage('2' + '\n' + choice + '\n');
           break;
-        case 'fill':
-          worker.postMessage('5' + '\n' + choice + '\n' + '4');
-          break;
-        case 'sort':
-          switch (choice) {
-            case 'QuickSort':
-              choice = '1';
-              break;
-            case 'ShellSort':
-              choice = '2';
-              break;
-            case 'InsertionSort':
-              choice = '3';
-              break;
-          }
-          worker.postMessage('6' + '\n' + choice + '\n' + '4');
+        case 'dijkstra':
+          message = '7' + '\n';
+          if (inputValue[4] === '')
+            message += '0';
+          else
+            message += inputValue[4];
+          message += '\n';
+          if (inputValue[5] === '')
+            message += '1';
+          else
+            message += inputValue[5];
+          worker.postMessage(message);
           break;
       }
     }
@@ -127,10 +150,25 @@
   function print(data) {
     ok = true;
     // console.log(data);
-    if (data.includes('Sequence: ['))
-      sequence = data.split('Sequence: ')[1];
-    else if (data.includes('Result: '))
-      result = data.split('Result: ')[1];
+    text += data;
+    if (text.includes('graph {') && text.includes('}')) {
+      if (text.includes('digraph {'))
+        text = 'digraph {' + text.split('digraph {')[1];
+      else
+        text = 'graph {' + text.split('graph {')[1];
+      // console.log(text);
+      text.split('}').forEach((el) => {
+        if (el.includes('graph {'))
+          dots.push(el + '}');
+        // console.log(dots);
+
+      });
+      text = '';
+    }
+    if (data.includes('Chromatic num = '))
+      result = data.split('Chromatic num = ')[1];
+    else if (data.includes('Topological order is'))
+      result = data.split('Topological order is')[1];
 
     consoleText += data + '\r\n';
     let textarea = document.getElementById('consoleOutput');
@@ -146,6 +184,7 @@
     }, 5);
 
   }
+
 </script>
 
 <div class='flex justify-center'>
@@ -156,24 +195,30 @@
        rounded-md w-full focus:outline-none h-44 dark:ring-outline-dark m-1'
               readonly>{consoleText}</textarea>
 
-      <Select text='Select type for sequence' command={(choice)=>{Command('type', choice);}}
-              button_text='Select' id='type' options={['int', 'float', 'string', 'complex']} />
-      {#if type_selected}
-        <div class='my-2 w-full flex flex-wrap justify-center' id='menu'>
-          <Input text='Add value to sequence' command={(choice)=>{Command('input',choice);}}
-                 button_text='Add' />
-          <Input text='Remove value from sequence' command={(choice)=>{Command('remove',choice);}}
-                 button_text='Remove' />
-          <Input text='Fill sequence with random numbers' command={(choice)=>{Command('fill',choice);}}
-                 button_text='Fill' choice={10} />
-          <Select text='Init sequence with' command={(choice)=>{Command('init',choice);}}
-                  button_text='Init' options={['ArraySequence', 'ListSequence']} />
-          <Select text='Sort sequence' command={(choice)=>{Command('sort',choice);}}
-                  button_text='Sort' options={['QuickSort', 'ShellSort', 'InsertionSort']} />
-          <Field label_text='Sequence' text={sequence} />
-          <Field label_text='Result' text={result} />
+
+      <div class='my-2 w-full flex flex-wrap justify-center' id='menu'>
+        <Input text='Nodes count' command={(choice)=>{Command('input',choice);}}
+               bind:choice={inputValue[0]} />
+        <Input text='Edges count' command={(choice)=>{Command('remove',choice);}}
+               bind:choice={inputValue[1]} />
+        <Select text='Directed' command={(choice)=>{Command('init',choice);}}
+                options={['True', 'False']} bind:choice={inputValue[2]} />
+        <Select text='Edge weighted' command={()=>{Command('init');}}
+                button_text='Init' options={['True', 'False']} bind:choice={inputValue[3]} />
+        <div class='flex justify-center flex-wrap md:w-2/3 w-full'>
+          <Button button_text='Colorize' command={()=>{Command('colorize');}} />
+          <Button button_text='Topological sort' command={(choice)=>{Command('top',choice);}} />
+          <Button button_text='Add node' command={(choice)=>{Command('add',choice);}} />
         </div>
-      {/if}
+        <Input text='From node index' command={(choice)=>{Command('remove',choice);}}
+               bind:choice={inputValue[4]} />
+        <Input text='To node index' command={()=>{Command('dijkstra');}}
+               button_text='Dijkstra' bind:choice={inputValue[5]} />
+        <Input text='Node index' command={(choice)=>{Command('input',choice);}}
+               button_text='Remove' />
+        <Field label_text='Result' text={result} />
+        <Canvas label_text='Graph' bind:svg={svg} />
+      </div>
     </div>
 
 

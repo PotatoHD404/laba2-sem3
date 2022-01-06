@@ -169,15 +169,16 @@ private:
                     this->values.Insert(i, k);
                     return true;
                 }
-                return false;
             } else {
                 if (this->children[i]->values.Count() == 2 * _t - 1) {
                     SplitChild(i, this->GetChild(i), _t);
                     if (this->values[i] < k)
-                        i++;
+                        ++i;
                 }
-                return this->GetChild(i)->InsertNonFull(k, _t);
+                if (this->values.Count() == i || (i < this->values.Count() && k != this->values[i]))
+                    return this->GetChild(i)->InsertNonFull(k, _t);
             }
+            return false;
         }
 
         bool Remove(T k, size_t _t) {
@@ -240,19 +241,20 @@ private:
         }
 
         void SplitChild(size_t i, BNode *y, size_t _t) {
-            BNode *z = new BNode();
+            auto z = new BNode();
 //            z->values.Resize(_t - 1);
-            for (size_t j = 0; j < _t - 1; j++)
+            for (size_t j = 0; j < _t - 1; ++j)
 //                z->values[j] = y->values[j + _t];
                 z->values.AddFirst(y->values.RemoveLast());
 
             if (!y->IsLeaf()) {
-                for (size_t j = 0; j < _t; j++)
+                for (size_t j = 0; j < _t; ++j)
                     z->children.AddFirst(y->children.RemoveLast());
             }
-
+//            cout << y->values << endl;
             this->children.Insert(i + 1, z);
             this->values.Insert(i, y->values.RemoveLast());
+
 //            y->values.Resize(_t - 1);
         }
 
@@ -278,6 +280,7 @@ private:
 
         const T &operator*() const override {
 //            std::cout << stack << endl;
+//            cout << stack.Top().first->ChildrenCount() << " " << stack.Top().second << endl;
             return stack.Top().first->values[stack.Top().second - 1];
         }
 
@@ -287,7 +290,10 @@ private:
             if (++this->pos == this->it->Count()) {
             } else if ((stack.Top().first->IsLeaf() && stack.Top().first->values.Count() < ++stack.Top().second) ||
                        (stack.Top().first->ChildrenCount() == stack.Top().second)) {
-                stack.Pop();
+                do {
+                    stack.Pop();
+                } while ((stack.Top().first->IsLeaf() && stack.Top().first->values.Count() < ++stack.Top().second) ||
+                         (stack.Top().first->ChildrenCount() == stack.Top().second));
 //                cout << "Popped ";
             } else if (!stack.Top().first->IsLeaf()) {
 //                cout << "Whiled ";
@@ -365,13 +371,15 @@ public:
             BNode *s = new BNode();
             s->children.Add(this->root);
             s->SplitChild(0, this->root, t);
-            size_t i = 0;
-            if (s->values[i] < k)
-                i++;
+//            size_t i = 0;
+//            if (s->values[i] < k)
+//                ++i;
 
+            this->root = s;
+//            cout << *this << endl;
+//            cout << s->values << endl;
             if (s->InsertNonFull(k, t))
                 this->count++;
-            this->root = s;
         } else {
             if (this->root->InsertNonFull(k, t))
                 this->count++;

@@ -3,7 +3,7 @@
   export let text;
   export let button_text;
   export let command;
-  let choice;
+  export let choice;
 </script>
 <div class='flex my-2 w-full md:w-2/3 pt-2'>
   <div class='relative input-component empty w-full h-8 px-1'>
@@ -19,13 +19,15 @@
       {text}
     </label>
   </div>
-  <div class='px-1 w-1/3 h-8'>
-    <button on:click={()=>{command(choice)}} class='h-full w-full light-text dark:bg-alt-dark dark:text-dark-text bg-light rounded-md transition
+  {#if button_text}
+    <div class='px-1 w-1/3 h-8'>
+      <button on:click={()=>{command(choice)}} class='h-full w-full light-text dark:bg-alt-dark dark:text-dark-text bg-light rounded-md transition
                     font-semibold focus:outline-none hover:bg-gray-200
                     ring-1 ring-outline-light dark:ring-outline-dark dark:hover:ring-gray-400 duration-300 dark:duration-200'>
-      {button_text}
-    </button>
-  </div>
+        {button_text}
+      </button>
+    </div>
+  {/if}
 </div>
 <style>
     label {

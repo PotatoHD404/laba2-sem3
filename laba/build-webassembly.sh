@@ -1,4 +1,4 @@
-#!/bin/bash
+
 EM_PATH=$HOME/emsdk/upstream/emscripten
 echo EM_PATH
 mkdir -p ./src/cmake-build-webassembly

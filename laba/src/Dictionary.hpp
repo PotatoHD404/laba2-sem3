@@ -11,10 +11,9 @@
 
 template<typename TKey, typename TValue>
 class Dictionary : public IDictionary<TKey, TValue> {
-public:
-    using keyValue = KeyValue<TKey, TValue>;
 private:
     using iCollection = ICollection<KeyValue<TKey, TValue>>;
+    using keyValue = KeyValue<TKey, TValue>;
     Set<keyValue> set;
 
 public:
