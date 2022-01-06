@@ -112,15 +112,15 @@ public:
         return *this;
     }
 
-    Set<T> operator+(Set<T> &list) {
+    Set<T> operator+(const Set<T> &list) {
         return Utils::Union(*this, list);
     }
 
-    Set<T> operator*(Set<T> &list) {
+    Set<T> operator*(const Set<T> &list) {
         return Utils::Intersection(*this, list);
     }
 
-    Set<T> operator-(Set<T> &list) {
+    Set<T> operator-(const Set<T> &list) {
         return Utils::Difference(*this, list);
     }
 };

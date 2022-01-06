@@ -52,6 +52,13 @@ namespace Utils {
             out << "\"" << x << "\"";
         } else if constexpr(std::is_same<T, char>::value) {
             out << "\'" << x << "\'";
+        } else if constexpr(std::is_integral<T>::value) {
+            if (x == std::numeric_limits<T>::max())
+                out << "+inf";
+            else if (x == std::numeric_limits<T>::min() && x != 0)
+                out << "-inf";
+            else
+                out << x;
         } else {
             out << x;
         }

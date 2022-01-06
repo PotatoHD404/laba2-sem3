@@ -25,7 +25,7 @@ git pull && \
 ./emsdk install latest && \
 ./emsdk activate latest && \
 source ./emsdk_env.sh && \
-echo 'source "/home/user/emsdk/emsdk_env.sh"' >> /home/user/.bash_profile
+echo 'source "$HOME/emsdk/emsdk_env.sh"' >> $HOME/.bash_profile
 
 #sudo useradd -m user && \
 #yes password | passwd user

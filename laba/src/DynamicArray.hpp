@@ -19,15 +19,18 @@ public:
     //Creation of the object
     DynamicArray() : actual_array(new T[1]()), length(0) {}
 
-    explicit DynamicArray(size_t count) {
+    explicit DynamicArray(size_t count, T value = T()) {
         if ((long) count < 0)
             throw out_of_range("count < 0");
 
         if (count > 0)
-            actual_array = new T[count]();
+            actual_array = new T[count];
         else
             actual_array = new T[1]();
         length = count;
+        for (size_t i = 0; i < length; ++i) {
+            actual_array[i] = value;
+        }
     }
 
     DynamicArray(T *items, size_t count) {
@@ -147,9 +150,6 @@ public:
 
     //Termination
     ~DynamicArray() {
-        if (actual_array) {
-            delete[] actual_array;
-            actual_array = nullptr;
-        }
+        delete[] actual_array;
     }
 };

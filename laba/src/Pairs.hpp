@@ -4,7 +4,11 @@
 
 #pragma once
 
-template<typename T1, typename T2>
+#include "ICollection.hpp"
+
+using std::ostream;
+
+template<typename T1, typename T2=T1>
 class Pair {
 public:
     mutable T1 first;
@@ -47,7 +51,7 @@ public:
 
     bool operator==(const KeyValue &x) const { return key == x.key; }
 
-//    bool Equals(const KeyValue &x) const { return key == x.key && value == x.value; }
+//    bool Equals(const keyValue &x) const { return key == x.key && value == x.value; }
 
     bool operator!=(const KeyValue &x) const {
         return !(*this == x);
@@ -83,7 +87,7 @@ ostream &operator<<(ostream &out, const KeyValue<TKey, TValue> &x) {
 template<typename T1, typename T2>
 ostream &operator<<(ostream &out, const Pair<T1, T2> &x) {
     Utils::PPrint(out, x.first);
-    out << ": ";
+    out << ", ";
     Utils::PPrint(out, x.second);
     return out;
 }
