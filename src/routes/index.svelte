@@ -12,9 +12,6 @@
   import Field from '../components/field.svelte';
   import Button from '../components/button.svelte';
   import Canvas from '../components/canvas.svelte';
-  import Viz from 'viz.js';
-
-  import { Module, render } from 'viz.js/full.render.js';
 
   // const vizRenderStringSync = import('@aduh95/viz.js/sync');
   // import LabWorker from '../../scripts/actual-service-worker.js?url';
@@ -26,37 +23,8 @@
   let ok = false;
   let consoleText = '';
   let type_selected = false;
-  let sequence = '';
-  let result = '';
-  let inputValue = ['', '', 'True', 'True', '', ''];
-  let dots = [];
-  let svg = '';
-  let text = '';
-  let viz = new Viz({ Module, render });
+  let prev = 'o';
 
-  function render_graph(dot) {
-    viz.renderString(dot)
-      .then(result => {
-        svg = result;
-      })
-      .catch(error => {
-        // Create a new Viz instance (@see Caveats page for more info)
-        viz = new Viz({ Module, render });
-
-        // Possibly display the error
-        console.error(error);
-      });
-  }
-
-  function queue() {
-    if (dots.length !== 0) {
-      console.log();
-      const el = dots.shift();
-      render_graph(el);
-
-    }
-    // console.log(dots.length);
-  }
 
   onMount(async () => {
     // worker = new Worker(LabWorker);
@@ -68,7 +36,6 @@
     };
     worker.postMessage('init');
     ok = true;
-    setInterval(queue, 1000);
 
 
     // const graphviz1 = graphviz('#graph').renderDot(dots[0]);
@@ -83,65 +50,44 @@
   // };
 
   // worker.postMessage('init');
+  let n = 0;
+  let initialized = false;
+  let result;
+  let field = [];
 
   function Command(input, choice) {
 
     if (ok) {
-      ok = false;
+
       let message;
+      console.log(input);
       switch (input) {
 
         case 'init':
-          // console.log(inputValue);
-          message = '1' + '\n';
-          if (inputValue[0] === '')
-            message += '0';
-          else
-            message += inputValue[0];
-          message += '\n';
-          if (inputValue[1] === '')
-            message += '0';
-          else
-            message += inputValue[1];
-          message += '\n';
-          if (inputValue[2] === 'True')
-            message += '1';
-          else
-            message += '2';
-          message += '\n';
-          if (inputValue[3] === 'True')
-            message += '1';
-          else
-            message += '2';
-          message += '\n' + '9' + '\n';
-
+          if (choice !== '' && choice - 0 >= 3) {
+            n = choice - 0;
+          }
+          field = new Array(n);
+          for (let i = 0; i < n; i++) {
+            field[i] = new Array(n);
+            for (let j = 0; j < n; j++)
+              field[i][j] = '';
+          }
+          message = '';
+          if (initialized)
+            message += '\n';
+          message += '1' + '\n' + choice + '\n';
           worker.postMessage(message);
+          initialized = true;
+          ok = false;
           break;
-        case 'colorize':
-          worker.postMessage('8' + '\n');
-          break;
-        case 'top':
-          worker.postMessage('6' + '\n');
-          break;
-        case 'add':
-          worker.postMessage('2' + '\n' + '9' + '\n');
-          break;
-        case 'remove':
-          if (choice !== '')
-            worker.postMessage('2' + '\n' + choice + '\n');
-          break;
-        case 'dijkstra':
-          message = '7' + '\n';
-          if (inputValue[4] === '')
-            message += '0';
-          else
-            message += inputValue[4];
-          message += '\n';
-          if (inputValue[5] === '')
-            message += '1';
-          else
-            message += inputValue[5];
-          worker.postMessage(message);
+        case 'move':
+          if (field[choice[0]][choice[1]] === '' && prev !== 'x') {
+            ok = false;
+            field[choice[0]][choice[1]] = 'x';
+            worker.postMessage(`${choice[0]} ${choice[1]} \n`);
+            prev = 'x';
+          }
           break;
       }
     }
@@ -150,25 +96,23 @@
   function print(data) {
     ok = true;
     // console.log(data);
-    text += data;
-    if (text.includes('graph {') && text.includes('}')) {
-      if (text.includes('digraph {'))
-        text = 'digraph {' + text.split('digraph {')[1];
-      else
-        text = 'graph {' + text.split('graph {')[1];
-      // console.log(text);
-      text.split('}').forEach((el) => {
-        if (el.includes('graph {'))
-          dots.push(el + '}');
-        // console.log(dots);
 
-      });
-      text = '';
+    if (data.includes('Xs won!')) {
+      prev = 'x';
+      result = 'Xs won!';
+    } else if (data.includes('Os won!')) {
+      prev = 'x';
+      result = 'Os won!';
+    } else if (data.includes('Draw...')) {
+      prev = 'x';
+      result = 'Draw...';
+    } else if (data.includes('AI move: ')) {
+      console.log(data);
+      prev = 'o';
+      result = data.split('AI move: ')[1];
+      const move = data.split('AI move: ')[1].split(', ');
+      field[move[0] - 0][move[1] - 0] = 'o';
     }
-    if (data.includes('Chromatic num = '))
-      result = data.split('Chromatic num = ')[1];
-    else if (data.includes('Topological order is'))
-      result = data.split('Topological order is')[1];
 
     consoleText += data + '\r\n';
     let textarea = document.getElementById('consoleOutput');
@@ -197,27 +141,37 @@
 
 
       <div class='my-2 w-full flex flex-wrap justify-center' id='menu'>
-        <Input text='Nodes count' command={(choice)=>{Command('input',choice);}}
-               bind:choice={inputValue[0]} />
-        <Input text='Edges count' command={(choice)=>{Command('remove',choice);}}
-               bind:choice={inputValue[1]} />
-        <Select text='Directed' command={(choice)=>{Command('init',choice);}}
-                options={['True', 'False']} bind:choice={inputValue[2]} />
-        <Select text='Edge weighted' command={()=>{Command('init');}}
-                button_text='Init' options={['True', 'False']} bind:choice={inputValue[3]} />
-        <div class='flex justify-center flex-wrap md:w-2/3 w-full'>
-          <Button button_text='Colorize' command={()=>{Command('colorize');}} />
-          <Button button_text='Topological sort' command={(choice)=>{Command('top',choice);}} />
-          <Button button_text='Add node' command={(choice)=>{Command('add',choice);}} />
+        <Input text='Field size' command={(choice)=>{Command('init',choice);}}
+               button_text='Set' />
+        <div class='w-full flex flex-wrap h-full justify-center field'>
+          {#each Array(n) as _, i}
+            <div class='w-full flex h-auto justify-center'>
+              {#each Array(n) as _, j}
+                <Button button_text={field[i][j]} command={()=>{Command('move', [i,j])}} />
+              {/each}
+            </div>
+
+          {/each}
         </div>
-        <Input text='From node index' command={(choice)=>{Command('remove',choice);}}
-               bind:choice={inputValue[4]} />
-        <Input text='To node index' command={()=>{Command('dijkstra');}}
-               button_text='Dijkstra' bind:choice={inputValue[5]} />
-        <Input text='Node index' command={(choice)=>{Command('input',choice);}}
-               button_text='Remove' />
-        <Field label_text='Result' text={result} />
-        <Canvas label_text='Graph' bind:svg={svg} />
+        <!--        <Input text='Edges count' command={(choice)=>{Command('remove',choice);}}-->
+        <!--               bind:choice={inputValue[1]} />-->
+        <!--        <Select text='Directed' command={(choice)=>{Command('init',choice);}}-->
+        <!--                options={['True', 'False']} bind:choice={inputValue[2]} />-->
+        <!--        <Select text='Edge weighted' command={()=>{Command('init');}}-->
+        <!--                button_text='Init' options={['True', 'False']} bind:choice={inputValue[3]} />-->
+        <!--        <div class='flex justify-center flex-wrap md:w-2/3 w-full'>-->
+        <!--          <Button button_text='Colorize' command={()=>{Command('colorize');}} />-->
+        <!--          <Button button_text='Topological sort' command={(choice)=>{Command('top',choice);}} />-->
+        <!--          <Button button_text='Add node' command={(choice)=>{Command('add',choice);}} />-->
+        <!--        </div>-->
+        <!--        <Input text='From node index' command={(choice)=>{Command('remove',choice);}}-->
+        <!--               bind:choice={inputValue[4]} />-->
+        <!--        <Input text='To node index' command={()=>{Command('dijkstra');}}-->
+        <!--               button_text='Dijkstra' bind:choice={inputValue[5]} />-->
+        <!--        <Input text='Node index' command={(choice)=>{Command('input',choice);}}-->
+        <!--               button_text='Remove' />-->
+        <!--        <Field label_text='Result' text={result} />-->
+        <!--        <Canvas label_text='Graph' bind:svg={svg} />-->
       </div>
     </div>
 
@@ -230,6 +184,11 @@
     /*.greenBox {*/
     /*    background-color: rgba(0, 255, 0, 0.2);*/
     /*}*/
+    .field {
+        width: 40rem;
+        height: 40rem;
+        font-size: 1.5rem;
+    }
 
     label {
         top: 0;
