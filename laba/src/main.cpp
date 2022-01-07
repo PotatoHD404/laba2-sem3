@@ -39,9 +39,21 @@ int DialogValue(const string &msg) {
 }
 
 void StartUI() {
+//    cout << std::numeric_limits<long>::min() << endl << std::numeric_limits<long>::max() << endl;
+//    auto b1 = new Board(3);
+//    b1->Set(1, 1, 'x');
+//    b1->Set(1, 2, 'o');
+//
+//    b1->Set(0, 1, 'x');
+//    b1->Set(2, 1, 'o');
+//    b1->Set(2, 2, 'x');
+//    Utils::PPrint(cout, *b1) << endl;
+//
+//    Utils::PPrint(cout, b1->GetGameState()) << endl;
+//    delete b1;
     int choice = 1;
     auto b = new Board(3);
-//    Pair<size_t> move{};
+    Pair<size_t> move{};
     stringstream ss;
 //    ss >> choice;
     while (choice) {
@@ -66,13 +78,17 @@ void StartUI() {
                                 break;
                             }
                             b->Set(x, y, 'x', true);
-//                            move = PredictMove(*b);
-//                            cout << "aaaaaaaaaaaaaaaaaaaaaaa" << endl;
-                            cout << *b << endl;
-                            cout << "AI move: " << Pair(0, 1) << endl;
+//                            cout << b->clusters << endl;
+                            if (b->GetGameState() == 0) {
+                                move = PredictMove(*b);
+                                cout << *b << endl;
+                                cout << "AI move: " << move << endl;
 //        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
-//                            b->Set(move.first, move.second, 'o', true);
-//                            cout << *b << endl;
+                                b->Set(move.first, move.second, 'o', true);
+//                                cout << b->clusters << endl;
+
+                                cout << *b << endl;
+                            }
                         }
                         catch (exception &e) {
                             cout << "An error has occurred: " << e.what() << "\nTry again!\n";
@@ -105,32 +121,38 @@ void StartUI() {
 
 
 int main() {
-    Board b(10);
-    stringstream ss;
+
+//    while (b->GetGameState() == 0) {
+//        long x = -1, y = -1;
+//
+//        cout << "Enter your move, enter to quit:" << endl;
+//        cout << "Input (x y)" << endl;
+//        auto ss = stringstream(readline());
+//        ss >> x >> y;
+//        if (x == y && y == -1) {
+//            break;
+//        }
+//        b->Set(x, y, 'x', true);
+////        cout << b->clusters << endl;
+//        if (b->GetGameState() == 0) {
+//            auto move = PredictMove(*b);
+//            cout << *b << endl;
+//            cout << "AI move: " << move << endl;
+////        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
+//            b->Set(move.first, move.second, 'o', true);
+////            cout << b->clusters << endl;
+//
+//            cout << *b << endl;
+//        }
+//
+//    }
+//    cout << *b << endl;
+//    Utils::PPrint(cout, b->GetGameState()) << endl;
+
+//
 
 
-//    cout << b.GetGameState() << endl;
-
-    while (b.GetGameState() == 0) {
-        long x = -1, y = -1;
-        cout << "Enter your move, enter to quit:" << endl;
-        ss = stringstream(readline());
-        ss >> x >> y;
-        if (x == y && y == -1) {
-            break;
-        }
-        b.Set(x, y, 'x', true);
-        auto move = PredictMove(b);
-        cout << b << endl << move << endl;
-//        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
-        b.Set(move.first, move.second, 'o', true);
-        cout << b << endl;
-    }
-    cout << b << endl;
-    Utils::PPrint(cout, b.GetGameState());
-
-
-//    StartUI();
+    StartUI();
     return 0;
 }
 

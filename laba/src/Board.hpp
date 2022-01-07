@@ -82,20 +82,33 @@ public:
                 leftUpper.y = y;
             else if (y > rightLower.y)
                 rightLower.y = y;
-            else if (y == leftUpper.y && x > 0)
+            else if (y == leftUpper.y && y > 0)
                 leftUpper.y = y - 1;
             else if (y == rightLower.y)
                 rightLower.y = y + 1;
 
+//            if (leftUpper.y == (size_t) -1) {
+//                cout << "" << endl;
+//            }
+
+        }
+
+        friend ostream &operator<<(ostream &out, const Cluster &x) {
+            out << "(";
+            out << x.leftUpper.x << ", " << x.leftUpper.y << ", ";
+            out << x.rightLower.x << ", " << x.rightLower.y;
+
+            out << ")";
+            return out;
         }
     };
 
-private:
+public:
     mutable char *board;
     mutable char gameState{};
     mutable size_t count{};
     ListSequence<Cluster> clusters;
-    Stack<Pair<Cluster, size_t>> clusterChanges;
+    Stack<Stack<Pair<Cluster, size_t>>> clusterChanges;
     long score{};
 public:
 
@@ -131,7 +144,7 @@ public:
         return count;
     }
 
-    void Set(size_t i, size_t j, char item, bool updateClusters = true) {
+    void Set(long i, long j, char item, bool updateClusters = true) {
         if (item == '_') {
             gameState = 0;
             if (board[i * size + j] != '_')
@@ -142,6 +155,8 @@ public:
         if (board[i * size + j] != '_' || gameState != 0)
             throw invalid_argument("Wrong move!");
         board[i * size + j] = item;
+//        cout << board << endl;
+
         if (updateClusters)
             this->UpdateClusters(i, j);
         ++count;
@@ -149,13 +164,13 @@ public:
             gameState = '_';
             return;
         }
-        size_t expand = winConst - 1;
-        size_t leftBound = j >= expand ? j - expand : 0;
-        size_t rightBound = j + expand < this->size ? j + expand : this->size - 1;
-        size_t upBound = i >= expand ? i - expand : 0;
-        size_t downBound = i + expand < this->size ? i + expand : this->size - 1;
+        long expand = winConst - 1;
+        long leftBound = (long) j >= expand ? (long) j - expand : 0;
+        long rightBound = j + expand < (long)  this->size ? j + expand : (long) this->size - 1;
+        long upBound =  i >= expand ?  i - expand : 0;
+        long downBound = i + expand < (long)this->size ? (long) i + expand : (long) this->size - 1;
         long series = 0;
-        for (size_t k = leftBound; k <= rightBound; ++k) {
+        for (long k = leftBound; k <= rightBound; ++k) {
             if (this->Get(i, k) != item) {
                 series = 0;
             } else {
@@ -170,7 +185,7 @@ public:
         series = 0;
 
 
-        for (size_t k = upBound; k <= downBound; ++k) {
+        for (long k = upBound; k <= downBound; ++k) {
             if (this->Get(k, j) != item) {
                 series = 0;
             } else {
@@ -183,11 +198,12 @@ public:
         }
         series = 0;
 
-        auto min = (long long) (leftBound - j > upBound - i ? leftBound - j : upBound - i);
-        auto max = (long long) (rightBound - j > downBound - i ? downBound - i : rightBound - j);
-        if (max - min >= (long long) expand) {
-            for (long long k = min; k <= max; ++k) {
+        long min = (long) (leftBound - j > upBound - i ? leftBound - j : upBound - i);
+        long max = (long) (rightBound - j > downBound - i ? downBound - i : rightBound - j);
+        if (max - min >= (long) expand) {
+            for (long k = min; k <= max; ++k) {
                 if (this->Get(i + k, j + k) != item) {
+//                    cout << this->Get(i + k, j + k) << " " << i + k << " " << j + k << " " << item << endl;
                     series = 0;
                 } else {
                     ++series;
@@ -199,18 +215,11 @@ public:
             }
             series = 0;
         }
-        min = (long long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
-        max = (long long) (rightBound - j > i - upBound ? i - upBound : rightBound - j);
-        if (max - min >= (long long) expand) {
-            for (long long k = min; k <= max; ++k) {
+        min = (long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
+        max = (long) (rightBound - j > i - upBound ? i - upBound : rightBound - j);
+        if (max - min >= (long) expand) {
+            for (long k = min; k <= max; ++k) {
                 if (this->Get(i - k, j + k) != item) {
-                    if (this->Get(i - k, j + k) == '_' && series == winConst - 1) {
-                        if (item == 'x')
-                            score -= series;
-                        else
-                            score += series;
-
-                    }
                     series = 0;
                 } else {
                     ++series;
@@ -221,35 +230,41 @@ public:
                 }
             }
         }
+//        cout << "I am here" << endl;
     }
 
     void UpdateClusters(size_t i, size_t j) {
         bool added = false;
+        clusterChanges.Push(Stack<Pair<Cluster, size_t>>());
         for (size_t k = 0; k < clusters.Count(); ++k) {
 
             if (clusters[k].IsNear(i, j)) {
-                clusterChanges.Push(Pair(clusters[k], k));
+                clusterChanges.Top().Push(Pair(clusters[k], k));
                 clusters[k].Expand(i, j);
                 added = true;
-                break;
+//                break;
             }
         }
         if (!added) {
             Cluster tmp = {Point(i, j), Point(i, j)};
             tmp.Expand(i, j);
             tmp.Expand(i, j);
-            clusterChanges.Add(Pair(Cluster(Point((size_t) -1, (size_t) -1),
-                                            Point((size_t) -1, (size_t) -1)), clusters.Count()));
+            clusterChanges.Top().Push(Pair(Cluster(Point((size_t) -1, (size_t) -1),
+                                                   Point((size_t) -1, (size_t) -1)), clusters.Count()));
             clusters.Add(tmp);
         }
     }
 
     void UndoClusters() {
-        if (Cluster(Point((size_t) -1, (size_t) -1),
-                    Point((size_t) -1, (size_t) -1)) == clusterChanges.Top().first)
-            clusters.RemoveAt(clusterChanges.Pop().second);
-        else
-            clusters[clusterChanges.Top().second] = clusterChanges.Pop().first;
+        auto changes = clusterChanges.Pop();
+        while (!changes.IsEmpty())
+            if (Cluster(Point((size_t) -1, (size_t) -1),
+                        Point((size_t) -1, (size_t) -1)) == changes.Top().first)
+                clusters.RemoveAt(changes.Pop().second);
+            else {
+                auto tmp = changes.Pop();
+                clusters[tmp.second] = tmp.first;
+            }
 
     }
 

@@ -8,6 +8,9 @@
 
 template<class T>
 class Stack : public ListSequence<T> {
+private:
+    using ListSequence<T>::Add;
+    using ListSequence<T>::AddFirst;
 public:
     using ListSequence<T>::ListSequence;
 
