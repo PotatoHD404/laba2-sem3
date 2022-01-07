@@ -82,20 +82,33 @@ public:
                 leftUpper.y = y;
             else if (y > rightLower.y)
                 rightLower.y = y;
-            else if (y == leftUpper.y && x > 0)
+            else if (y == leftUpper.y && y > 0)
                 leftUpper.y = y - 1;
             else if (y == rightLower.y)
                 rightLower.y = y + 1;
 
+//            if (leftUpper.y == (size_t) -1) {
+//                cout << "" << endl;
+//            }
+
+        }
+
+        friend ostream &operator<<(ostream &out, const Cluster &x) {
+            out << "(";
+            out << x.leftUpper.x << ", " << x.leftUpper.y << ", ";
+            out << x.rightLower.x << ", " << x.rightLower.y;
+
+            out << ")";
+            return out;
         }
     };
 
-private:
+public:
     mutable char *board;
     mutable char gameState{};
     mutable size_t count{};
     ListSequence<Cluster> clusters;
-    Stack<Pair<Cluster, size_t>> clusterChanges;
+    Stack<Stack<Pair<Cluster, size_t>>> clusterChanges;
     long score{};
 public:
 
@@ -204,13 +217,6 @@ public:
         if (max - min >= (long long) expand) {
             for (long long k = min; k <= max; ++k) {
                 if (this->Get(i - k, j + k) != item) {
-                    if (this->Get(i - k, j + k) == '_' && series == winConst - 1) {
-                        if (item == 'x')
-                            score -= series;
-                        else
-                            score += series;
-
-                    }
                     series = 0;
                 } else {
                     ++series;
@@ -225,31 +231,36 @@ public:
 
     void UpdateClusters(size_t i, size_t j) {
         bool added = false;
+        clusterChanges.Push(Stack<Pair<Cluster, size_t>>());
         for (size_t k = 0; k < clusters.Count(); ++k) {
 
             if (clusters[k].IsNear(i, j)) {
-                clusterChanges.Push(Pair(clusters[k], k));
+                clusterChanges.Top().Push(Pair(clusters[k], k));
                 clusters[k].Expand(i, j);
                 added = true;
-                break;
+//                break;
             }
         }
         if (!added) {
             Cluster tmp = {Point(i, j), Point(i, j)};
             tmp.Expand(i, j);
             tmp.Expand(i, j);
-            clusterChanges.Add(Pair(Cluster(Point((size_t) -1, (size_t) -1),
-                                            Point((size_t) -1, (size_t) -1)), clusters.Count()));
+            clusterChanges.Top().Push(Pair(Cluster(Point((size_t) -1, (size_t) -1),
+                                                   Point((size_t) -1, (size_t) -1)), clusters.Count()));
             clusters.Add(tmp);
         }
     }
 
     void UndoClusters() {
-        if (Cluster(Point((size_t) -1, (size_t) -1),
-                    Point((size_t) -1, (size_t) -1)) == clusterChanges.Top().first)
-            clusters.RemoveAt(clusterChanges.Pop().second);
-        else
-            clusters[clusterChanges.Top().second] = clusterChanges.Pop().first;
+        auto changes = clusterChanges.Pop();
+        while (!changes.IsEmpty())
+            if (Cluster(Point((size_t) -1, (size_t) -1),
+                        Point((size_t) -1, (size_t) -1)) == changes.Top().first)
+                clusters.RemoveAt(changes.Pop().second);
+            else {
+                auto tmp = changes.Pop();
+                clusters[tmp.second] = tmp.first;
+            }
 
     }
 

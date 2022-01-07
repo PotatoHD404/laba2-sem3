@@ -16,7 +16,7 @@ MiniMax(Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-value-
         size_t depth) {
     if (depth >= maxDepth) {
 //        cout << "Exceeded" << endl;
-        return board.GetScore();
+        return 0;
     }
     long bestScore = isEnemyMove ? std::numeric_limits<long>::max() : std::numeric_limits<long>::min();
     char gameState = board.GetGameState();
@@ -36,7 +36,8 @@ MiniMax(Board &board, bool isEnemyMove, // NOLINT(performance-unnecessary-value-
 //                cout << (long) bestScore << endl;
                 board.UndoClusters();
                 board.Set(i, j, '_');
-                if ((!isEnemyMove && bestScore == 1) || (bestScore == -1 && isEnemyMove))
+                if ((!isEnemyMove && bestScore == std::numeric_limits<long>::max()) ||
+                    (bestScore == std::numeric_limits<long>::min() && isEnemyMove))
                     return bestScore;
             }
         }
@@ -51,6 +52,8 @@ Pair<size_t> PredictMove(Board &board) {
     size_t movesCount = 1;
     size_t boardSize = board.GetSize();
     for (maxDepth = 0; movesCount < 1000000; ++maxDepth) {
+        if (boardSize - board.GetCount() - maxDepth == 0)
+            break;
         movesCount *= boardSize - board.GetCount() - maxDepth;
     }
     --maxDepth;
@@ -64,16 +67,19 @@ Pair<size_t> PredictMove(Board &board) {
                 board.Set(i, j, '_');
 //                cout << board << endl;
                 if (score > best_score) {
+//                    cout << score << endl;
+
                     best_score = score;
 //                    cout << (long) best_score << endl;
                     move = {i, j};
-                    if (best_score == 1)
+                    if (best_score == std::numeric_limits<long>::max())
                         return move;
                 }
 
             }
         }
     }
+//    cout << "not found" << endl;
     return move;
 
 }

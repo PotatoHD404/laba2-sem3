@@ -75,7 +75,7 @@
           }
           message = '';
           if (initialized)
-            message += '\n';
+            message += '\n\n';
           message += '1' + '\n' + choice + '\n';
           worker.postMessage(message);
           initialized = true;
@@ -100,14 +100,19 @@
     if (data.includes('Xs won!')) {
       prev = 'x';
       result = 'Xs won!';
+      initialized = false;
     } else if (data.includes('Os won!')) {
       prev = 'x';
       result = 'Os won!';
+      initialized = false;
+
     } else if (data.includes('Draw...')) {
       prev = 'x';
       result = 'Draw...';
+      initialized = false;
+
     } else if (data.includes('AI move: ')) {
-      console.log(data);
+      // console.log(data);
       prev = 'o';
       result = data.split('AI move: ')[1];
       const move = data.split('AI move: ')[1].split(', ');
