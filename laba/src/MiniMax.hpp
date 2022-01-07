@@ -67,7 +67,7 @@ Pair<size_t> PredictMove(Board &board) {
                 board.Set(i, j, '_');
 //                cout << board << endl;
                 if (score > best_score) {
-//                    cout << score << endl;
+                    cout << score << endl;
 
                     best_score = score;
 //                    cout << (long) best_score << endl;
@@ -79,7 +79,7 @@ Pair<size_t> PredictMove(Board &board) {
             }
         }
     }
-//    cout << "not found" << endl;
+    cout << "not found" << endl;
     return move;
 
 }

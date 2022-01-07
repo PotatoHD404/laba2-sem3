@@ -155,6 +155,8 @@ public:
         if (board[i * size + j] != '_' || gameState != 0)
             throw invalid_argument("Wrong move!");
         board[i * size + j] = item;
+//        cout << board << endl;
+
         if (updateClusters)
             this->UpdateClusters(i, j);
         ++count;
@@ -162,13 +164,13 @@ public:
             gameState = '_';
             return;
         }
-        size_t expand = winConst - 1;
-        size_t leftBound = j >= expand ? j - expand : 0;
-        size_t rightBound = j + expand < this->size ? j + expand : this->size - 1;
-        size_t upBound = i >= expand ? i - expand : 0;
-        size_t downBound = i + expand < this->size ? i + expand : this->size - 1;
+        long expand = winConst - 1;
+        long leftBound = (long) j >= expand ? (long) j - expand : 0;
+        long rightBound = j + expand < this->size ? (long) j + expand : (long) this->size - 1;
+        long upBound = (long) i >= expand ? (long) i - expand : 0;
+        long downBound = i + expand < this->size ? (long) i + expand : (long) this->size - 1;
         long series = 0;
-        for (size_t k = leftBound; k <= rightBound; ++k) {
+        for (long k = leftBound; k <= rightBound; ++k) {
             if (this->Get(i, k) != item) {
                 series = 0;
             } else {
@@ -183,7 +185,7 @@ public:
         series = 0;
 
 
-        for (size_t k = upBound; k <= downBound; ++k) {
+        for (long k = upBound; k <= downBound; ++k) {
             if (this->Get(k, j) != item) {
                 series = 0;
             } else {
@@ -196,11 +198,12 @@ public:
         }
         series = 0;
 
-        auto min = (long long) (leftBound - j > upBound - i ? leftBound - j : upBound - i);
-        auto max = (long long) (rightBound - j > downBound - i ? downBound - i : rightBound - j);
-        if (max - min >= (long long) expand) {
-            for (long long k = min; k <= max; ++k) {
+        long min = (long) (leftBound - j > upBound - i ? leftBound - j : upBound - i);
+        long max = (long) (rightBound - j > downBound - i ? downBound - i : rightBound - j);
+        if (max - min >= (long) expand) {
+            for (long k = min; k <= max; ++k) {
                 if (this->Get(i + k, j + k) != item) {
+//                    cout << this->Get(i + k, j + k) << " " << i + k << " " << j + k << " " << item << endl;
                     series = 0;
                 } else {
                     ++series;
@@ -212,9 +215,9 @@ public:
             }
             series = 0;
         }
-        min = (long long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
-        max = (long long) (rightBound - j > i - upBound ? i - upBound : rightBound - j);
-        if (max - min >= (long long) expand) {
+        min = (long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
+        max = (long) (rightBound - j > i - upBound ? i - upBound : rightBound - j);
+        if (max - min >= (long) expand) {
             for (long long k = min; k <= max; ++k) {
                 if (this->Get(i - k, j + k) != item) {
                     series = 0;
@@ -227,6 +230,7 @@ public:
                 }
             }
         }
+//        cout << "I am here" << endl;
     }
 
     void UpdateClusters(size_t i, size_t j) {

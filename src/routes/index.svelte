@@ -75,11 +75,13 @@
           }
           message = '';
           if (initialized)
-            message += '\n\n';
+            message += '-1 -1\n';
           message += '1' + '\n' + choice + '\n';
           worker.postMessage(message);
           initialized = true;
           ok = false;
+          prev = 'o';
+
           break;
         case 'move':
           if (field[choice[0]][choice[1]] === '' && prev !== 'x') {
@@ -148,6 +150,8 @@
       <div class='my-2 w-full flex flex-wrap justify-center' id='menu'>
         <Input text='Field size' command={(choice)=>{Command('init',choice);}}
                button_text='Set' />
+        <Field label_text='Result' text={result} />
+
         <div class='w-full flex flex-wrap h-full justify-center field'>
           {#each Array(n) as _, i}
             <div class='w-full flex h-auto justify-center'>

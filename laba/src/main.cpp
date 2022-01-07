@@ -39,7 +39,12 @@ int DialogValue(const string &msg) {
 }
 
 void StartUI() {
-    cout << "9.7" << endl;
+//    cout << std::numeric_limits<long>::min() << endl << std::numeric_limits<long>::max() << endl;
+//    auto b1 = new Board(3);
+//    b1->Set(0, 0, 'x');
+//    b1->Set(1, 1, 'x');
+//    b1->Set(2, 2, 'x');
+//    Utils::PPrint(cout, b1->GetGameState()) << endl;
     int choice = 1;
     auto b = new Board(3);
     Pair<size_t> move{};
@@ -67,12 +72,15 @@ void StartUI() {
                                 break;
                             }
                             b->Set(x, y, 'x', true);
+//                            cout << b->clusters << endl;
                             if (b->GetGameState() == 0) {
                                 move = PredictMove(*b);
                                 cout << *b << endl;
                                 cout << "AI move: " << move << endl;
 //        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
                                 b->Set(move.first, move.second, 'o', true);
+//                                cout << b->clusters << endl;
+
                                 cout << *b << endl;
                             }
                         }
@@ -107,7 +115,7 @@ void StartUI() {
 
 
 int main() {
-//    auto b = new Board(DialogValue("Input field size"));
+
 //    while (b->GetGameState() == 0) {
 //        long x = -1, y = -1;
 //
