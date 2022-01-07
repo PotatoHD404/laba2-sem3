@@ -11,7 +11,7 @@ class Board {
 
 public:
     const size_t size{};
-    const size_t winConst{};
+    const long winConst{};
 
     class Point {
     public:
@@ -94,7 +94,9 @@ private:
     mutable char *board;
     mutable char gameState{};
     mutable size_t count{};
-    ArraySequence<Cluster> clusters;
+    ListSequence<Cluster> clusters;
+    Stack<Pair<Cluster, size_t>> clusterChanges;
+    long score{};
 public:
 
 
@@ -103,6 +105,8 @@ public:
             board[i] = '_';
         }
     }
+
+    long GetScore() const { return score; }
 
     Board(const Board &) = default;
 
@@ -116,18 +120,18 @@ public:
     }
 
     size_t GetSize() const {
-        size_t res = 0;
-        for (auto cluster: clusters) {
-            res += cluster.GetSize();
-        }
-        return res;
+//        size_t res = 0;
+//        for (auto cluster: clusters) {
+//            res += cluster.GetSize();
+//        }
+        return size * size;
     }
 
     size_t GetCount() const {
         return count;
     }
 
-    void Set(size_t i, size_t j, char item, bool updateClusters = false) const {
+    void Set(size_t i, size_t j, char item, bool updateClusters = true) {
         if (item == '_') {
             gameState = 0;
             if (board[i * size + j] != '_')
@@ -150,7 +154,7 @@ public:
         size_t rightBound = j + expand < this->size ? j + expand : this->size - 1;
         size_t upBound = i >= expand ? i - expand : 0;
         size_t downBound = i + expand < this->size ? i + expand : this->size - 1;
-        size_t series = 0;
+        long series = 0;
         for (size_t k = leftBound; k <= rightBound; ++k) {
             if (this->Get(i, k) != item) {
                 series = 0;
@@ -200,6 +204,13 @@ public:
         if (max - min >= (long long) expand) {
             for (long long k = min; k <= max; ++k) {
                 if (this->Get(i - k, j + k) != item) {
+                    if (this->Get(i - k, j + k) == '_' && series == winConst - 1) {
+                        if (item == 'x')
+                            score -= series;
+                        else
+                            score += series;
+
+                    }
                     series = 0;
                 } else {
                     ++series;
@@ -212,13 +223,34 @@ public:
         }
     }
 
-    void UpdateClusters(size_t i, size_t j) const {
-        for (auto cluster: clusters) {
-            if (cluster.IsNear(i, j)) {
-                cluster.Expand(i, j);
+    void UpdateClusters(size_t i, size_t j) {
+        bool added = false;
+        for (size_t k = 0; k < clusters.Count(); ++k) {
+
+            if (clusters[k].IsNear(i, j)) {
+                clusterChanges.Push(Pair(clusters[k], k));
+                clusters[k].Expand(i, j);
+                added = true;
                 break;
             }
         }
+        if (!added) {
+            Cluster tmp = {Point(i, j), Point(i, j)};
+            tmp.Expand(i, j);
+            tmp.Expand(i, j);
+            clusterChanges.Add(Pair(Cluster(Point((size_t) -1, (size_t) -1),
+                                            Point((size_t) -1, (size_t) -1)), clusters.Count()));
+            clusters.Add(tmp);
+        }
+    }
+
+    void UndoClusters() {
+        if (Cluster(Point((size_t) -1, (size_t) -1),
+                    Point((size_t) -1, (size_t) -1)) == clusterChanges.Top().first)
+            clusters.RemoveAt(clusterChanges.Pop().second);
+        else
+            clusters[clusterChanges.Top().second] = clusterChanges.Pop().first;
+
     }
 
     bool IsInClusters(size_t i, size_t j) const {

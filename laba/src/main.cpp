@@ -41,7 +41,7 @@ int DialogValue(const string &msg) {
 void StartUI() {
     int choice = 1;
     auto b = new Board(3);
-    Pair<size_t> move{};
+//    Pair<size_t> move{};
     stringstream ss;
 //    ss >> choice;
     while (choice) {
@@ -66,11 +66,13 @@ void StartUI() {
                                 break;
                             }
                             b->Set(x, y, 'x', true);
-                            move = PredictMove(*b);
-                            cout << *b << endl << "AI move: " << move << endl;
-//        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
-                            b->Set(move.first, move.second, 'o', true);
+//                            move = PredictMove(*b);
+//                            cout << "aaaaaaaaaaaaaaaaaaaaaaa" << endl;
                             cout << *b << endl;
+                            cout << "AI move: " << Pair(0, 1) << endl;
+//        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
+//                            b->Set(move.first, move.second, 'o', true);
+//                            cout << *b << endl;
                         }
                         catch (exception &e) {
                             cout << "An error has occurred: " << e.what() << "\nTry again!\n";
@@ -103,14 +105,20 @@ void StartUI() {
 
 
 int main() {
-/*    Board b(10);
-    size_t x, y;
+    Board b(10);
+    stringstream ss;
+
 
 //    cout << b.GetGameState() << endl;
 
     while (b.GetGameState() == 0) {
-        cout << "Enter your move, (-1 -1) to quit:" << endl;
-        cin >> x >> y;
+        long x = -1, y = -1;
+        cout << "Enter your move, enter to quit:" << endl;
+        ss = stringstream(readline());
+        ss >> x >> y;
+        if (x == y && y == -1) {
+            break;
+        }
         b.Set(x, y, 'x', true);
         auto move = PredictMove(b);
         cout << b << endl << move << endl;
@@ -119,10 +127,10 @@ int main() {
         cout << b << endl;
     }
     cout << b << endl;
-    cout << b.GetGameState() << endl;*/
+    Utils::PPrint(cout, b.GetGameState());
 
 
-    StartUI();
+//    StartUI();
     return 0;
 }
 

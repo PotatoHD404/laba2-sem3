@@ -23,6 +23,7 @@
   let ok = false;
   let consoleText = '';
   let type_selected = false;
+  let prev = 'o';
 
 
   onMount(async () => {
@@ -57,8 +58,9 @@
   function Command(input, choice) {
 
     if (ok) {
-      ok = false;
+
       let message;
+      console.log(input);
       switch (input) {
 
         case 'init':
@@ -76,10 +78,16 @@
             message += '\n';
           message += '1' + '\n' + choice + '\n';
           worker.postMessage(message);
+          initialized = true;
+          ok = false;
           break;
         case 'move':
-          field[choice[0]][choice[1]] = 'x';
-          worker.postMessage(`${choice[0]} ${choice[1]} \n`);
+          if (field[choice[0]][choice[1]] === '' && prev !== 'x') {
+            ok = false;
+            field[choice[0]][choice[1]] = 'x';
+            worker.postMessage(`${choice[0]} ${choice[1]} \n`);
+            prev = 'x';
+          }
           break;
       }
     }
@@ -89,13 +97,20 @@
     ok = true;
     // console.log(data);
 
-    if (data.includes('Xs won!'))
+    if (data.includes('Xs won!')) {
+      prev = 'x';
       result = 'Xs won!';
-    else if (data.includes('Os won!'))
+    } else if (data.includes('Os won!')) {
+      prev = 'x';
       result = 'Os won!';
-    else if (data.includes('AI move: ')) {
+    } else if (data.includes('Draw...')) {
+      prev = 'x';
+      result = 'Draw...';
+    } else if (data.includes('AI move: ')) {
+      console.log(data);
+      prev = 'o';
       result = data.split('AI move: ')[1];
-      const move = data.split('AI move: ')[1].split(' ');
+      const move = data.split('AI move: ')[1].split(', ');
       field[move[0] - 0][move[1] - 0] = 'o';
     }
 
