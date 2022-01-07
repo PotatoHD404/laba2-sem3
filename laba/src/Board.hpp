@@ -144,7 +144,7 @@ public:
         return count;
     }
 
-    void Set(size_t i, size_t j, char item, bool updateClusters = true) {
+    void Set(long i, long j, char item, bool updateClusters = true) {
         if (item == '_') {
             gameState = 0;
             if (board[i * size + j] != '_')
@@ -166,9 +166,9 @@ public:
         }
         long expand = winConst - 1;
         long leftBound = (long) j >= expand ? (long) j - expand : 0;
-        long rightBound = j + expand < this->size ? (long) j + expand : (long) this->size - 1;
-        long upBound = (long) i >= expand ? (long) i - expand : 0;
-        long downBound = i + expand < this->size ? (long) i + expand : (long) this->size - 1;
+        long rightBound = j + expand < (long)  this->size ? j + expand : (long) this->size - 1;
+        long upBound =  i >= expand ?  i - expand : 0;
+        long downBound = i + expand < (long)this->size ? (long) i + expand : (long) this->size - 1;
         long series = 0;
         for (long k = leftBound; k <= rightBound; ++k) {
             if (this->Get(i, k) != item) {
@@ -218,7 +218,7 @@ public:
         min = (long) (leftBound - j > -(downBound - i) ? leftBound - j : -(downBound - i));
         max = (long) (rightBound - j > i - upBound ? i - upBound : rightBound - j);
         if (max - min >= (long) expand) {
-            for (long long k = min; k <= max; ++k) {
+            for (long k = min; k <= max; ++k) {
                 if (this->Get(i - k, j + k) != item) {
                     series = 0;
                 } else {

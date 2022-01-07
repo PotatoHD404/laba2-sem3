@@ -40,11 +40,17 @@ int DialogValue(const string &msg) {
 
 void StartUI() {
 //    cout << std::numeric_limits<long>::min() << endl << std::numeric_limits<long>::max() << endl;
-//    auto b1 = new Board(3);
-//    b1->Set(0, 0, 'x');
-//    b1->Set(1, 1, 'x');
+    auto b1 = new Board(3);
+    b1->Set(1, 1, 'x');
+    b1->Set(1, 2, 'o');
+
+    b1->Set(0, 1, 'x');
+    b1->Set(2, 1, 'o');
 //    b1->Set(2, 2, 'x');
-//    Utils::PPrint(cout, b1->GetGameState()) << endl;
+    Utils::PPrint(cout, *b1) << endl;
+
+    Utils::PPrint(cout, b1->GetGameState()) << endl;
+    delete b1;
     int choice = 1;
     auto b = new Board(3);
     Pair<size_t> move{};
