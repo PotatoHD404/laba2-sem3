@@ -105,11 +105,14 @@ namespace Utils {
                 ++begin1;
                 ++begin2;
             } else if (*begin1 < *begin2) {
-                if (++begin1 >= end1)
+                if (begin1 >= end1 - 1)
                     break;
+                ++begin1;
             } else {
-                if (++begin2 >= end2)
+                if (begin2 >= end2-1)
                     break;
+                ++begin2;
+
             }
         }
         return res;

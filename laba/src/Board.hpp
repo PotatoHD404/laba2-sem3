@@ -103,7 +103,7 @@ public:
         }
     };
 
-public:
+private:
     mutable char *board;
     mutable char gameState{};
     mutable size_t count{};

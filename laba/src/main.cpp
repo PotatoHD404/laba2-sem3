@@ -122,35 +122,6 @@ void StartUI() {
 
 int main() {
 
-//    while (b->GetGameState() == 0) {
-//        long x = -1, y = -1;
-//
-//        cout << "Enter your move, enter to quit:" << endl;
-//        cout << "Input (x y)" << endl;
-//        auto ss = stringstream(readline());
-//        ss >> x >> y;
-//        if (x == y && y == -1) {
-//            break;
-//        }
-//        b->Set(x, y, 'x', true);
-////        cout << b->clusters << endl;
-//        if (b->GetGameState() == 0) {
-//            auto move = PredictMove(*b);
-//            cout << *b << endl;
-//            cout << "AI move: " << move << endl;
-////        if (move != Pair<size_t>{(size_t) -1, (size_t) -1})
-//            b->Set(move.first, move.second, 'o', true);
-////            cout << b->clusters << endl;
-//
-//            cout << *b << endl;
-//        }
-//
-//    }
-//    cout << *b << endl;
-//    Utils::PPrint(cout, b->GetGameState()) << endl;
-
-//
-
 
     StartUI();
     return 0;
